@@ -30,28 +30,24 @@ impl ACCSharedMemory {
             physics_reader,
             graphics_reader,
             statics_reader,
-            last_physics_id: 0,
+            // Sentinel: must not equal a real first `packet_id` (often 0), or the first read is
+            // mistaken for a duplicate and `read_shared_memory` returns None forever.
+            last_physics_id: -1,
             last_physics: None,
         })
     }
 
     /// Read shared memory data, returning None if no new data is available.
-    /// 
-    /// This method only returns data when the physics packet ID has changed,
-    /// avoiding duplicate processing of the same telemetry frame.
+    ///
+    /// Returns `Some` when the physics `packet_id` changes from the last returned frame.
     pub fn read_shared_memory(&mut self) -> Result<Option<ACCMap>> {
         let physics = parse_physics_map(&self.physics_reader)?;
         
-        // Check if we have new data
+        // New frame = new physics packet id. (Do not use `PhysicsMap::is_equal`: it only compares
+        // `suspension_travel`, so standing still suppresses almost all reads while ACC still
+        // advances `packet_id` and other fields change.)
         if physics.packet_id == self.last_physics_id {
             return Ok(None);
-        }
-
-        // Additional check: compare with last physics data to detect stale updates
-        if let Some(ref last_physics) = self.last_physics {
-            if physics.is_equal(last_physics) {
-                return Ok(None);
-            }
         }
 
         let graphics = parse_graphics_map(&self.graphics_reader)?;
@@ -113,7 +109,7 @@ impl ACCSharedMemory {
 
     /// Reset the internal state, forcing the next read to return data.
     pub fn reset(&mut self) {
-        self.last_physics_id = 0;
+        self.last_physics_id = -1;
         self.last_physics = None;
     }
 }

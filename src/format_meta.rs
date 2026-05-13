@@ -1,4 +1,7 @@
 //! Format metadata JSON for rkyv recordings.
+//!
+//! The embedded `schema.types` list is a **subset** of fields for human-readable discovery.
+//! The authoritative layout is `PhysicsRecord` in `src/record.rs` (must match `sqlite_export` `physics` table).
 
 use std::path::Path;
 use std::time::SystemTime;

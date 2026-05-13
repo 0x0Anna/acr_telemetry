@@ -825,7 +825,11 @@ fn export_shapefile_points(
     let mut written = 0usize;
     let mut sub_samples: Vec<ShpSample> = Vec::new();
     for (i, gr) in graphics_records.iter().enumerate().step_by(downsample) {
-        let pt = Point::new(gr.car_coordinates_x as f64, gr.car_coordinates_z as f64);
+        let (fx, fy) = acr_recorder::gis::game_xz_to_file(
+            gr.car_coordinates_x as f64,
+            gr.car_coordinates_z as f64,
+        );
+        let pt = Point::new(fx, fy);
         let physics_idx =
             ((i as f64 * physics_sample_rate as f64 / sample_rate as f64).round() as usize)
                 .min(physics_records.len() - 1);

@@ -356,7 +356,8 @@ pub fn write_subtiming_shapefile(path: &Path, markers: &[SubtimingMarker]) -> Re
 
     let mut writer = Writer::from_path(path, table_builder)?;
     for m in markers {
-        let pt = Point::new(m.x, m.z);
+        let (fx, fy) = crate::gis::game_xz_to_file(m.x, m.z);
+        let pt = Point::new(fx, fy);
         let mut rec = Record::default();
         rec.insert("mark_id".to_string(), FieldValue::Numeric(Some(m.mark_id as f64)));
         rec.insert("src_idx".to_string(), FieldValue::Numeric(Some(m.src_idx as f64)));

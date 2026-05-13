@@ -31,6 +31,18 @@ path = "src/bin/acr_track_match.rs"
 name = "acr_rtss_osd"
 path = "src/bin/acr_rtss_osd.rs"
 
+[[bin]]
+name = "acr_beep_demo"
+path = "src/bin/acr_beep_demo.rs"
+
+[[bin]]
+name = "acr_sectors_filter"
+path = "src/bin/acr_sectors_filter.rs"
+
+[[bin]]
+name = "acr_grip_estimator"
+path = "src/bin/acr_grip_estimator.rs"
+
 [dependencies]
 acc_shared_memory_rs = { path = "vendor/acc_shared_memory_rs" }
 rkyv = { version = "0.7", features = ["std"] }
@@ -43,6 +55,7 @@ toml = "0.8"
 dirs = "5.0"
 tiny_http = "0.12"
 shapefile = "0.8.0"
+rodio = { version = "0.19", default-features = false, features = ["wav"] }
 
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = [
@@ -52,4 +65,5 @@ winapi = { version = "0.3", features = [
     "synchapi",
     "winnt",
     "errhandlingapi",
+    "winuser",
 ] }

@@ -179,8 +179,8 @@ pub struct PhysicsMap {
 }
 
 impl PhysicsMap {
-    /// Compare two PhysicsMap instances for equality based on suspension travel.
-    /// This is used to detect when fresh telemetry data is available.
+    /// Historical helper: compares **only** `suspension_travel`. Do not use this to decide
+    /// whether a new physics packet arrived; use `packet_id` (see `read_shared_memory`).
     pub fn is_equal(&self, other: &PhysicsMap) -> bool {
         self.suspension_travel == other.suspension_travel
     }

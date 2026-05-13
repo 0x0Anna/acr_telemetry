@@ -1,0 +1,55 @@
+refs = ["reference_tracks"]
+live = true
+rtss = true
+rtss_owner = "acr_track_match"
+rtss_slot = 3
+
+sectors_shp = "timing/sectors.shp"
+sector_track_field = "src_layer"
+sector_id_field = "seg_id"
+timing_db = "timing/timing.db"
+
+track_lock_after_sec = 10.0
+track_unlock_speed_kmh = 3.0
+track_unlock_hold_sec = 5.0
+## Persist detected staged starts as GeoJSON points (used for future preselection too)
+start_points_geojson = "timing/start_points.geojson"
+start_prefilter_radius = 20.0
+beep_on_split = true
+
+# Split sounds: default device (headphones/speakers). mode = "sine" | "wav"
+[beep]
+mode = "sine"
+faster_freq_hz = 1700.0
+faster_duration_ms = 45
+slower_freq_hz = 950.0
+slower_duration_ms = 140
+gap_ms = 200
+volume = 0.4
+# faster_wav = "C:/path/fast.wav"
+# slower_wav = "C:/path/slow.wav"
+
+
+[pacenotes]
+enabled = true
+pacenotes_dir = "timing/pacenotes"
+# Default per SHP stem: python scripts/ensure_reference_pacenote_aliases.py (after YAML->GeoJSON batch)
+# Optional: disambiguate when several GeoJSON files share the same track prefix (e.g. hafren_north vs hafren_south).
+# Do NOT set this to another track's stage — pacenotes are chosen by detected reference track + filename prefix.
+# stage = "sisteron_mezien"
+# geojson = "timing/pacenotes/sisteron_mezien.geojson"
+voice_dir = "voices/elevenlabs_en"
+lead_sec = 1.0
+slow_corner_extra_lead_sec = 1.0
+protected_corner_gear = 3
+critical_start_reserve_sec = 1.2
+skippable_corner_gear = 4
+gear_advance_hz = 5
+# Minimum ACC gear (2=first, 7=sixth) before gear-based lead is applied.
+gear_advance_gear = 1
+gear_reference_severity = 6
+gear_step_ms = 2000
+skip_buffer_m = 5.0
+trigger_radius_m = 12.0
+min_speed_kmh = 8.0
+volume = 0.9
