@@ -1,0 +1,7189 @@
+{
+  "type": "FeatureCollection",
+  "name": "pacenotes:Forêt de Munster",
+  "properties": {
+    "source_yaml": "c:\\temp\\acc\\vendor\\PacenotePal\\pacenotes\\Forêt de Munster.yml",
+    "reference_shp": "c:\\temp\\acc\\reference_tracks\\valee_de_munster.shp",
+    "coordinate_space": "acc_world_zx",
+    "swap_xz": true,
+    "start_dist_m_offset": 11929.927,
+    "subtract_start_dist": true,
+    "reference_point_count": 1147,
+    "reference_station_max_m": -1170.717,
+    "pacenote_count": 84,
+    "max_pacenote_distance_m": 10740.0,
+    "notes_beyond_reference_end": 0,
+    "gis_field_schema": {
+      "group_fields": {
+        "grp_keep": [
+          "keep_in",
+          "keep_left",
+          "keep_middle",
+          "keep_out",
+          "keep_right"
+        ],
+        "grp_cut": [
+          "cut",
+          "dont_cut",
+          "small_cut"
+        ],
+        "grp_opening": [
+          "opens",
+          "opens_late",
+          "widens"
+        ],
+        "grp_go": [
+          "go_left",
+          "go_right",
+          "go_straight"
+        ]
+      },
+      "bool_fields": [
+        "flg_caution",
+        "flg_brake",
+        "flg_finish",
+        "flg_narrows",
+        "flg_tightens",
+        "flg_tightens_late",
+        "flg_late",
+        "flg_sudden",
+        "flg_linked_to_next",
+        "flg_turn_left",
+        "flg_turn_right"
+      ],
+      "notes": {
+        "grp_*": "Mutually exclusive categorical flags for QGIS/WebGIS dropdown filters.",
+        "flg_*": "Independent boolean flags for checkbox filters and rule-based styling.",
+        "turn_sides": "Comma-separated turn sides when a numbered/style turn is present.",
+        "notes_text": "Original PacenotePal token sequence for map labels."
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 0,
+        "distance_m": 3811.0,
+        "distance_lookup_m": -8118.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist90"
+        ],
+        "notes_text": "Dist90",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist90",
+            "meters": 90
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            90
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "90"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 1,
+        "distance_m": 3907.0,
+        "distance_lookup_m": -8022.927,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "Right5",
+          "Tightens"
+        ],
+        "notes_text": "Caution, Right5, Tightens",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 2,
+        "distance_m": 3962.0,
+        "distance_lookup_m": -7967.927,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Sudden",
+          "LeftAcuteHP"
+        ],
+        "notes_text": "Into, Sudden, LeftAcuteHP",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "modifier",
+            "source": "Sudden",
+            "name": "sudden"
+          },
+          {
+            "kind": "turn",
+            "source": "LeftAcuteHP",
+            "side": "left",
+            "style": "acutehp"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": true
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": true,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 3,
+        "distance_m": 3993.0,
+        "distance_lookup_m": -7936.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist40",
+          "OverCrest"
+        ],
+        "notes_text": "Dist40, OverCrest",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 4,
+        "distance_m": 4039.0,
+        "distance_lookup_m": -7890.927,
+        "link_to_next": true,
+        "notes": [
+          "Pause0.25s",
+          "Right2",
+          "Long",
+          "Opens"
+        ],
+        "notes_text": "Pause0.25s, Right2, Long, Opens",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "turn",
+            "source": "Right2",
+            "side": "right",
+            "severity": 2
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "opening",
+            "source": "Opens",
+            "name": "opens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": "opens",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          },
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "opens",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2,
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 5,
+        "distance_m": 4134.0,
+        "distance_lookup_m": -7795.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist60"
+        ],
+        "notes_text": "Dist60",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 6,
+        "distance_m": 4197.0,
+        "distance_lookup_m": -7732.927,
+        "link_to_next": true,
+        "notes": [
+          "Right4",
+          "BadCamber"
+        ],
+        "notes_text": "Right4, BadCamber",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "hazard",
+            "source": "BadCamber",
+            "name": "bad_camber"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 7,
+        "distance_m": 4251.0,
+        "distance_lookup_m": -7678.927,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left5",
+          "Long"
+        ],
+        "notes_text": "And, Left5, Long",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 8,
+        "distance_m": 4325.0,
+        "distance_lookup_m": -7604.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist60"
+        ],
+        "notes_text": "Dist60",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 9,
+        "distance_m": 4391.0,
+        "distance_lookup_m": -7538.927,
+        "link_to_next": true,
+        "notes": [
+          "RightKink"
+        ],
+        "notes_text": "RightKink",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "RightKink",
+            "side": "right",
+            "style": "kink"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 10,
+        "distance_m": 4471.0,
+        "distance_lookup_m": -7458.927,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left4",
+          "Long",
+          "TightensLate",
+          "Pause0.1s",
+          "DontCut"
+        ],
+        "notes_text": "Into, Left4, Long, TightensLate, Pause0.1s, DontCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "modifier",
+            "source": "TightensLate",
+            "name": "tightens_late"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": true,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": true,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 11,
+        "distance_m": 4606.0,
+        "distance_lookup_m": -7323.927,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "BadCamber",
+          "Pause0.1s_Reset",
+          "Right3",
+          "Long"
+        ],
+        "notes_text": "Caution, BadCamber, Pause0.1s_Reset, Right3, Long",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "hazard",
+            "source": "BadCamber",
+            "name": "bad_camber"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s_Reset",
+            "seconds": 0.1,
+            "reset": true
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 12,
+        "distance_m": 4687.0,
+        "distance_lookup_m": -7242.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 13,
+        "distance_m": 4809.0,
+        "distance_lookup_m": -7120.927,
+        "link_to_next": true,
+        "notes": [
+          "Left6"
+        ],
+        "notes_text": "Left6",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left6",
+            "side": "left",
+            "severity": 6
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 14,
+        "distance_m": 4869.0,
+        "distance_lookup_m": -7060.927,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Right5",
+          "Long"
+        ],
+        "notes_text": "And, Right5, Long",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 15,
+        "distance_m": 4941.0,
+        "distance_lookup_m": -6988.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 16,
+        "distance_m": 5050.0,
+        "distance_lookup_m": -6879.927,
+        "link_to_next": true,
+        "notes": [
+          "LeftFlat",
+          "IntoDip"
+        ],
+        "notes_text": "LeftFlat, IntoDip",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "LeftFlat",
+            "side": "left",
+            "style": "flat"
+          },
+          {
+            "kind": "feature",
+            "source": "IntoDip",
+            "name": "into_dip"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 17,
+        "distance_m": 5121.0,
+        "distance_lookup_m": -6808.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist80",
+          "OverBumps"
+        ],
+        "notes_text": "Dist80, OverBumps",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          },
+          {
+            "kind": "feature",
+            "source": "OverBumps",
+            "name": "over_bumps"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 18,
+        "distance_m": 5218.0,
+        "distance_lookup_m": -6711.927,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "Left4"
+        ],
+        "notes_text": "Caution, Left4",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 19,
+        "distance_m": 5267.0,
+        "distance_lookup_m": -6662.927,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "Right4",
+          "DontCut"
+        ],
+        "notes_text": "And, Right4, DontCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 20,
+        "distance_m": 5335.0,
+        "distance_lookup_m": -6594.927,
+        "link_to_next": false,
+        "notes": [
+          "LeftFlat",
+          "Long"
+        ],
+        "notes_text": "LeftFlat, Long",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "LeftFlat",
+            "side": "left",
+            "style": "flat"
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 21,
+        "distance_m": 5425.0,
+        "distance_lookup_m": -6504.927,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "Left3",
+          "DontCut"
+        ],
+        "notes_text": "Caution, Left3, DontCut",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 22,
+        "distance_m": 5466.0,
+        "distance_lookup_m": -6463.927,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Sudden",
+          "Right3",
+          "KeepIn"
+        ],
+        "notes_text": "And, Sudden, Right3, KeepIn",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "modifier",
+            "source": "Sudden",
+            "name": "sudden"
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepIn",
+            "name": "keep_in"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_in",
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": true
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "keep_in",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": true,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 23,
+        "distance_m": 5499.0,
+        "distance_lookup_m": -6430.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist60"
+        ],
+        "notes_text": "Dist60",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 24,
+        "distance_m": 5564.0,
+        "distance_lookup_m": -6365.927,
+        "link_to_next": true,
+        "notes": [
+          "Left5",
+          "VeryLong",
+          "Tighten4"
+        ],
+        "notes_text": "Left5, VeryLong, Tighten4",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "length",
+            "source": "VeryLong",
+            "name": "very_long"
+          },
+          {
+            "kind": "modifier",
+            "source": "Tighten4",
+            "name": "tighten",
+            "level": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 25,
+        "distance_m": 5701.0,
+        "distance_lookup_m": -6228.927,
+        "link_to_next": false,
+        "notes": [
+          "OverCrest",
+          "Dist80"
+        ],
+        "notes_text": "OverCrest, Dist80",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          },
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 26,
+        "distance_m": 5794.0,
+        "distance_lookup_m": -6135.927,
+        "link_to_next": true,
+        "notes": [
+          "LeftKink"
+        ],
+        "notes_text": "LeftKink",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "LeftKink",
+            "side": "left",
+            "style": "kink"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 27,
+        "distance_m": 5840.0,
+        "distance_lookup_m": -6089.927,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Right4",
+          "VeryLong",
+          "Tighten3",
+          "Late"
+        ],
+        "notes_text": "Into, Right4, VeryLong, Tighten3, Late",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "VeryLong",
+            "name": "very_long"
+          },
+          {
+            "kind": "modifier",
+            "source": "Tighten3",
+            "name": "tighten",
+            "level": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "Late",
+            "name": "late"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": true,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": true,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 28,
+        "distance_m": 5956.0,
+        "distance_lookup_m": -5973.927,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left5"
+        ],
+        "notes_text": "And, Left5",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 29,
+        "distance_m": 6024.0,
+        "distance_lookup_m": -5905.927,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Right3",
+          "Long",
+          "OpensLate"
+        ],
+        "notes_text": "Into, Right3, Long, OpensLate",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "opening",
+            "source": "OpensLate",
+            "name": "opens_late"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": "opens_late",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "opens_late",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 30,
+        "distance_m": 6120.0,
+        "distance_lookup_m": -5809.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 31,
+        "distance_m": 6236.0,
+        "distance_lookup_m": -5693.927,
+        "link_to_next": true,
+        "notes": [
+          "Left4",
+          "Long",
+          "DontCut",
+          "Pause0.1s",
+          "OverBumps"
+        ],
+        "notes_text": "Left4, Long, DontCut, Pause0.1s, OverBumps",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "feature",
+            "source": "OverBumps",
+            "name": "over_bumps"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 32,
+        "distance_m": 6347.0,
+        "distance_lookup_m": -5582.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist60"
+        ],
+        "notes_text": "Dist60",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 33,
+        "distance_m": 6413.0,
+        "distance_lookup_m": -5516.927,
+        "link_to_next": true,
+        "notes": [
+          "Left5",
+          "Tighten3",
+          "Late",
+          "Pause0.1s",
+          "Caution",
+          "KeepIn"
+        ],
+        "notes_text": "Left5, Tighten3, Late, Pause0.1s, Caution, KeepIn",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "modifier",
+            "source": "Tighten3",
+            "name": "tighten",
+            "level": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "Late",
+            "name": "late"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepIn",
+            "name": "keep_in"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_in",
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": true,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "keep_in",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": true,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 34,
+        "distance_m": 6529.0,
+        "distance_lookup_m": -5400.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist80"
+        ],
+        "notes_text": "Dist80",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 35,
+        "distance_m": 6617.0,
+        "distance_lookup_m": -5312.927,
+        "link_to_next": true,
+        "notes": [
+          "Left6",
+          "OverBump"
+        ],
+        "notes_text": "Left6, OverBump",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left6",
+            "side": "left",
+            "severity": 6
+          },
+          {
+            "kind": "feature",
+            "source": "OverBump",
+            "name": "over_bump"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 36,
+        "distance_m": 6685.0,
+        "distance_lookup_m": -5244.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist70"
+        ],
+        "notes_text": "Dist70",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist70",
+            "meters": 70
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            70
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "70"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 37,
+        "distance_m": 6759.0,
+        "distance_lookup_m": -5170.927,
+        "link_to_next": true,
+        "notes": [
+          "LeftFlat",
+          "DontCut"
+        ],
+        "notes_text": "LeftFlat, DontCut",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "LeftFlat",
+            "side": "left",
+            "style": "flat"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 38,
+        "distance_m": 6800.0,
+        "distance_lookup_m": -5129.927,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Right4",
+          "VeryLong",
+          "Pause0.1s",
+          "OpensLate"
+        ],
+        "notes_text": "Into, Right4, VeryLong, Pause0.1s, OpensLate",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "VeryLong",
+            "name": "very_long"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "opening",
+            "source": "OpensLate",
+            "name": "opens_late"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": "opens_late",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "opens_late",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 39,
+        "distance_m": 6987.0,
+        "distance_lookup_m": -4942.927,
+        "link_to_next": true,
+        "notes": [
+          "Left3",
+          "DontCut"
+        ],
+        "notes_text": "Left3, DontCut",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 40,
+        "distance_m": 7052.0,
+        "distance_lookup_m": -4877.927,
+        "link_to_next": true,
+        "notes": [
+          "OverCrest",
+          "Into",
+          "Right4",
+          "Long",
+          "Pause0.1s",
+          "TightensLate"
+        ],
+        "notes_text": "OverCrest, Into, Right4, Long, Pause0.1s, TightensLate",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "modifier",
+            "source": "TightensLate",
+            "name": "tightens_late"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": true,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": true,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 41,
+        "distance_m": 7160.0,
+        "distance_lookup_m": -4769.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist70"
+        ],
+        "notes_text": "Dist70",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist70",
+            "meters": 70
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            70
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "70"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 42,
+        "distance_m": 7237.0,
+        "distance_lookup_m": -4692.927,
+        "link_to_next": true,
+        "notes": [
+          "RightFlat"
+        ],
+        "notes_text": "RightFlat",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "RightFlat",
+            "side": "right",
+            "style": "flat"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 43,
+        "distance_m": 7292.0,
+        "distance_lookup_m": -4637.927,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left4",
+          "Long"
+        ],
+        "notes_text": "Into, Left4, Long",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 44,
+        "distance_m": 7400.0,
+        "distance_lookup_m": -4529.927,
+        "link_to_next": true,
+        "notes": [
+          "Right4",
+          "Tightens",
+          "OverCrest"
+        ],
+        "notes_text": "Right4, Tightens, OverCrest",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 45,
+        "distance_m": 7476.0,
+        "distance_lookup_m": -4453.927,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left4",
+          "Long",
+          "Tightens"
+        ],
+        "notes_text": "Into, Left4, Long, Tightens",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 46,
+        "distance_m": 7592.0,
+        "distance_lookup_m": -4337.927,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Right5",
+          "Long"
+        ],
+        "notes_text": "And, Right5, Long",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 47,
+        "distance_m": 7688.0,
+        "distance_lookup_m": -4241.927,
+        "link_to_next": false,
+        "notes": [
+          "Caution",
+          "Into",
+          "Right4",
+          "VeryLong",
+          "Tightens"
+        ],
+        "notes_text": "Caution, Into, Right4, VeryLong, Tightens",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "VeryLong",
+            "name": "very_long"
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 48,
+        "distance_m": 7834.0,
+        "distance_lookup_m": -4095.927,
+        "link_to_next": true,
+        "notes": [
+          "Left4",
+          "Long"
+        ],
+        "notes_text": "Left4, Long",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 49,
+        "distance_m": 7943.0,
+        "distance_lookup_m": -3986.927,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.25s",
+          "Dist70"
+        ],
+        "notes_text": "Pause0.25s, Dist70",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "distance",
+            "source": "Dist70",
+            "meters": 70
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            70
+          ],
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "70",
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 50,
+        "distance_m": 8024.0,
+        "distance_lookup_m": -3905.927,
+        "link_to_next": false,
+        "notes": [
+          "KinksStartingRight"
+        ],
+        "notes_text": "KinksStartingRight",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "KinksStartingRight",
+            "name": "kinks_starting_right"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 51,
+        "distance_m": 8132.0,
+        "distance_lookup_m": -3797.927,
+        "link_to_next": false,
+        "notes": [
+          "Caution",
+          "Brake",
+          "Pause0.1s",
+          "Right2"
+        ],
+        "notes_text": "Caution, Brake, Pause0.1s, Right2",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "turn",
+            "source": "Right2",
+            "side": "right",
+            "severity": 2
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 52,
+        "distance_m": 8190.0,
+        "distance_lookup_m": -3739.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 53,
+        "distance_m": 8232.0,
+        "distance_lookup_m": -3697.927,
+        "link_to_next": true,
+        "notes": [
+          "Right4",
+          "Long",
+          "Tightens"
+        ],
+        "notes_text": "Right4, Long, Tightens",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 54,
+        "distance_m": 8327.0,
+        "distance_lookup_m": -3602.927,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.25s",
+          "Into",
+          "LeftHP"
+        ],
+        "notes_text": "Pause0.25s, Into, LeftHP",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "LeftHP",
+            "side": "left",
+            "style": "hp"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          },
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 55,
+        "distance_m": 8410.0,
+        "distance_lookup_m": -3519.927,
+        "link_to_next": true,
+        "notes": [
+          "Left6",
+          "Long"
+        ],
+        "notes_text": "Left6, Long",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left6",
+            "side": "left",
+            "severity": 6
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 56,
+        "distance_m": 8478.0,
+        "distance_lookup_m": -3451.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 57,
+        "distance_m": 8540.0,
+        "distance_lookup_m": -3389.927,
+        "link_to_next": true,
+        "notes": [
+          "Left4",
+          "Long",
+          "Tighten3"
+        ],
+        "notes_text": "Left4, Long, Tighten3",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "modifier",
+            "source": "Tighten3",
+            "name": "tighten",
+            "level": 3
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 58,
+        "distance_m": 8668.0,
+        "distance_lookup_m": -3261.927,
+        "link_to_next": true,
+        "notes": [
+          "Pause0.1s",
+          "And",
+          "Right4",
+          "BigCut"
+        ],
+        "notes_text": "Pause0.1s, And, Right4, BigCut",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "other",
+            "source": "BigCut",
+            "name": "BigCut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 59,
+        "distance_m": 8707.0,
+        "distance_lookup_m": -3222.927,
+        "link_to_next": false,
+        "notes": [
+          "Kinks",
+          "Dist150"
+        ],
+        "notes_text": "Kinks, Dist150",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "Kinks",
+            "name": "kinks"
+          },
+          {
+            "kind": "distance",
+            "source": "Dist150",
+            "meters": 150
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            150
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "150"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 60,
+        "distance_m": 8867.0,
+        "distance_lookup_m": -3062.927,
+        "link_to_next": true,
+        "notes": [
+          "Right6",
+          "Pause0.25s_Reset"
+        ],
+        "notes_text": "Right6, Pause0.25s_Reset",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.25s_Reset",
+            "seconds": 0.25,
+            "reset": true
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          },
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6,
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 61,
+        "distance_m": 8924.0,
+        "distance_lookup_m": -3005.927,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "Brake",
+          "LeftKink",
+          "Into"
+        ],
+        "notes_text": "Caution, Brake, LeftKink, Into",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          },
+          {
+            "kind": "turn",
+            "source": "LeftKink",
+            "side": "left",
+            "style": "kink"
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 62,
+        "distance_m": 9004.0,
+        "distance_lookup_m": -2925.927,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.25s",
+          "RightAcuteHP"
+        ],
+        "notes_text": "Pause0.25s, RightAcuteHP",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "turn",
+            "source": "RightAcuteHP",
+            "side": "right",
+            "style": "acutehp"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          },
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 63,
+        "distance_m": 9065.0,
+        "distance_lookup_m": -2864.927,
+        "link_to_next": false,
+        "notes": [
+          "Left5",
+          "Long"
+        ],
+        "notes_text": "Left5, Long",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 64,
+        "distance_m": 9173.0,
+        "distance_lookup_m": -2756.927,
+        "link_to_next": true,
+        "notes": [
+          "Right4",
+          "OverBumps"
+        ],
+        "notes_text": "Right4, OverBumps",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "feature",
+            "source": "OverBumps",
+            "name": "over_bumps"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 65,
+        "distance_m": 9258.0,
+        "distance_lookup_m": -2671.927,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.1s",
+          "Into",
+          "Left3",
+          "Tightens"
+        ],
+        "notes_text": "Pause0.1s, Into, Left3, Tightens",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 66,
+        "distance_m": 9350.0,
+        "distance_lookup_m": -2579.927,
+        "link_to_next": true,
+        "notes": [
+          "Right5",
+          "VeryLong",
+          "Pause0.1s",
+          "Tighten4"
+        ],
+        "notes_text": "Right5, VeryLong, Pause0.1s, Tighten4",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          },
+          {
+            "kind": "length",
+            "source": "VeryLong",
+            "name": "very_long"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "modifier",
+            "source": "Tighten4",
+            "name": "tighten",
+            "level": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 67,
+        "distance_m": 9467.0,
+        "distance_lookup_m": -2462.927,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.1s",
+          "Dist100"
+        ],
+        "notes_text": "Pause0.1s, Dist100",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ],
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100",
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 68,
+        "distance_m": 9580.0,
+        "distance_lookup_m": -2349.927,
+        "link_to_next": true,
+        "notes": [
+          "Right5",
+          "Brake"
+        ],
+        "notes_text": "Right5, Brake",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          },
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 69,
+        "distance_m": 9638.0,
+        "distance_lookup_m": -2291.927,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "LeftKink"
+        ],
+        "notes_text": "And, LeftKink",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "LeftKink",
+            "side": "left",
+            "style": "kink"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 70,
+        "distance_m": 9693.0,
+        "distance_lookup_m": -2236.927,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.1s",
+          "Into",
+          "Left3",
+          "Long",
+          "Tightens"
+        ],
+        "notes_text": "Pause0.1s, Into, Left3, Long, Tightens",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 71,
+        "distance_m": 9802.0,
+        "distance_lookup_m": -2127.927,
+        "link_to_next": true,
+        "notes": [
+          "Left4"
+        ],
+        "notes_text": "Left4",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 72,
+        "distance_m": 9847.0,
+        "distance_lookup_m": -2082.927,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "RightKink"
+        ],
+        "notes_text": "And, RightKink",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "RightKink",
+            "side": "right",
+            "style": "kink"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 73,
+        "distance_m": 9897.0,
+        "distance_lookup_m": -2032.927,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "Pause0.1s",
+          "Left2"
+        ],
+        "notes_text": "Caution, Pause0.1s, Left2",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "turn",
+            "source": "Left2",
+            "side": "left",
+            "severity": 2
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 74,
+        "distance_m": 9954.0,
+        "distance_lookup_m": -1975.927,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.25s",
+          "Into",
+          "Sudden",
+          "RightHP",
+          "TightensLate"
+        ],
+        "notes_text": "Pause0.25s, Into, Sudden, RightHP, TightensLate",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "modifier",
+            "source": "Sudden",
+            "name": "sudden"
+          },
+          {
+            "kind": "turn",
+            "source": "RightHP",
+            "side": "right",
+            "style": "hp"
+          },
+          {
+            "kind": "modifier",
+            "source": "TightensLate",
+            "name": "tightens_late"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": true,
+            "late": false,
+            "sudden": true
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          },
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": true,
+        "flg_late": false,
+        "flg_sudden": true,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 75,
+        "distance_m": 10035.0,
+        "distance_lookup_m": -1894.927,
+        "link_to_next": true,
+        "notes": [
+          "Right5"
+        ],
+        "notes_text": "Right5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 76,
+        "distance_m": 10080.0,
+        "distance_lookup_m": -1849.927,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.1s",
+          "And",
+          "LeftFlat"
+        ],
+        "notes_text": "Pause0.1s, And, LeftFlat",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "LeftFlat",
+            "side": "left",
+            "style": "flat"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 77,
+        "distance_m": 10159.0,
+        "distance_lookup_m": -1770.927,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "Right4",
+          "Opens"
+        ],
+        "notes_text": "Caution, Right4, Opens",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "opening",
+            "source": "Opens",
+            "name": "opens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": "opens",
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "opens",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 78,
+        "distance_m": 10256.0,
+        "distance_lookup_m": -1673.927,
+        "link_to_next": false,
+        "notes": [
+          "Brake",
+          "Into",
+          "LeftHP"
+        ],
+        "notes_text": "Brake, Into, LeftHP",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "LeftHP",
+            "side": "left",
+            "style": "hp"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 79,
+        "distance_m": 10330.0,
+        "distance_lookup_m": -1599.927,
+        "link_to_next": true,
+        "notes": [
+          "Dist50"
+        ],
+        "notes_text": "Dist50",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist50",
+            "meters": 50
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "distance_calls_m": [
+            50
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "50"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 80,
+        "distance_m": 10389.0,
+        "distance_lookup_m": -1540.927,
+        "link_to_next": true,
+        "notes": [
+          "Left4"
+        ],
+        "notes_text": "Left4",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 81,
+        "distance_m": 10447.0,
+        "distance_lookup_m": -1482.927,
+        "link_to_next": false,
+        "notes": [
+          "Dist60"
+        ],
+        "notes_text": "Dist60",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 82,
+        "distance_m": 10510.0,
+        "distance_lookup_m": -1419.927,
+        "link_to_next": false,
+        "notes": [
+          "Finish"
+        ],
+        "notes_text": "Finish",
+        "atoms": [
+          {
+            "kind": "control",
+            "source": "Finish",
+            "name": "finish"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": true,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": true,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1283.577,
+          1131.464
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Forêt de Munster",
+        "reference_track": "valee_de_munster",
+        "note_index": 83,
+        "distance_m": 10740.0,
+        "distance_lookup_m": -1189.927,
+        "link_to_next": false,
+        "notes": [
+          "SlowDown",
+          "StopAtMarshals"
+        ],
+        "notes_text": "SlowDown, StopAtMarshals",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "SlowDown",
+            "name": "slow_down"
+          },
+          {
+            "kind": "control",
+            "source": "StopAtMarshals",
+            "name": "stop_at_marshals"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false
+        },
+        "ref_segment_index": 0,
+        "ref_segment_t": 0.0,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    }
+  ]
+}

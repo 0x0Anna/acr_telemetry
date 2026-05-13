@@ -905,6 +905,8 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
     // After a track lock, require at least one interval at/above `track_unlock_speed_kmh` before
     // low-speed unlock can arm — avoids lock/unlock oscillation on the start grid.
     let mut locked_seen_fast_since_lock = false;
+    // True when track lock came from start grid (`start_points` / pacenote UI stillstand), not segment match.
+    let mut grid_start_layout_lock = false;
     let mut no_data_since: Option<Instant> = None;
     let mut last_sector_wait_log = Instant::now();
     let mut last_pacenote_anchor_help =
@@ -962,6 +964,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                     locked_car_model = None;
                     stable_selected = None;
                     locked_seen_fast_since_lock = false;
+                    grid_start_layout_lock = false;
                     pacenote_ambiguous_pick = None;
                     clear_pacenote_live(
                         &mut pacenote_course,
@@ -977,7 +980,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                 if speed_kmh_now >= cfg.track_unlock_speed_kmh {
                     locked_seen_fast_since_lock = true;
                     low_speed_since = None;
-                } else if locked_seen_fast_since_lock {
+                } else if locked_seen_fast_since_lock && !grid_start_layout_lock {
                     if low_speed_since.is_none() {
                         low_speed_since = Some(Instant::now());
                     }
@@ -996,6 +999,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                         stable_selected = None;
                         low_speed_since = None;
                         locked_seen_fast_since_lock = false;
+                        grid_start_layout_lock = false;
                         active_track_name = None;
                         timing_state = None;
                         latest_timing_line = None;
@@ -1053,6 +1057,57 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                 x: player_coords.x as f64,
                 z: player_coords.z as f64,
             };
+            if grid_start_layout_lock {
+                if let Some(lp) = last_pt {
+                    let jump_m = dist(lp, p);
+                    if jump_m > START_LAYOUT_TELEPORT_RESET_M {
+                        eprintln!(
+                            "unlocking start-layout track lock: position jump {:.1} m (> {:.0} m)",
+                            jump_m, START_LAYOUT_TELEPORT_RESET_M
+                        );
+                        let prev_locked = locked_track.clone();
+                        locked_track = None;
+                        locked_car_model = None;
+                        stable_selected = None;
+                        low_speed_since = None;
+                        locked_seen_fast_since_lock = false;
+                        grid_start_layout_lock = false;
+                        active_track_name = None;
+                        timing_state = None;
+                        latest_timing_line = None;
+                        sector_status_line = Some((
+                            format!(
+                                "reset after teleport (> {:.0} m / frame)",
+                                START_LAYOUT_TELEPORT_RESET_M
+                            ),
+                            Instant::now(),
+                        ));
+                        detected_track_line = None;
+                        history.clear();
+                        last_pt = None;
+                        total_drive_m = 0.0;
+                        pacenote_ambiguous_pick = None;
+                        clear_pacenote_live(
+                            &mut pacenote_course,
+                            &mut pacenote_course_track,
+                            &mut active_pacenote_stage_path,
+                            &mut triggered_pacenotes,
+                            &mut last_pacenote_gear_eval,
+                            &mut pacenote_gear_extra_lead_sec,
+                        );
+                        let status = if let Some(name) = prev_locked.as_deref() {
+                            format!("track reset {}", name)
+                        } else {
+                            "track reset".to_string()
+                        };
+                        let detail = format!("teleport/jump: {:.0} m", jump_m);
+                        let msg = compose_two_line_osd(&status, &detail);
+                        let _ = push_live_overlay(cfg, &msg, 2);
+                        last_overlay_msg = msg;
+                        last_overlay_push = Instant::now();
+                    }
+                }
+            }
             if let (Some(catalog), Some(pc)) =
                 (pacenote_stage_catalog.as_ref(), pacenote_cfg.as_ref())
             {
@@ -1077,8 +1132,34 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                         pace_ref,
                     );
                     if hits_lock.len() == 1 {
+                        let pick0 = &hits_lock[0].1;
+                        if locked_track.is_none() {
+                            activate_standstill_track_lock(
+                                pick0.reference_track.as_str(),
+                                &car_model_now,
+                                refs,
+                                &sector_sets,
+                                &timing_conn,
+                                &mut locked_track,
+                                &mut locked_car_model,
+                                &mut active_track_name,
+                                &mut stable_selected,
+                                &mut timing_state,
+                                &mut sector_status_line,
+                                &mut detected_track_line,
+                                &mut last_sector_wait_log,
+                                &mut locked_seen_fast_since_lock,
+                                &format!(
+                                    "track locked from pacenote first-anchor (unique, lock r={:.0} m): {}",
+                                    lock_r, pick0.reference_track
+                                ),
+                            );
+                            if locked_track.is_some() {
+                                grid_start_layout_lock = true;
+                            }
+                        }
                         apply_pacenote_first_anchor_resolution(
-                            &hits_lock[0].1,
+                            pick0,
                             &mut active_pacenote_stage_path,
                             pc,
                             locked_track.as_deref(),
@@ -1122,6 +1203,31 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                     Some(PacenotePickerNav::Confirm) => {
                                         let pick = ui.candidates[ui.index].clone();
                                         pacenote_ambiguous_pick = None;
+                                        if locked_track.is_none() {
+                                            activate_standstill_track_lock(
+                                                pick.reference_track.as_str(),
+                                                &car_model_now,
+                                                refs,
+                                                &sector_sets,
+                                                &timing_conn,
+                                                &mut locked_track,
+                                                &mut locked_car_model,
+                                                &mut active_track_name,
+                                                &mut stable_selected,
+                                                &mut timing_state,
+                                                &mut sector_status_line,
+                                                &mut detected_track_line,
+                                                &mut last_sector_wait_log,
+                                                &mut locked_seen_fast_since_lock,
+                                                &format!(
+                                                    "track locked from pacenote menu: {} ({})",
+                                                    pick.reference_track, pick.slug
+                                                ),
+                                            );
+                                            if locked_track.is_some() {
+                                                grid_start_layout_lock = true;
+                                            }
+                                        }
                                         apply_pacenote_first_anchor_resolution(
                                             &pick,
                                             &mut active_pacenote_stage_path,
@@ -1163,8 +1269,34 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                     menu_r
                                 );
                             } else if hits_menu.len() == 1 {
+                                let pick1 = &hits_menu[0].1;
+                                if locked_track.is_none() {
+                                    activate_standstill_track_lock(
+                                        pick1.reference_track.as_str(),
+                                        &car_model_now,
+                                        refs,
+                                        &sector_sets,
+                                        &timing_conn,
+                                        &mut locked_track,
+                                        &mut locked_car_model,
+                                        &mut active_track_name,
+                                        &mut stable_selected,
+                                        &mut timing_state,
+                                        &mut sector_status_line,
+                                        &mut detected_track_line,
+                                        &mut last_sector_wait_log,
+                                        &mut locked_seen_fast_since_lock,
+                                        &format!(
+                                            "track locked from pacenote first-anchor (menu r={:.0} m): {}",
+                                            menu_r, pick1.reference_track
+                                        ),
+                                    );
+                                    if locked_track.is_some() {
+                                        grid_start_layout_lock = true;
+                                    }
+                                }
                                 apply_pacenote_first_anchor_resolution(
-                                    &hits_menu[0].1,
+                                    pick1,
                                     &mut active_pacenote_stage_path,
                                     pc,
                                     locked_track.as_deref(),
@@ -1670,35 +1802,27 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                         select_track_from_starts(&start_index, p, cfg.start_prefilter_radius_m)
                     {
                         if refs.iter().any(|r| r.name == st) {
-                            locked_track = Some(st.clone());
-                            locked_seen_fast_since_lock = false;
-                            locked_car_model = if car_model_now.is_empty() {
-                                None
-                            } else {
-                                Some(car_model_now.clone())
-                            };
-                            active_track_name = Some(st.clone());
-                            stable_selected = Some((st.clone(), Instant::now()));
-                            timing_state = if let Some(s) = sector_sets.get(&st) {
-                                let line = "waiting for sector passing...".to_string();
-                                eprintln!("{} ({})", line, st);
-                                sector_status_line = Some((line, Instant::now()));
-                                detected_track_line = Some((
-                                    format!("detected track {}", st),
-                                    Instant::now(),
-                                ));
-                                Some(LiveTimingState::new(s.ring_ids.clone()))
-                            } else {
-                                let line = "no sector set for detected track".to_string();
-                                eprintln!("{} ({})", line, st);
-                                sector_status_line = Some((line, Instant::now()));
-                                detected_track_line = Some((
-                                    format!("detected track {}", st),
-                                    Instant::now(),
-                                ));
-                                None
-                            };
-                            last_sector_wait_log = Instant::now();
+                            activate_standstill_track_lock(
+                                &st,
+                                &car_model_now,
+                                refs,
+                                &sector_sets,
+                                &timing_conn,
+                                &mut locked_track,
+                                &mut locked_car_model,
+                                &mut active_track_name,
+                                &mut stable_selected,
+                                &mut timing_state,
+                                &mut sector_status_line,
+                                &mut detected_track_line,
+                                &mut last_sector_wait_log,
+                                &mut locked_seen_fast_since_lock,
+                                &format!(
+                                    "track locked from start_points.geojson (unique within {:.0} m): {}",
+                                    cfg.start_prefilter_radius_m, st
+                                ),
+                            );
+                            grid_start_layout_lock = true;
                             if let Some(catalog) = pacenote_stage_catalog.as_ref() {
                                 if let Some(pick) = catalog.select_from_position(
                                     p.x,
@@ -1708,18 +1832,6 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                     if pick.reference_track == st {
                                         active_pacenote_stage_path = Some(pick.path.clone());
                                     }
-                                }
-                            }
-                            eprintln!(
-                                "track locked from start_points.geojson (unique within {:.0} m): {}",
-                                cfg.start_prefilter_radius_m, st
-                            );
-                            if let Ok(n) = acr_recorder::timing_db::promote_pending_for_track(
-                                &timing_conn,
-                                &st,
-                            ) {
-                                if n > 0 {
-                                    eprintln!("promoted {} pending split(s) for {}", n, st);
                                 }
                             }
                         }
@@ -1781,7 +1893,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                             "pacenote start candidate: {} ({})",
                             pick.reference_track, pick.slug
                         );
-                        if locked_track.is_none() {
+                        if locked_track.is_none() && pacenote_ambiguous_pick.is_none() {
                             active_pacenote_stage_path = Some(pick.path.clone());
                         }
                     }
@@ -1829,6 +1941,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                 if pick.reference_track == selected.name {
                                     locked_track = Some(selected.name.clone());
                                     locked_seen_fast_since_lock = false;
+                                    grid_start_layout_lock = false;
                                     locked_car_model = if car_model_now.is_empty() {
                                         None
                                     } else {
@@ -1862,6 +1975,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         if locked_track.as_deref() != Some(selected.name.as_str()) {
                                             locked_track = Some(selected.name.clone());
                                             locked_seen_fast_since_lock = false;
+                                            grid_start_layout_lock = false;
                                             locked_car_model = if car_model_now.is_empty() {
                                                 None
                                             } else {
@@ -2044,6 +2158,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                 stable_selected = None;
                 low_speed_since = None;
                 locked_seen_fast_since_lock = false;
+                grid_start_layout_lock = false;
                 active_track_name = None;
                 timing_state = None;
                 latest_timing_line = None;

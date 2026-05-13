@@ -1,0 +1,6827 @@
+{
+  "type": "FeatureCollection",
+  "name": "pacenotes:Banc Gwyn - Afon Biga",
+  "properties": {
+    "source_yaml": "c:\\temp\\acc\\vendor\\PacenotePal\\pacenotes\\Banc Gwyn - Afon Biga.yml",
+    "reference_shp": "c:\\temp\\acc\\reference_tracks\\hafren_north.shp",
+    "coordinate_space": "acc_world_zx",
+    "swap_xz": true,
+    "start_dist_m_offset": 153.663,
+    "subtract_start_dist": true,
+    "reference_point_count": 1512,
+    "reference_station_max_m": 11776.209,
+    "pacenote_count": 83,
+    "max_pacenote_distance_m": 11921.0,
+    "notes_beyond_reference_end": 0,
+    "gis_field_schema": {
+      "group_fields": {
+        "grp_keep": [
+          "keep_in",
+          "keep_left",
+          "keep_middle",
+          "keep_out",
+          "keep_right"
+        ],
+        "grp_cut": [
+          "cut",
+          "dont_cut",
+          "small_cut"
+        ],
+        "grp_opening": [
+          "opens",
+          "opens_late",
+          "widens"
+        ],
+        "grp_go": [
+          "go_left",
+          "go_right",
+          "go_straight"
+        ]
+      },
+      "bool_fields": [
+        "flg_caution",
+        "flg_brake",
+        "flg_finish",
+        "flg_narrows",
+        "flg_tightens",
+        "flg_tightens_late",
+        "flg_late",
+        "flg_sudden",
+        "flg_linked_to_next",
+        "flg_turn_left",
+        "flg_turn_right"
+      ],
+      "notes": {
+        "grp_*": "Mutually exclusive categorical flags for QGIS/WebGIS dropdown filters.",
+        "flg_*": "Independent boolean flags for checkbox filters and rule-based styling.",
+        "turn_sides": "Comma-separated turn sides when a numbered/style turn is present.",
+        "notes_text": "Original PacenotePal token sequence for map labels."
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          74.111,
+          93.019
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 0,
+        "distance_m": 6377.0,
+        "distance_lookup_m": 6223.337,
+        "link_to_next": true,
+        "notes": [
+          "Left3",
+          "OverCrest"
+        ],
+        "notes_text": "Left3, OverCrest",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 809,
+        "ref_segment_t": 0.655386,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.673,
+          118.902
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 1,
+        "distance_m": 6417.0,
+        "distance_lookup_m": 6263.337,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Right2",
+          "Tightens"
+        ],
+        "notes_text": "Into, Right2, Tightens",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right2",
+            "side": "right",
+            "severity": 2
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 814,
+        "ref_segment_t": 0.647957,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.004,
+          167.319
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 2,
+        "distance_m": 6483.0,
+        "distance_lookup_m": 6329.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 825,
+        "ref_segment_t": 0.997938,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.282,
+          210.926
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 3,
+        "distance_m": 6531.0,
+        "distance_lookup_m": 6377.337,
+        "link_to_next": true,
+        "notes": [
+          "KinksStartingLeft"
+        ],
+        "notes_text": "KinksStartingLeft",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "KinksStartingLeft",
+            "name": "kinks_starting_left"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true
+        },
+        "ref_segment_index": 834,
+        "ref_segment_t": 0.327998,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          69.005,
+          309.914
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 4,
+        "distance_m": 6636.0,
+        "distance_lookup_m": 6482.337,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Left5",
+          "OverCrest"
+        ],
+        "notes_text": "Into, Left5, OverCrest",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 845,
+        "ref_segment_t": 0.954146,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.629,
+          357.53
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 5,
+        "distance_m": 6685.0,
+        "distance_lookup_m": 6531.337,
+        "link_to_next": true,
+        "notes": [
+          "Pause0.1s_Reset",
+          "And",
+          "Right5"
+        ],
+        "notes_text": "Pause0.1s_Reset, And, Right5",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.1s_Reset",
+            "seconds": 0.1,
+            "reset": true
+          },
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 850,
+        "ref_segment_t": 0.736762,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.168,
+          394.86
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 6,
+        "distance_m": 6723.0,
+        "distance_lookup_m": 6569.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 854,
+        "ref_segment_t": 0.373478,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          97.158,
+          439.881
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 7,
+        "distance_m": 6770.0,
+        "distance_lookup_m": 6616.337,
+        "link_to_next": true,
+        "notes": [
+          "Brake",
+          "Right5",
+          "Tightens"
+        ],
+        "notes_text": "Brake, Right5, Tightens",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          },
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 858,
+        "ref_segment_t": 0.782368,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          137.158,
+          503.061
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 8,
+        "distance_m": 6846.0,
+        "distance_lookup_m": 6692.337,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Left2",
+          "Long",
+          "OpensLate",
+          "DontCut"
+        ],
+        "notes_text": "Into, Left2, Long, OpensLate, DontCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left2",
+            "side": "left",
+            "severity": 2
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "opening",
+            "source": "OpensLate",
+            "name": "opens_late"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": "opens_late",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 866,
+        "ref_segment_t": 0.341255,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "opens_late",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.7,
+          586.903
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 9,
+        "distance_m": 6960.0,
+        "distance_lookup_m": 6806.337,
+        "link_to_next": true,
+        "notes": [
+          "Left4",
+          "Opens",
+          "DontCut"
+        ],
+        "notes_text": "Left4, Opens, DontCut",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "opening",
+            "source": "Opens",
+            "name": "opens"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": "opens",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 886,
+        "ref_segment_t": 0.498513,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "opens",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          48.873,
+          607.173
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 10,
+        "distance_m": 7026.0,
+        "distance_lookup_m": 6872.337,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "Right4"
+        ],
+        "notes_text": "And, Right4",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 895,
+        "ref_segment_t": 0.432118,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -10.797,
+          631.994
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 11,
+        "distance_m": 7092.0,
+        "distance_lookup_m": 6938.337,
+        "link_to_next": true,
+        "notes": [
+          "OverCrest",
+          "Into",
+          "Right1",
+          "Long",
+          "Opens"
+        ],
+        "notes_text": "OverCrest, Into, Right1, Long, Opens",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right1",
+            "side": "right",
+            "severity": 1
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "opening",
+            "source": "Opens",
+            "name": "opens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": "opens",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 1,
+            "severity_min": 1
+          }
+        },
+        "ref_segment_index": 903,
+        "ref_segment_t": 0.487978,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "opens",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 1,
+        "turn_severity_max": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -15.82,
+          693.737
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 12,
+        "distance_m": 7178.0,
+        "distance_lookup_m": 7024.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist60"
+        ],
+        "notes_text": "Dist60",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 919,
+        "ref_segment_t": 0.453236,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          40.217,
+          726.554
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 13,
+        "distance_m": 7243.0,
+        "distance_lookup_m": 7089.337,
+        "link_to_next": true,
+        "notes": [
+          "Right6"
+        ],
+        "notes_text": "Right6",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 927,
+        "ref_segment_t": 0.528746,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          94.729,
+          752.921
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 14,
+        "distance_m": 7304.0,
+        "distance_lookup_m": 7150.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist50"
+        ],
+        "notes_text": "Dist50",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist50",
+            "meters": 50
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            50
+          ]
+        },
+        "ref_segment_index": 933,
+        "ref_segment_t": 0.578044,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "50"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          149.1,
+          769.391
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 15,
+        "distance_m": 7361.0,
+        "distance_lookup_m": 7207.337,
+        "link_to_next": false,
+        "notes": [
+          "Left4",
+          "Tighten3",
+          "OverCrest",
+          "VeryLong",
+          "Pause0.1s_Reset",
+          "DontCut",
+          "LogsInside"
+        ],
+        "notes_text": "Left4, Tighten3, OverCrest, VeryLong, Pause0.1s_Reset, DontCut, LogsInside",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "Tighten3",
+            "name": "tighten",
+            "level": 3
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          },
+          {
+            "kind": "length",
+            "source": "VeryLong",
+            "name": "very_long"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s_Reset",
+            "seconds": 0.1,
+            "reset": true
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          },
+          {
+            "kind": "other",
+            "source": "LogsInside",
+            "name": "LogsInside"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 938,
+        "ref_segment_t": 0.701159,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          155.378,
+          954.307
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 16,
+        "distance_m": 7639.0,
+        "distance_lookup_m": 7485.337,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Right4",
+          "Tightens"
+        ],
+        "notes_text": "And, Right4, Tightens",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 974,
+        "ref_segment_t": 0.709536,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.34,
+          988.486
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 17,
+        "distance_m": 7731.0,
+        "distance_lookup_m": 7577.337,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.1s_Reset",
+          "Into",
+          "Left3",
+          "OverCrest"
+        ],
+        "notes_text": "Pause0.1s_Reset, Into, Left3, OverCrest",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.1s_Reset",
+            "seconds": 0.1,
+            "reset": true
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 985,
+        "ref_segment_t": 0.20065,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -3.77,
+          1005.432
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 18,
+        "distance_m": 7813.0,
+        "distance_lookup_m": 7659.337,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Right5"
+        ],
+        "notes_text": "And, Right5",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 997,
+        "ref_segment_t": 0.776489,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -60.041,
+          1009.084
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 19,
+        "distance_m": 7870.0,
+        "distance_lookup_m": 7716.337,
+        "link_to_next": false,
+        "notes": [
+          "KinksStartingRight"
+        ],
+        "notes_text": "KinksStartingRight",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "KinksStartingRight",
+            "name": "kinks_starting_right"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false
+        },
+        "ref_segment_index": 1004,
+        "ref_segment_t": 0.730475,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -136.046,
+          1024.629
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 20,
+        "distance_m": 7948.0,
+        "distance_lookup_m": 7794.337,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Left4",
+          "Short",
+          "DontCut"
+        ],
+        "notes_text": "Into, Left4, Short, DontCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 1013,
+        "ref_segment_t": 0.535668,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -184.184,
+          1020.337
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 21,
+        "distance_m": 7997.0,
+        "distance_lookup_m": 7843.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist70"
+        ],
+        "notes_text": "Dist70",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist70",
+            "meters": 70
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            70
+          ]
+        },
+        "ref_segment_index": 1019,
+        "ref_segment_t": 0.272758,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "70"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -252.107,
+          997.243
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 22,
+        "distance_m": 8069.0,
+        "distance_lookup_m": 7915.337,
+        "link_to_next": true,
+        "notes": [
+          "Left5"
+        ],
+        "notes_text": "Left5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 1027,
+        "ref_segment_t": 0.079167,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -297.383,
+          969.019
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 23,
+        "distance_m": 8123.0,
+        "distance_lookup_m": 7969.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist50"
+        ],
+        "notes_text": "Dist50",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist50",
+            "meters": 50
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            50
+          ]
+        },
+        "ref_segment_index": 1033,
+        "ref_segment_t": 0.161091,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "50"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -336.836,
+          932.872
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 24,
+        "distance_m": 8177.0,
+        "distance_lookup_m": 8023.337,
+        "link_to_next": true,
+        "notes": [
+          "Left6",
+          "OverCrest"
+        ],
+        "notes_text": "Left6, OverCrest",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left6",
+            "side": "left",
+            "severity": 6
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 1038,
+        "ref_segment_t": 0.757543,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -362.809,
+          901.374
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 25,
+        "distance_m": 8218.0,
+        "distance_lookup_m": 8064.337,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Right5",
+          "Long"
+        ],
+        "notes_text": "Into, Right5, Long",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 1042,
+        "ref_segment_t": 0.801436,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -420.171,
+          850.644
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 26,
+        "distance_m": 8295.0,
+        "distance_lookup_m": 8141.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 1051,
+        "ref_segment_t": 0.183138,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -459.313,
+          828.539
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 27,
+        "distance_m": 8340.0,
+        "distance_lookup_m": 8186.337,
+        "link_to_next": true,
+        "notes": [
+          "Brake",
+          "Left3"
+        ],
+        "notes_text": "Brake, Left3",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 1056,
+        "ref_segment_t": 0.056348,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -488.05,
+          800.611
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 28,
+        "distance_m": 8381.0,
+        "distance_lookup_m": 8227.337,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Right2"
+        ],
+        "notes_text": "Into, Right2",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right2",
+            "side": "right",
+            "severity": 2
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 1062,
+        "ref_segment_t": 0.268087,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -530.611,
+          787.452
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 29,
+        "distance_m": 8428.0,
+        "distance_lookup_m": 8274.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist200",
+          "OverCrest"
+        ],
+        "notes_text": "Dist200, OverCrest",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist200",
+            "meters": 200
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            200
+          ]
+        },
+        "ref_segment_index": 1070,
+        "ref_segment_t": 0.437036,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "200"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -742.028,
+          809.851
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 30,
+        "distance_m": 8641.0,
+        "distance_lookup_m": 8487.337,
+        "link_to_next": true,
+        "notes": [
+          "Left3"
+        ],
+        "notes_text": "Left3",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 1092,
+        "ref_segment_t": 0.506437,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -774.068,
+          807.869
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 31,
+        "distance_m": 8675.0,
+        "distance_lookup_m": 8521.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Sudden",
+          "Right1"
+        ],
+        "notes_text": "Into, Sudden, Right1",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "modifier",
+            "source": "Sudden",
+            "name": "sudden"
+          },
+          {
+            "kind": "turn",
+            "source": "Right1",
+            "side": "right",
+            "severity": 1
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": true
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 1,
+            "severity_min": 1
+          }
+        },
+        "ref_segment_index": 1098,
+        "ref_segment_t": 0.009272,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": true,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 1,
+        "turn_severity_max": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -803.411,
+          842.764
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 32,
+        "distance_m": 8733.0,
+        "distance_lookup_m": 8579.337,
+        "link_to_next": true,
+        "notes": [
+          "Left4",
+          "Narrows"
+        ],
+        "notes_text": "Left4, Narrows",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "Narrows",
+            "name": "narrows"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": true,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 1108,
+        "ref_segment_t": 0.979484,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": true,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -819.624,
+          875.544
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 33,
+        "distance_m": 8771.0,
+        "distance_lookup_m": 8617.337,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Right3"
+        ],
+        "notes_text": "Into, Right3",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 1115,
+        "ref_segment_t": 0.098683,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -838.113,
+          920.657
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 34,
+        "distance_m": 8821.0,
+        "distance_lookup_m": 8667.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist60",
+          "OverCrest"
+        ],
+        "notes_text": "Dist60, OverCrest",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 1121,
+        "ref_segment_t": 0.878036,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -832.114,
+          987.331
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 35,
+        "distance_m": 8888.0,
+        "distance_lookup_m": 8734.337,
+        "link_to_next": true,
+        "notes": [
+          "Right3",
+          "Tightens",
+          "IntoDip"
+        ],
+        "notes_text": "Right3, Tightens, IntoDip",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          },
+          {
+            "kind": "feature",
+            "source": "IntoDip",
+            "name": "into_dip"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 1129,
+        "ref_segment_t": 0.802246,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -814.969,
+          1035.011
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 36,
+        "distance_m": 8940.0,
+        "distance_lookup_m": 8786.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist80"
+        ],
+        "notes_text": "Dist80",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ]
+        },
+        "ref_segment_index": 1135,
+        "ref_segment_t": 0.901332,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -769.093,
+          1110.707
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 37,
+        "distance_m": 9029.0,
+        "distance_lookup_m": 8875.337,
+        "link_to_next": true,
+        "notes": [
+          "Left5"
+        ],
+        "notes_text": "Left5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 1144,
+        "ref_segment_t": 0.638327,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -751.042,
+          1153.675
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 38,
+        "distance_m": 9076.0,
+        "distance_lookup_m": 8922.337,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Right4",
+          "KeepIn"
+        ],
+        "notes_text": "Into, Right4, KeepIn",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepIn",
+            "name": "keep_in"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_in",
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 1148,
+        "ref_segment_t": 0.780182,
+        "grp_keep": "keep_in",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -724.511,
+          1198.127
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 39,
+        "distance_m": 9128.0,
+        "distance_lookup_m": 8974.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist80",
+          "OverCrest",
+          "KeepLeft"
+        ],
+        "notes_text": "Dist80, OverCrest, KeepLeft",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepLeft",
+            "name": "keep_left"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_left",
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ]
+        },
+        "ref_segment_index": 1154,
+        "ref_segment_t": 0.036576,
+        "grp_keep": "keep_left",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -665.859,
+          1249.504
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 40,
+        "distance_m": 9206.0,
+        "distance_lookup_m": 9052.337,
+        "link_to_next": false,
+        "notes": [
+          "Left6",
+          "Long"
+        ],
+        "notes_text": "Left6, Long",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left6",
+            "side": "left",
+            "severity": 6
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 1162,
+        "ref_segment_t": 0.008826,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -608.663,
+          1327.668
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 41,
+        "distance_m": 9304.0,
+        "distance_lookup_m": 9150.337,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Left5"
+        ],
+        "notes_text": "Into, Left5",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 1171,
+        "ref_segment_t": 0.708738,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -593.842,
+          1363.462
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 42,
+        "distance_m": 9343.0,
+        "distance_lookup_m": 9189.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist50",
+          "OverBumps"
+        ],
+        "notes_text": "Dist50, OverBumps",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist50",
+            "meters": 50
+          },
+          {
+            "kind": "feature",
+            "source": "OverBumps",
+            "name": "over_bumps"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            50
+          ]
+        },
+        "ref_segment_index": 1175,
+        "ref_segment_t": 0.569481,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "50"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -579.981,
+          1413.365
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 43,
+        "distance_m": 9395.0,
+        "distance_lookup_m": 9241.337,
+        "link_to_next": false,
+        "notes": [
+          "Left6",
+          "KeepIn"
+        ],
+        "notes_text": "Left6, KeepIn",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left6",
+            "side": "left",
+            "severity": 6
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepIn",
+            "name": "keep_in"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_in",
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 1180,
+        "ref_segment_t": 0.355839,
+        "grp_keep": "keep_in",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -572.69,
+          1456.614
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 44,
+        "distance_m": 9439.0,
+        "distance_lookup_m": 9285.337,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "KinksStartingRight",
+          "OverBumps"
+        ],
+        "notes_text": "Caution, KinksStartingRight, OverBumps",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "feature",
+            "source": "KinksStartingRight",
+            "name": "kinks_starting_right"
+          },
+          {
+            "kind": "feature",
+            "source": "OverBumps",
+            "name": "over_bumps"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true
+        },
+        "ref_segment_index": 1184,
+        "ref_segment_t": 0.485234,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -562.869,
+          1522.006
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 45,
+        "distance_m": 9506.0,
+        "distance_lookup_m": 9352.337,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Left5"
+        ],
+        "notes_text": "Into, Left5",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 1191,
+        "ref_segment_t": 0.775548,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -567.886,
+          1562.572
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 46,
+        "distance_m": 9547.0,
+        "distance_lookup_m": 9393.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 1196,
+        "ref_segment_t": 0.61013,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -577.395,
+          1609.379
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 47,
+        "distance_m": 9595.0,
+        "distance_lookup_m": 9441.337,
+        "link_to_next": false,
+        "notes": [
+          "Right1"
+        ],
+        "notes_text": "Right1",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right1",
+            "side": "right",
+            "severity": 1
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 1,
+            "severity_min": 1
+          }
+        },
+        "ref_segment_index": 1202,
+        "ref_segment_t": 0.859099,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 1,
+        "turn_severity_max": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -552.111,
+          1635.105
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 48,
+        "distance_m": 9641.0,
+        "distance_lookup_m": 9487.337,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left2",
+          "Short"
+        ],
+        "notes_text": "And, Left2, Short",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left2",
+            "side": "left",
+            "severity": 2
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 1212,
+        "ref_segment_t": 0.591969,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -520.048,
+          1643.534
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 49,
+        "distance_m": 9676.0,
+        "distance_lookup_m": 9522.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 1218,
+        "ref_segment_t": 0.191365,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -489.198,
+          1673.348
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 50,
+        "distance_m": 9719.0,
+        "distance_lookup_m": 9565.337,
+        "link_to_next": false,
+        "notes": [
+          "RightFlat"
+        ],
+        "notes_text": "RightFlat",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "RightFlat",
+            "side": "right",
+            "style": "flat"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          }
+        },
+        "ref_segment_index": 1224,
+        "ref_segment_t": 0.242877,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -460.824,
+          1696.562
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 51,
+        "distance_m": 9756.0,
+        "distance_lookup_m": 9602.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Right4",
+          "KeepIn"
+        ],
+        "notes_text": "Into, Right4, KeepIn",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepIn",
+            "name": "keep_in"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_in",
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 1228,
+        "ref_segment_t": 0.603151,
+        "grp_keep": "keep_in",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -417.096,
+          1713.201
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 52,
+        "distance_m": 9804.0,
+        "distance_lookup_m": 9650.337,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left5"
+        ],
+        "notes_text": "And, Left5",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 1234,
+        "ref_segment_t": 0.273154,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -362.002,
+          1724.046
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 53,
+        "distance_m": 9861.0,
+        "distance_lookup_m": 9707.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 1240,
+        "ref_segment_t": 0.724186,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -325.862,
+          1735.463
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 54,
+        "distance_m": 9899.0,
+        "distance_lookup_m": 9745.337,
+        "link_to_next": true,
+        "notes": [
+          "Right5"
+        ],
+        "notes_text": "Right5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 1244,
+        "ref_segment_t": 0.626668,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -277.853,
+          1741.755
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 55,
+        "distance_m": 9948.0,
+        "distance_lookup_m": 9794.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 1249,
+        "ref_segment_t": 0.473653,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -174.052,
+          1739.709
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 56,
+        "distance_m": 10052.0,
+        "distance_lookup_m": 9898.337,
+        "link_to_next": false,
+        "notes": [
+          "Right3",
+          "Tightens"
+        ],
+        "notes_text": "Right3, Tightens",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 1259,
+        "ref_segment_t": 0.58143,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -125.742,
+          1710.582
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 57,
+        "distance_m": 10112.0,
+        "distance_lookup_m": 9958.337,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "Left4"
+        ],
+        "notes_text": "And, Left4",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 1268,
+        "ref_segment_t": 0.196819,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -61.027,
+          1664.946
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 58,
+        "distance_m": 10193.0,
+        "distance_lookup_m": 10039.337,
+        "link_to_next": true,
+        "notes": [
+          "Left5",
+          "Short",
+          "OverCrest"
+        ],
+        "notes_text": "Left5, Short, OverCrest",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 1278,
+        "ref_segment_t": 0.628676,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -30.277,
+          1656.561
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 59,
+        "distance_m": 10225.0,
+        "distance_lookup_m": 10071.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Right4"
+        ],
+        "notes_text": "Into, Right4",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 1282,
+        "ref_segment_t": 0.150337,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.91,
+          1640.274
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 60,
+        "distance_m": 10284.0,
+        "distance_lookup_m": 10130.337,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left5"
+        ],
+        "notes_text": "And, Left5",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 1287,
+        "ref_segment_t": 0.85587,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.665,
+          1624.221
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 61,
+        "distance_m": 10330.0,
+        "distance_lookup_m": 10176.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Right4"
+        ],
+        "notes_text": "Into, Right4",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 1292,
+        "ref_segment_t": 0.007917,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.18,
+          1603.089
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 62,
+        "distance_m": 10383.0,
+        "distance_lookup_m": 10229.337,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Right4"
+        ],
+        "notes_text": "And, Right4",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 1297,
+        "ref_segment_t": 0.157284,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          154.022,
+          1577.833
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 63,
+        "distance_m": 10429.0,
+        "distance_lookup_m": 10275.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left2",
+          "Tightens"
+        ],
+        "notes_text": "Into, Left2, Tightens",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left2",
+            "side": "left",
+            "severity": 2
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 1301,
+        "ref_segment_t": 0.730311,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          216.181,
+          1570.064
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 64,
+        "distance_m": 10501.0,
+        "distance_lookup_m": 10347.337,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "KinksStartingLeft"
+        ],
+        "notes_text": "And, KinksStartingLeft",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "feature",
+            "source": "KinksStartingLeft",
+            "name": "kinks_starting_left"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true
+        },
+        "ref_segment_index": 1323,
+        "ref_segment_t": 0.644115,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          263.033,
+          1619.355
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 65,
+        "distance_m": 10569.0,
+        "distance_lookup_m": 10415.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist80"
+        ],
+        "notes_text": "Dist80",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ]
+        },
+        "ref_segment_index": 1336,
+        "ref_segment_t": 0.275346,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          325.935,
+          1676.094
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 66,
+        "distance_m": 10654.0,
+        "distance_lookup_m": 10500.337,
+        "link_to_next": false,
+        "notes": [
+          "Right3",
+          "Long",
+          "Opens"
+        ],
+        "notes_text": "Right3, Long, Opens",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "opening",
+            "source": "Opens",
+            "name": "opens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": "opens",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 1346,
+        "ref_segment_t": 0.678697,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "opens",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          395.91,
+          1695.028
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 67,
+        "distance_m": 10731.0,
+        "distance_lookup_m": 10577.337,
+        "link_to_next": false,
+        "notes": [
+          "Crest"
+        ],
+        "notes_text": "Crest",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "Crest",
+            "name": "crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false
+        },
+        "ref_segment_index": 1357,
+        "ref_segment_t": 0.004891,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          420.505,
+          1686.811
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 68,
+        "distance_m": 10757.0,
+        "distance_lookup_m": 10603.337,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "Right4",
+          "VeryLong"
+        ],
+        "notes_text": "And, Right4, VeryLong",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "VeryLong",
+            "name": "very_long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 1360,
+        "ref_segment_t": 0.465397,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          496.332,
+          1578.843
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 69,
+        "distance_m": 10896.0,
+        "distance_lookup_m": 10742.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left3",
+          "Tightens"
+        ],
+        "notes_text": "Into, Left3, Tightens",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 1377,
+        "ref_segment_t": 0.471142,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          549.111,
+          1523.28
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 70,
+        "distance_m": 10978.0,
+        "distance_lookup_m": 10824.337,
+        "link_to_next": true,
+        "notes": [
+          "Right5"
+        ],
+        "notes_text": "Right5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 1389,
+        "ref_segment_t": 0.062614,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          575.39,
+          1511.665
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 71,
+        "distance_m": 11007.0,
+        "distance_lookup_m": 10853.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left4",
+          "OverCrest"
+        ],
+        "notes_text": "Into, Left4, OverCrest",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 1392,
+        "ref_segment_t": 0.650755,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          623.576,
+          1501.197
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 72,
+        "distance_m": 11057.0,
+        "distance_lookup_m": 10903.337,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Right3",
+          "KeepIn"
+        ],
+        "notes_text": "Into, Right3, KeepIn",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepIn",
+            "name": "keep_in"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_in",
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 1399,
+        "ref_segment_t": 0.164546,
+        "grp_keep": "keep_in",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          672.855,
+          1485.356
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 73,
+        "distance_m": 11110.0,
+        "distance_lookup_m": 10956.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 1406,
+        "ref_segment_t": 0.785055,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          761.749,
+          1423.401
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 74,
+        "distance_m": 11219.0,
+        "distance_lookup_m": 11065.337,
+        "link_to_next": true,
+        "notes": [
+          "Left5"
+        ],
+        "notes_text": "Left5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 1417,
+        "ref_segment_t": 0.894591,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          803.115,
+          1406.231
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 75,
+        "distance_m": 11264.0,
+        "distance_lookup_m": 11110.337,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "KinksStartingRight"
+        ],
+        "notes_text": "And, KinksStartingRight",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "feature",
+            "source": "KinksStartingRight",
+            "name": "kinks_starting_right"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true
+        },
+        "ref_segment_index": 1422,
+        "ref_segment_t": 0.158266,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          865.303,
+          1386.522
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 76,
+        "distance_m": 11330.0,
+        "distance_lookup_m": 11176.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist60"
+        ],
+        "notes_text": "Dist60",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 1427,
+        "ref_segment_t": 0.837835,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          938.984,
+          1375.211
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 77,
+        "distance_m": 11405.0,
+        "distance_lookup_m": 11251.337,
+        "link_to_next": true,
+        "notes": [
+          "Right4",
+          "Tighten3",
+          "Late"
+        ],
+        "notes_text": "Right4, Tighten3, Late",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "Tighten3",
+            "name": "tighten",
+            "level": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "Late",
+            "name": "late"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": true,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 1434,
+        "ref_segment_t": 0.784077,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": true,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1020.188,
+          1303.148
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 78,
+        "distance_m": 11527.0,
+        "distance_lookup_m": 11373.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 1449,
+        "ref_segment_t": 0.828595,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1022.204,
+          1258.256
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 79,
+        "distance_m": 11572.0,
+        "distance_lookup_m": 11418.337,
+        "link_to_next": false,
+        "notes": [
+          "KinksStartingLeft"
+        ],
+        "notes_text": "KinksStartingLeft",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "KinksStartingLeft",
+            "name": "kinks_starting_left"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false
+        },
+        "ref_segment_index": 1454,
+        "ref_segment_t": 0.781822,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1031.424,
+          1193.631
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 80,
+        "distance_m": 11638.0,
+        "distance_lookup_m": 11484.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left3",
+          "Long",
+          "Tightens"
+        ],
+        "notes_text": "Into, Left3, Long, Tightens",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 1461,
+        "ref_segment_t": 0.428484,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1114.699,
+          1131.697
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 81,
+        "distance_m": 11757.0,
+        "distance_lookup_m": 11603.337,
+        "link_to_next": false,
+        "notes": [
+          "Finish"
+        ],
+        "notes_text": "Finish",
+        "atoms": [
+          {
+            "kind": "control",
+            "source": "Finish",
+            "name": "finish"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": true,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false
+        },
+        "ref_segment_index": 1486,
+        "ref_segment_t": 0.126736,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": true,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1275.314,
+          1134.792
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Banc Gwyn - Afon Biga",
+        "reference_track": "hafren_north",
+        "note_index": 82,
+        "distance_m": 11921.0,
+        "distance_lookup_m": 11767.337,
+        "link_to_next": false,
+        "notes": [
+          "Pause1.5s",
+          "SlowDown",
+          "And",
+          "StopAtMarshals"
+        ],
+        "notes_text": "Pause1.5s, SlowDown, And, StopAtMarshals",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause1.5s",
+            "seconds": 1.5,
+            "reset": false
+          },
+          {
+            "kind": "hazard",
+            "source": "SlowDown",
+            "name": "slow_down"
+          },
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "control",
+            "source": "StopAtMarshals",
+            "name": "stop_at_marshals"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "pause_seconds": [
+            1.5
+          ]
+        },
+        "ref_segment_index": 1507,
+        "ref_segment_t": 0.309579,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "pause_seconds": "1.5"
+      }
+    }
+  ]
+}

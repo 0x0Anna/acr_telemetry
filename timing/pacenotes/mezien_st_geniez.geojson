@@ -1,0 +1,6561 @@
+{
+  "type": "FeatureCollection",
+  "name": "pacenotes:Mézien - St. Geniez",
+  "properties": {
+    "source_yaml": "c:\\temp\\acc\\vendor\\PacenotePal\\pacenotes\\Mézien - St. Geniez.yml",
+    "reference_shp": "c:\\temp\\acc\\reference_tracks\\sisteron.shp",
+    "coordinate_space": "acc_world_zx",
+    "swap_xz": true,
+    "start_dist_m_offset": 350.794,
+    "subtract_start_dist": true,
+    "reference_point_count": 3459,
+    "reference_station_max_m": 13404.806,
+    "pacenote_count": 81,
+    "max_pacenote_distance_m": 13711.0,
+    "notes_beyond_reference_end": 0,
+    "gis_field_schema": {
+      "group_fields": {
+        "grp_keep": [
+          "keep_in",
+          "keep_left",
+          "keep_middle",
+          "keep_out",
+          "keep_right"
+        ],
+        "grp_cut": [
+          "cut",
+          "dont_cut",
+          "small_cut"
+        ],
+        "grp_opening": [
+          "opens",
+          "opens_late",
+          "widens"
+        ],
+        "grp_go": [
+          "go_left",
+          "go_right",
+          "go_straight"
+        ]
+      },
+      "bool_fields": [
+        "flg_caution",
+        "flg_brake",
+        "flg_finish",
+        "flg_narrows",
+        "flg_tightens",
+        "flg_tightens_late",
+        "flg_late",
+        "flg_sudden",
+        "flg_linked_to_next",
+        "flg_turn_left",
+        "flg_turn_right"
+      ],
+      "notes": {
+        "grp_*": "Mutually exclusive categorical flags for QGIS/WebGIS dropdown filters.",
+        "flg_*": "Independent boolean flags for checkbox filters and rule-based styling.",
+        "turn_sides": "Comma-separated turn sides when a numbered/style turn is present.",
+        "notes_text": "Original PacenotePal token sequence for map labels."
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -825.549,
+          -1020.902
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 0,
+        "distance_m": 8267.0,
+        "distance_lookup_m": 7916.206,
+        "link_to_next": false,
+        "notes": [
+          "Right4",
+          "Short"
+        ],
+        "notes_text": "Right4, Short",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 2179,
+        "ref_segment_t": 0.840491,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -772.815,
+          -980.881
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 1,
+        "distance_m": 8334.0,
+        "distance_lookup_m": 7983.206,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "KinksStartingLeft"
+        ],
+        "notes_text": "And, KinksStartingLeft",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "feature",
+            "source": "KinksStartingLeft",
+            "name": "kinks_starting_left"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true
+        },
+        "ref_segment_index": 2192,
+        "ref_segment_t": 0.573434,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -682.699,
+          -918.781
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 2,
+        "distance_m": 8444.0,
+        "distance_lookup_m": 8093.206,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Right4",
+          "Short",
+          "DontCut"
+        ],
+        "notes_text": "Into, Right4, Short, DontCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 2214,
+        "ref_segment_t": 0.583488,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -612.844,
+          -899.624
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 3,
+        "distance_m": 8517.0,
+        "distance_lookup_m": 8166.206,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left4"
+        ],
+        "notes_text": "And, Left4",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 2229,
+        "ref_segment_t": 0.562077,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -566.756,
+          -874.535
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 4,
+        "distance_m": 8570.0,
+        "distance_lookup_m": 8219.206,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Right5"
+        ],
+        "notes_text": "And, Right5",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 2240,
+        "ref_segment_t": 0.471013,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -534.127,
+          -855.715
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 5,
+        "distance_m": 8608.0,
+        "distance_lookup_m": 8257.206,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left3",
+          "Short"
+        ],
+        "notes_text": "Into, Left3, Short",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 2247,
+        "ref_segment_t": 0.995432,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -509.285,
+          -834.623
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 6,
+        "distance_m": 8641.0,
+        "distance_lookup_m": 8290.206,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "Right4",
+          "DontCut"
+        ],
+        "notes_text": "And, Right4, DontCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 2256,
+        "ref_segment_t": 0.123902,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -458.83,
+          -802.81
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 7,
+        "distance_m": 8702.0,
+        "distance_lookup_m": 8351.206,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left4"
+        ],
+        "notes_text": "And, Left4",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 2269,
+        "ref_segment_t": 0.400423,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -420.491,
+          -773.874
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 8,
+        "distance_m": 8751.0,
+        "distance_lookup_m": 8400.206,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Right2",
+          "Short"
+        ],
+        "notes_text": "Into, Right2, Short",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right2",
+            "side": "right",
+            "severity": 2
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 2280,
+        "ref_segment_t": 0.662671,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -366.203,
+          -744.482
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 9,
+        "distance_m": 8815.0,
+        "distance_lookup_m": 8464.206,
+        "link_to_next": true,
+        "notes": [
+          "Left4",
+          "Narrows"
+        ],
+        "notes_text": "Left4, Narrows",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "Narrows",
+            "name": "narrows"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": true,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 2396,
+        "ref_segment_t": 0.164192,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": true,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -343.102,
+          -730.209
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 10,
+        "distance_m": 8843.0,
+        "distance_lookup_m": 8492.206,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Right2"
+        ],
+        "notes_text": "Into, Right2",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right2",
+            "side": "right",
+            "severity": 2
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 2406,
+        "ref_segment_t": 0.054746,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -320.317,
+          -719.619
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 11,
+        "distance_m": 8869.0,
+        "distance_lookup_m": 8518.206,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left2"
+        ],
+        "notes_text": "And, Left2",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left2",
+            "side": "left",
+            "severity": 2
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 2414,
+        "ref_segment_t": 0.028244,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -294.047,
+          -699.495
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 12,
+        "distance_m": 8904.0,
+        "distance_lookup_m": 8553.206,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "Right3"
+        ],
+        "notes_text": "And, Right3",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 2423,
+        "ref_segment_t": 0.212755,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -250.652,
+          -675.383
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 13,
+        "distance_m": 8955.0,
+        "distance_lookup_m": 8604.206,
+        "link_to_next": true,
+        "notes": [
+          "Pause0.25s",
+          "Into",
+          "Left2",
+          "Widens"
+        ],
+        "notes_text": "Pause0.25s, Into, Left2, Widens",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left2",
+            "side": "left",
+            "severity": 2
+          },
+          {
+            "kind": "opening",
+            "source": "Widens",
+            "name": "widens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": "widens",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          },
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 2435,
+        "ref_segment_t": 0.676046,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "widens",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2,
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -229.016,
+          -643.976
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 14,
+        "distance_m": 8998.0,
+        "distance_lookup_m": 8647.206,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Right2",
+          "Narrows"
+        ],
+        "notes_text": "And, Right2, Narrows",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right2",
+            "side": "right",
+            "severity": 2
+          },
+          {
+            "kind": "modifier",
+            "source": "Narrows",
+            "name": "narrows"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": true,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 2448,
+        "ref_segment_t": 0.407502,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": true,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -212.176,
+          -617.692
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 15,
+        "distance_m": 9031.0,
+        "distance_lookup_m": 8680.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 2459,
+        "ref_segment_t": 0.205751,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -177.68,
+          -595.894
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 16,
+        "distance_m": 9072.0,
+        "distance_lookup_m": 8721.206,
+        "link_to_next": true,
+        "notes": [
+          "LeftKink"
+        ],
+        "notes_text": "LeftKink",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "LeftKink",
+            "side": "left",
+            "style": "kink"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 2470,
+        "ref_segment_t": 0.686207,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -157.243,
+          -580.33
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 17,
+        "distance_m": 9098.0,
+        "distance_lookup_m": 8747.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist60"
+        ],
+        "notes_text": "Dist60",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 2477,
+        "ref_segment_t": 0.127752,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -108.691,
+          -538.996
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 18,
+        "distance_m": 9162.0,
+        "distance_lookup_m": 8811.206,
+        "link_to_next": true,
+        "notes": [
+          "Left5"
+        ],
+        "notes_text": "Left5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 2491,
+        "ref_segment_t": 0.217427,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.431,
+          -515.457
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 19,
+        "distance_m": 9194.0,
+        "distance_lookup_m": 8843.206,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Right5"
+        ],
+        "notes_text": "And, Right5",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 2497,
+        "ref_segment_t": 0.786231,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -60.436,
+          -490.626
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 20,
+        "distance_m": 9231.0,
+        "distance_lookup_m": 8880.206,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left5"
+        ],
+        "notes_text": "And, Left5",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 2505,
+        "ref_segment_t": 0.933161,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -30.751,
+          -454.905
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 21,
+        "distance_m": 9278.0,
+        "distance_lookup_m": 8927.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist50"
+        ],
+        "notes_text": "Dist50",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist50",
+            "meters": 50
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            50
+          ]
+        },
+        "ref_segment_index": 2516,
+        "ref_segment_t": 0.831901,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "50"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.606,
+          -408.274
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 22,
+        "distance_m": 9335.0,
+        "distance_lookup_m": 8984.206,
+        "link_to_next": true,
+        "notes": [
+          "Right4",
+          "Short",
+          "KeepIn"
+        ],
+        "notes_text": "Right4, Short, KeepIn",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepIn",
+            "name": "keep_in"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_in",
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 2528,
+        "ref_segment_t": 0.655325,
+        "grp_keep": "keep_in",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.033,
+          -384.416
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 23,
+        "distance_m": 9369.0,
+        "distance_lookup_m": 9018.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist50"
+        ],
+        "notes_text": "Dist50",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist50",
+            "meters": 50
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            50
+          ]
+        },
+        "ref_segment_index": 2535,
+        "ref_segment_t": 0.601626,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "50"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          69.348,
+          -350.538
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 24,
+        "distance_m": 9425.0,
+        "distance_lookup_m": 9074.206,
+        "link_to_next": true,
+        "notes": [
+          "Right6"
+        ],
+        "notes_text": "Right6",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 2546,
+        "ref_segment_t": 0.566789,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          97.44,
+          -333.903
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 25,
+        "distance_m": 9458.0,
+        "distance_lookup_m": 9107.206,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left6",
+          "Brake"
+        ],
+        "notes_text": "Into, Left6, Brake",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left6",
+            "side": "left",
+            "severity": 6
+          },
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 2552,
+        "ref_segment_t": 0.843137,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          148.82,
+          -299.772
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 26,
+        "distance_m": 9520.0,
+        "distance_lookup_m": 9169.206,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Left3",
+          "Narrows",
+          "Late"
+        ],
+        "notes_text": "Into, Left3, Narrows, Late",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "Narrows",
+            "name": "narrows"
+          },
+          {
+            "kind": "modifier",
+            "source": "Late",
+            "name": "late"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": true,
+            "tightens": false,
+            "tightens_late": false,
+            "late": true,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 2567,
+        "ref_segment_t": 0.322897,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": true,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": true,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          165.084,
+          -241.749
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 27,
+        "distance_m": 9585.0,
+        "distance_lookup_m": 9234.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 2586,
+        "ref_segment_t": 0.247357,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          152.6,
+          -201.778
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 28,
+        "distance_m": 9627.0,
+        "distance_lookup_m": 9276.206,
+        "link_to_next": false,
+        "notes": [
+          "Right3",
+          "Opens",
+          "OverBumps"
+        ],
+        "notes_text": "Right3, Opens, OverBumps",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "opening",
+            "source": "Opens",
+            "name": "opens"
+          },
+          {
+            "kind": "feature",
+            "source": "OverBumps",
+            "name": "over_bumps"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": "opens",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 2596,
+        "ref_segment_t": 0.90355,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "opens",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          175.355,
+          -127.386
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 29,
+        "distance_m": 9709.0,
+        "distance_lookup_m": 9358.206,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left4",
+          "Tightens"
+        ],
+        "notes_text": "And, Left4, Tightens",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 2614,
+        "ref_segment_t": 0.697192,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          198.265,
+          -91.925
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 30,
+        "distance_m": 9752.0,
+        "distance_lookup_m": 9401.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist80"
+        ],
+        "notes_text": "Dist80",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ]
+        },
+        "ref_segment_index": 2624,
+        "ref_segment_t": 0.770531,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          216.56,
+          -11.081
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 31,
+        "distance_m": 9835.0,
+        "distance_lookup_m": 9484.206,
+        "link_to_next": true,
+        "notes": [
+          "Right2",
+          "Opens",
+          "DontCut"
+        ],
+        "notes_text": "Right2, Opens, DontCut",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right2",
+            "side": "right",
+            "severity": 2
+          },
+          {
+            "kind": "opening",
+            "source": "Opens",
+            "name": "opens"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": "opens",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 2642,
+        "ref_segment_t": 0.939808,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "opens",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          268.095,
+          37.632
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 32,
+        "distance_m": 9913.0,
+        "distance_lookup_m": 9562.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 2664,
+        "ref_segment_t": 0.331359,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          377.034,
+          52.64
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 33,
+        "distance_m": 10023.0,
+        "distance_lookup_m": 9672.206,
+        "link_to_next": true,
+        "notes": [
+          "Left5",
+          "Tighten4"
+        ],
+        "notes_text": "Left5, Tighten4",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "modifier",
+            "source": "Tighten4",
+            "name": "tighten",
+            "level": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 2686,
+        "ref_segment_t": 0.714312,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          460.352,
+          92.144
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 34,
+        "distance_m": 10117.0,
+        "distance_lookup_m": 9766.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist50"
+        ],
+        "notes_text": "Dist50",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist50",
+            "meters": 50
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            50
+          ]
+        },
+        "ref_segment_index": 2703,
+        "ref_segment_t": 0.732493,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "50"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          492.048,
+          130.812
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 35,
+        "distance_m": 10167.0,
+        "distance_lookup_m": 9816.206,
+        "link_to_next": true,
+        "notes": [
+          "Right5"
+        ],
+        "notes_text": "Right5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 2713,
+        "ref_segment_t": 0.089456,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          521.083,
+          157.856
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 36,
+        "distance_m": 10207.0,
+        "distance_lookup_m": 9856.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist130",
+          "OverCrest"
+        ],
+        "notes_text": "Dist130, OverCrest",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist130",
+            "meters": 130
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            130
+          ]
+        },
+        "ref_segment_index": 2720,
+        "ref_segment_t": 0.125782,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "130"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          638.477,
+          234.078
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 37,
+        "distance_m": 10347.0,
+        "distance_lookup_m": 9996.206,
+        "link_to_next": true,
+        "notes": [
+          "Right4",
+          "Long",
+          "Tightens"
+        ],
+        "notes_text": "Right4, Long, Tightens",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 2742,
+        "ref_segment_t": 0.752069,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          729.538,
+          235.676
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 38,
+        "distance_m": 10443.0,
+        "distance_lookup_m": 10092.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist80"
+        ],
+        "notes_text": "Dist80",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ]
+        },
+        "ref_segment_index": 2760,
+        "ref_segment_t": 0.797831,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          798.346,
+          194.992
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 39,
+        "distance_m": 10523.0,
+        "distance_lookup_m": 10172.206,
+        "link_to_next": true,
+        "notes": [
+          "Left4",
+          "Tightens"
+        ],
+        "notes_text": "Left4, Tightens",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 2774,
+        "ref_segment_t": 0.942761,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          881.916,
+          193.478
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 40,
+        "distance_m": 10611.0,
+        "distance_lookup_m": 10260.206,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Right3",
+          "DontCut",
+          "KeepIn"
+        ],
+        "notes_text": "Into, Right3, DontCut, KeepIn",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepIn",
+            "name": "keep_in"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_in",
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 2821,
+        "ref_segment_t": 0.837129,
+        "grp_keep": "keep_in",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          943.756,
+          195.448
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 41,
+        "distance_m": 10675.0,
+        "distance_lookup_m": 10324.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist70"
+        ],
+        "notes_text": "Dist70",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist70",
+            "meters": 70
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            70
+          ]
+        },
+        "ref_segment_index": 2838,
+        "ref_segment_t": 0.188227,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "70"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1016.887,
+          174.871
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 42,
+        "distance_m": 10751.0,
+        "distance_lookup_m": 10400.206,
+        "link_to_next": true,
+        "notes": [
+          "Left4",
+          "Short"
+        ],
+        "notes_text": "Left4, Short",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 2853,
+        "ref_segment_t": 0.548885,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1050.176,
+          169.834
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 43,
+        "distance_m": 10785.0,
+        "distance_lookup_m": 10434.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist70"
+        ],
+        "notes_text": "Dist70",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist70",
+            "meters": 70
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            70
+          ]
+        },
+        "ref_segment_index": 2859,
+        "ref_segment_t": 0.784245,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "70"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1127.145,
+          168.723
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 44,
+        "distance_m": 10862.0,
+        "distance_lookup_m": 10511.206,
+        "link_to_next": true,
+        "notes": [
+          "Right4",
+          "Tightens"
+        ],
+        "notes_text": "Right4, Tightens",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 2873,
+        "ref_segment_t": 0.396352,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1177.277,
+          150.081
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 45,
+        "distance_m": 10917.0,
+        "distance_lookup_m": 10566.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 2883,
+        "ref_segment_t": 0.212326,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1210.221,
+          125.773
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 46,
+        "distance_m": 10958.0,
+        "distance_lookup_m": 10607.206,
+        "link_to_next": true,
+        "notes": [
+          "Right6"
+        ],
+        "notes_text": "Right6",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 2890,
+        "ref_segment_t": 0.153552,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1243.51,
+          91.526
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 47,
+        "distance_m": 11006.0,
+        "distance_lookup_m": 10655.206,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Left5"
+        ],
+        "notes_text": "Into, Left5",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 2897,
+        "ref_segment_t": 0.841841,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1275.69,
+          63.113
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 48,
+        "distance_m": 11049.0,
+        "distance_lookup_m": 10698.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist70"
+        ],
+        "notes_text": "Dist70",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist70",
+            "meters": 70
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            70
+          ]
+        },
+        "ref_segment_index": 2904,
+        "ref_segment_t": 0.56519,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "70"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1335.231,
+          22.676
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 49,
+        "distance_m": 11121.0,
+        "distance_lookup_m": 10770.206,
+        "link_to_next": true,
+        "notes": [
+          "Left5"
+        ],
+        "notes_text": "Left5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 2915,
+        "ref_segment_t": 0.862642,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1378.6,
+          2.388
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 50,
+        "distance_m": 11169.0,
+        "distance_lookup_m": 10818.206,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "RightKink"
+        ],
+        "notes_text": "And, RightKink",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "RightKink",
+            "side": "right",
+            "style": "kink"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          }
+        },
+        "ref_segment_index": 2922,
+        "ref_segment_t": 0.94329,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1409.732,
+          -10.96
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 51,
+        "distance_m": 11203.0,
+        "distance_lookup_m": 10852.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 2927,
+        "ref_segment_t": 0.800729,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1446.167,
+          -27.543
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 52,
+        "distance_m": 11243.0,
+        "distance_lookup_m": 10892.206,
+        "link_to_next": false,
+        "notes": [
+          "Brake",
+          "Left3",
+          "Tightens"
+        ],
+        "notes_text": "Brake, Left3, Tightens",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 2933,
+        "ref_segment_t": 0.733322,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1518.401,
+          -13.753
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 53,
+        "distance_m": 11320.0,
+        "distance_lookup_m": 10969.206,
+        "link_to_next": true,
+        "notes": [
+          "Pause0.5s",
+          "And",
+          "Right4"
+        ],
+        "notes_text": "Pause0.5s, And, Right4",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.5s",
+            "seconds": 0.5,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          },
+          "pause_seconds": [
+            0.5
+          ]
+        },
+        "ref_segment_index": 2973,
+        "ref_segment_t": 0.60807,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4,
+        "pause_seconds": "0.5"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1568.927,
+          -4.022
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 54,
+        "distance_m": 11372.0,
+        "distance_lookup_m": 11021.206,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left6"
+        ],
+        "notes_text": "And, Left6",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left6",
+            "side": "left",
+            "severity": 6
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 2989,
+        "ref_segment_t": 0.542799,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1609.546,
+          0.756
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 55,
+        "distance_m": 11413.0,
+        "distance_lookup_m": 11062.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist150"
+        ],
+        "notes_text": "Dist150",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist150",
+            "meters": 150
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            150
+          ]
+        },
+        "ref_segment_index": 2999,
+        "ref_segment_t": 0.077287,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "150"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1753.239,
+          26.049
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 56,
+        "distance_m": 11559.0,
+        "distance_lookup_m": 11208.206,
+        "link_to_next": true,
+        "notes": [
+          "RightFlat",
+          "OverBridge"
+        ],
+        "notes_text": "RightFlat, OverBridge",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "RightFlat",
+            "side": "right",
+            "style": "flat"
+          },
+          {
+            "kind": "feature",
+            "source": "OverBridge",
+            "name": "over_bridge"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          }
+        },
+        "ref_segment_index": 3025,
+        "ref_segment_t": 0.965065,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1794.955,
+          30.82
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 57,
+        "distance_m": 11601.0,
+        "distance_lookup_m": 11250.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist80"
+        ],
+        "notes_text": "Dist80",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ]
+        },
+        "ref_segment_index": 3033,
+        "ref_segment_t": 0.708535,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1878.891,
+          32.878
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 58,
+        "distance_m": 11685.0,
+        "distance_lookup_m": 11334.206,
+        "link_to_next": true,
+        "notes": [
+          "Left5"
+        ],
+        "notes_text": "Left5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 3048,
+        "ref_segment_t": 0.042024,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1944.194,
+          43.931
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 59,
+        "distance_m": 11752.0,
+        "distance_lookup_m": 11401.206,
+        "link_to_next": true,
+        "notes": [
+          "JumpMaybe"
+        ],
+        "notes_text": "JumpMaybe",
+        "atoms": [
+          {
+            "kind": "other",
+            "source": "JumpMaybe",
+            "name": "JumpMaybe"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true
+        },
+        "ref_segment_index": 3060,
+        "ref_segment_t": 0.312808,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1961.932,
+          50.755
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 60,
+        "distance_m": 11771.0,
+        "distance_lookup_m": 11420.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist80"
+        ],
+        "notes_text": "Dist80",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ]
+        },
+        "ref_segment_index": 3063,
+        "ref_segment_t": 0.753335,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2041.21,
+          78.304
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 61,
+        "distance_m": 11855.0,
+        "distance_lookup_m": 11504.206,
+        "link_to_next": true,
+        "notes": [
+          "Brake",
+          "Right4"
+        ],
+        "notes_text": "Brake, Right4",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 3078,
+        "ref_segment_t": 0.150297,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2106.196,
+          81.79
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 62,
+        "distance_m": 11921.0,
+        "distance_lookup_m": 11570.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 3089,
+        "ref_segment_t": 0.164082,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2210.239,
+          68.762
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 63,
+        "distance_m": 12026.0,
+        "distance_lookup_m": 11675.206,
+        "link_to_next": false,
+        "notes": [
+          "Caution",
+          "Left2",
+          "Late",
+          "KeepIn"
+        ],
+        "notes_text": "Caution, Left2, Late, KeepIn",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "turn",
+            "source": "Left2",
+            "side": "left",
+            "severity": 2
+          },
+          {
+            "kind": "modifier",
+            "source": "Late",
+            "name": "late"
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepIn",
+            "name": "keep_in"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_in",
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": true,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 3109,
+        "ref_segment_t": 0.837487,
+        "grp_keep": "keep_in",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": true,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2251.236,
+          104.22
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 64,
+        "distance_m": 12095.0,
+        "distance_lookup_m": 11744.206,
+        "link_to_next": true,
+        "notes": [
+          "Right4",
+          "Long",
+          "TightensLate"
+        ],
+        "notes_text": "Right4, Long, TightensLate",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "modifier",
+            "source": "TightensLate",
+            "name": "tightens_late"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": true,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 3132,
+        "ref_segment_t": 0.630556,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": true,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2267.158,
+          234.719
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 65,
+        "distance_m": 12232.0,
+        "distance_lookup_m": 11881.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 3164,
+        "ref_segment_t": 0.091599,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2296.373,
+          268.952
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 66,
+        "distance_m": 12277.0,
+        "distance_lookup_m": 11926.206,
+        "link_to_next": false,
+        "notes": [
+          "Right5"
+        ],
+        "notes_text": "Right5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 3171,
+        "ref_segment_t": 0.946021,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2336.332,
+          305.171
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 67,
+        "distance_m": 12331.0,
+        "distance_lookup_m": 11980.206,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left4",
+          "Long",
+          "TightensLate"
+        ],
+        "notes_text": "Into, Left4, Long, TightensLate",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "modifier",
+            "source": "TightensLate",
+            "name": "tightens_late"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": true,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 3181,
+        "ref_segment_t": 0.155351,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": true,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2384.865,
+          429.582
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 68,
+        "distance_m": 12470.0,
+        "distance_lookup_m": 12119.206,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "Right6",
+          "VeryLong",
+          "Tighten5",
+          "Late"
+        ],
+        "notes_text": "And, Right6, VeryLong, Tighten5, Late",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          },
+          {
+            "kind": "length",
+            "source": "VeryLong",
+            "name": "very_long"
+          },
+          {
+            "kind": "modifier",
+            "source": "Tighten5",
+            "name": "tighten",
+            "level": 5
+          },
+          {
+            "kind": "modifier",
+            "source": "Late",
+            "name": "late"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": true,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 3205,
+        "ref_segment_t": 0.709939,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": true,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2446.854,
+          595.85
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 69,
+        "distance_m": 12652.0,
+        "distance_lookup_m": 12301.206,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left5"
+        ],
+        "notes_text": "And, Left5",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 3233,
+        "ref_segment_t": 0.947706,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2478.221,
+          658.054
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 70,
+        "distance_m": 12722.0,
+        "distance_lookup_m": 12371.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 3245,
+        "ref_segment_t": 0.154129,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2519.064,
+          756.726
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 71,
+        "distance_m": 12829.0,
+        "distance_lookup_m": 12478.206,
+        "link_to_next": true,
+        "notes": [
+          "Right6"
+        ],
+        "notes_text": "Right6",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 3260,
+        "ref_segment_t": 0.942983,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2544.139,
+          798.602
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 72,
+        "distance_m": 12878.0,
+        "distance_lookup_m": 12527.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist60",
+          "OverCrest",
+          "Brake"
+        ],
+        "notes_text": "Dist60, OverCrest, Brake",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          },
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 3267,
+        "ref_segment_t": 0.934159,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2577.83,
+          844.589
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 73,
+        "distance_m": 12935.0,
+        "distance_lookup_m": 12584.206,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Right3",
+          "Opens",
+          "DontCut"
+        ],
+        "notes_text": "Into, Right3, Opens, DontCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "opening",
+            "source": "Opens",
+            "name": "opens"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": "opens",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 3277,
+        "ref_segment_t": 0.292881,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "opens",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2612.598,
+          870.704
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 74,
+        "distance_m": 12980.0,
+        "distance_lookup_m": 12629.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist150"
+        ],
+        "notes_text": "Dist150",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist150",
+            "meters": 150
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            150
+          ]
+        },
+        "ref_segment_index": 3287,
+        "ref_segment_t": 0.234973,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "150"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2776.658,
+          925.24
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 75,
+        "distance_m": 13153.0,
+        "distance_lookup_m": 12802.206,
+        "link_to_next": true,
+        "notes": [
+          "Right6"
+        ],
+        "notes_text": "Right6",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 3318,
+        "ref_segment_t": 0.47748,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2826.952,
+          937.782
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 76,
+        "distance_m": 13205.0,
+        "distance_lookup_m": 12854.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 3326,
+        "ref_segment_t": 0.390927,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2926.225,
+          956.309
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 77,
+        "distance_m": 13306.0,
+        "distance_lookup_m": 12955.206,
+        "link_to_next": true,
+        "notes": [
+          "Left5"
+        ],
+        "notes_text": "Left5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 3340,
+        "ref_segment_t": 0.98815,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2991.404,
+          978.557
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 78,
+        "distance_m": 13375.0,
+        "distance_lookup_m": 13024.206,
+        "link_to_next": false,
+        "notes": [
+          "Dist70"
+        ],
+        "notes_text": "Dist70",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist70",
+            "meters": 70
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            70
+          ]
+        },
+        "ref_segment_index": 3351,
+        "ref_segment_t": 0.910369,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "70"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3050.737,
+          1007.238
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 79,
+        "distance_m": 13441.0,
+        "distance_lookup_m": 13090.206,
+        "link_to_next": true,
+        "notes": [
+          "Finish"
+        ],
+        "notes_text": "Finish",
+        "atoms": [
+          {
+            "kind": "control",
+            "source": "Finish",
+            "name": "finish"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": true,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true
+        },
+        "ref_segment_index": 3361,
+        "ref_segment_t": 0.85625,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": true,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3295.526,
+          1120.54
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Mézien - St. Geniez",
+        "reference_track": "sisteron",
+        "note_index": 80,
+        "distance_m": 13711.0,
+        "distance_lookup_m": 13360.206,
+        "link_to_next": false,
+        "notes": [
+          "StopAtMarshals"
+        ],
+        "notes_text": "StopAtMarshals",
+        "atoms": [
+          {
+            "kind": "control",
+            "source": "StopAtMarshals",
+            "name": "stop_at_marshals"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false
+        },
+        "ref_segment_index": 3417,
+        "ref_segment_t": 0.961243,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    }
+  ]
+}

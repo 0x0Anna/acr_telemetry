@@ -1,0 +1,6162 @@
+{
+  "type": "FeatureCollection",
+  "name": "pacenotes:saverne (alias of col_du_petit_ballon)",
+  "properties": {
+    "source_yaml": "c:\\temp\\acc\\vendor\\PacenotePal\\pacenotes\\Col du petit Ballon.yml",
+    "reference_shp": "c:\\temp\\acc\\reference_tracks\\saverne.shp",
+    "coordinate_space": "acc_world_zx",
+    "swap_xz": true,
+    "start_dist_m_offset": 108.102,
+    "subtract_start_dist": true,
+    "reference_point_count": 1002,
+    "reference_station_max_m": 9221.239,
+    "pacenote_count": 73,
+    "max_pacenote_distance_m": 5984.0,
+    "notes_beyond_reference_end": 0,
+    "gis_field_schema": {
+      "group_fields": {
+        "grp_keep": [
+          "keep_in",
+          "keep_left",
+          "keep_middle",
+          "keep_out",
+          "keep_right"
+        ],
+        "grp_cut": [
+          "cut",
+          "dont_cut",
+          "small_cut"
+        ],
+        "grp_opening": [
+          "opens",
+          "opens_late",
+          "widens"
+        ],
+        "grp_go": [
+          "go_left",
+          "go_right",
+          "go_straight"
+        ]
+      },
+      "bool_fields": [
+        "flg_caution",
+        "flg_brake",
+        "flg_finish",
+        "flg_narrows",
+        "flg_tightens",
+        "flg_tightens_late",
+        "flg_late",
+        "flg_sudden",
+        "flg_linked_to_next",
+        "flg_turn_left",
+        "flg_turn_right"
+      ],
+      "notes": {
+        "grp_*": "Mutually exclusive categorical flags for QGIS/WebGIS dropdown filters.",
+        "flg_*": "Independent boolean flags for checkbox filters and rule-based styling.",
+        "turn_sides": "Comma-separated turn sides when a numbered/style turn is present.",
+        "notes_text": "Original PacenotePal token sequence for map labels."
+      }
+    },
+    "alias_source_stem": "col_du_petit_ballon",
+    "alias_role": "default_stage_for_reference_track"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          525.874,
+          1700.447
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 0,
+        "distance_m": 219.0,
+        "distance_lookup_m": 110.898,
+        "link_to_next": true,
+        "notes": [
+          "Right5",
+          "Pause0.1s",
+          "And"
+        ],
+        "notes_text": "Right5, Pause0.1s, And",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 54,
+        "ref_segment_t": 0.142955,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          568.226,
+          1750.966
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 1,
+        "distance_m": 285.0,
+        "distance_lookup_m": 176.898,
+        "link_to_next": true,
+        "notes": [
+          "Left5",
+          "Long"
+        ],
+        "notes_text": "Left5, Long",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 60,
+        "ref_segment_t": 0.967775,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          629.428,
+          1809.672
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 2,
+        "distance_m": 370.0,
+        "distance_lookup_m": 261.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist130"
+        ],
+        "notes_text": "Dist130",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist130",
+            "meters": 130
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            130
+          ]
+        },
+        "ref_segment_index": 68,
+        "ref_segment_t": 0.350814,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "130"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          747.106,
+          1869.99
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 3,
+        "distance_m": 505.0,
+        "distance_lookup_m": 396.898,
+        "link_to_next": true,
+        "notes": [
+          "Right6",
+          "Short",
+          "DontCut"
+        ],
+        "notes_text": "Right6, Short, DontCut",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 79,
+        "ref_segment_t": 0.445129,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          805.912,
+          1885.717
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 4,
+        "distance_m": 566.0,
+        "distance_lookup_m": 457.898,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.1s",
+          "Dist150"
+        ],
+        "notes_text": "Pause0.1s, Dist150",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "distance",
+            "source": "Dist150",
+            "meters": 150
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            150
+          ],
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 84,
+        "ref_segment_t": 0.068617,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "150",
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          951.636,
+          1962.109
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 5,
+        "distance_m": 731.0,
+        "distance_lookup_m": 622.898,
+        "link_to_next": true,
+        "notes": [
+          "Right6",
+          "DontCut"
+        ],
+        "notes_text": "Right6, DontCut",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 97,
+        "ref_segment_t": 0.116603,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1041.557,
+          1948.44
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 6,
+        "distance_m": 829.0,
+        "distance_lookup_m": 720.898,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.25s",
+          "Dist50"
+        ],
+        "notes_text": "Pause0.25s, Dist50",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "distance",
+            "source": "Dist50",
+            "meters": 50
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            50
+          ],
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 113,
+        "ref_segment_t": 0.120368,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "50",
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1095.54,
+          1938.946
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 7,
+        "distance_m": 884.0,
+        "distance_lookup_m": 775.898,
+        "link_to_next": true,
+        "notes": [
+          "Left6",
+          "Long"
+        ],
+        "notes_text": "Left6, Long",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left6",
+            "side": "left",
+            "severity": 6
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 119,
+        "ref_segment_t": 0.187954,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1196.828,
+          1909.935
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 8,
+        "distance_m": 990.0,
+        "distance_lookup_m": 881.898,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.25s",
+          "Dist80"
+        ],
+        "notes_text": "Pause0.25s, Dist80",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ],
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 129,
+        "ref_segment_t": 0.2312,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80",
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1257.44,
+          1863.209
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 9,
+        "distance_m": 1068.0,
+        "distance_lookup_m": 959.898,
+        "link_to_next": true,
+        "notes": [
+          "Right6",
+          "Long"
+        ],
+        "notes_text": "Right6, Long",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 135,
+        "ref_segment_t": 0.999657,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1301.364,
+          1724.821
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 10,
+        "distance_m": 1216.0,
+        "distance_lookup_m": 1107.898,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "Left6"
+        ],
+        "notes_text": "And, Left6",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left6",
+            "side": "left",
+            "severity": 6
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 148,
+        "ref_segment_t": 0.357479,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1299.278,
+          1615.113
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 11,
+        "distance_m": 1326.0,
+        "distance_lookup_m": 1217.898,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "Pause0.25s_Reset",
+          "Right3"
+        ],
+        "notes_text": "Caution, Pause0.25s_Reset, Right3",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.25s_Reset",
+            "seconds": 0.25,
+            "reset": true
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          },
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 156,
+        "ref_segment_t": 0.98589,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3,
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1297.049,
+          1537.313
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 12,
+        "distance_m": 1404.0,
+        "distance_lookup_m": 1295.898,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left2",
+          "Tightens",
+          "DontCut"
+        ],
+        "notes_text": "Into, Left2, Tightens, DontCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left2",
+            "side": "left",
+            "severity": 2
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 162,
+        "ref_segment_t": 0.701994,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1291.206,
+          1471.73
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 13,
+        "distance_m": 1470.0,
+        "distance_lookup_m": 1361.898,
+        "link_to_next": true,
+        "notes": [
+          "Right5"
+        ],
+        "notes_text": "Right5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 167,
+        "ref_segment_t": 0.337832,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1288.102,
+          1430.924
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 14,
+        "distance_m": 1511.0,
+        "distance_lookup_m": 1402.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist50"
+        ],
+        "notes_text": "Dist50",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist50",
+            "meters": 50
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            50
+          ]
+        },
+        "ref_segment_index": 170,
+        "ref_segment_t": 0.174575,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "50"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1289.662,
+          1375.171
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 15,
+        "distance_m": 1567.0,
+        "distance_lookup_m": 1458.898,
+        "link_to_next": false,
+        "notes": [
+          "Left3",
+          "Opens",
+          "Long",
+          "Pause0.1s",
+          "DontCut"
+        ],
+        "notes_text": "Left3, Opens, Long, Pause0.1s, DontCut",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "opening",
+            "source": "Opens",
+            "name": "opens"
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": "opens",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 173,
+        "ref_segment_t": 0.968725,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "opens",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1290.941,
+          1282.84
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 16,
+        "distance_m": 1660.0,
+        "distance_lookup_m": 1551.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 181,
+        "ref_segment_t": 0.079772,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1282.72,
+          1242.819
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 17,
+        "distance_m": 1701.0,
+        "distance_lookup_m": 1592.898,
+        "link_to_next": true,
+        "notes": [
+          "Right6",
+          "OverCrest"
+        ],
+        "notes_text": "Right6, OverCrest",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 184,
+        "ref_segment_t": 0.31288,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1277.444,
+          1152.093
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 18,
+        "distance_m": 1793.0,
+        "distance_lookup_m": 1684.898,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left5",
+          "Long"
+        ],
+        "notes_text": "Into, Left5, Long",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 192,
+        "ref_segment_t": 0.081487,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1278.637,
+          1075.39
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 19,
+        "distance_m": 1870.0,
+        "distance_lookup_m": 1761.898,
+        "link_to_next": false,
+        "notes": [
+          "Over",
+          "JumpMaybe"
+        ],
+        "notes_text": "Over, JumpMaybe",
+        "atoms": [
+          {
+            "kind": "other",
+            "source": "Over",
+            "name": "Over"
+          },
+          {
+            "kind": "other",
+            "source": "JumpMaybe",
+            "name": "JumpMaybe"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false
+        },
+        "ref_segment_index": 198,
+        "ref_segment_t": 0.467946,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1275.544,
+          1040.609
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 20,
+        "distance_m": 1905.0,
+        "distance_lookup_m": 1796.898,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "Pause0.25s_Reset",
+          "Right6",
+          "TightensLate"
+        ],
+        "notes_text": "Caution, Pause0.25s_Reset, Right6, TightensLate",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.25s_Reset",
+            "seconds": 0.25,
+            "reset": true
+          },
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          },
+          {
+            "kind": "modifier",
+            "source": "TightensLate",
+            "name": "tightens_late"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": true,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          },
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 201,
+        "ref_segment_t": 0.234651,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": true,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6,
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1262.077,
+          940.926
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 21,
+        "distance_m": 2006.0,
+        "distance_lookup_m": 1897.898,
+        "link_to_next": false,
+        "notes": [
+          "Pause1s",
+          "Into",
+          "Right2",
+          "OverCrest",
+          "DontCut"
+        ],
+        "notes_text": "Pause1s, Into, Right2, OverCrest, DontCut",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause1s",
+            "seconds": 1.0,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right2",
+            "side": "right",
+            "severity": 2
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          },
+          "pause_seconds": [
+            1.0
+          ]
+        },
+        "ref_segment_index": 209,
+        "ref_segment_t": 0.153187,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2,
+        "pause_seconds": "1.0"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1236.544,
+          885.955
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 22,
+        "distance_m": 2067.0,
+        "distance_lookup_m": 1958.898,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "LeftSquare",
+          "DontCut"
+        ],
+        "notes_text": "Into, LeftSquare, DontCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "LeftSquare",
+            "side": "left",
+            "style": "square"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 213,
+        "ref_segment_t": 0.943484,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1216.628,
+          850.124
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 23,
+        "distance_m": 2108.0,
+        "distance_lookup_m": 1999.898,
+        "link_to_next": false,
+        "notes": [
+          "Pause1s",
+          "Dist200"
+        ],
+        "notes_text": "Pause1s, Dist200",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause1s",
+            "seconds": 1.0,
+            "reset": false
+          },
+          {
+            "kind": "distance",
+            "source": "Dist200",
+            "meters": 200
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            200
+          ],
+          "pause_seconds": [
+            1.0
+          ]
+        },
+        "ref_segment_index": 217,
+        "ref_segment_t": 0.114117,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "200",
+        "pause_seconds": "1.0"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1124.643,
+          662.041
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 24,
+        "distance_m": 2321.0,
+        "distance_lookup_m": 2212.898,
+        "link_to_next": true,
+        "notes": [
+          "LeftKink"
+        ],
+        "notes_text": "LeftKink",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "LeftKink",
+            "side": "left",
+            "style": "kink"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 239,
+        "ref_segment_t": 0.042451,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1136.713,
+          589.136
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 25,
+        "distance_m": 2395.0,
+        "distance_lookup_m": 2286.898,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Right4",
+          "DontCut"
+        ],
+        "notes_text": "Into, Right4, DontCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 246,
+        "ref_segment_t": 0.564809,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1140.811,
+          519.283
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 26,
+        "distance_m": 2465.0,
+        "distance_lookup_m": 2356.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 252,
+        "ref_segment_t": 0.62966,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1142.215,
+          475.321
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 27,
+        "distance_m": 2509.0,
+        "distance_lookup_m": 2400.898,
+        "link_to_next": true,
+        "notes": [
+          "RightKink"
+        ],
+        "notes_text": "RightKink",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "RightKink",
+            "side": "right",
+            "style": "kink"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          }
+        },
+        "ref_segment_index": 256,
+        "ref_segment_t": 0.148024,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1142.649,
+          430.309
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 28,
+        "distance_m": 2554.0,
+        "distance_lookup_m": 2445.898,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Left3",
+          "Short"
+        ],
+        "notes_text": "Into, Left3, Short",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 259,
+        "ref_segment_t": 0.595588,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1141.754,
+          358.385
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 29,
+        "distance_m": 2626.0,
+        "distance_lookup_m": 2517.898,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Sudden",
+          "Right4",
+          "Opens"
+        ],
+        "notes_text": "And, Sudden, Right4, Opens",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "modifier",
+            "source": "Sudden",
+            "name": "sudden"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "opening",
+            "source": "Opens",
+            "name": "opens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": "opens",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": true
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 265,
+        "ref_segment_t": 0.987474,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "opens",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": true,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1158.829,
+          296.459
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 30,
+        "distance_m": 2693.0,
+        "distance_lookup_m": 2584.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist50"
+        ],
+        "notes_text": "Dist50",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist50",
+            "meters": 50
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            50
+          ]
+        },
+        "ref_segment_index": 273,
+        "ref_segment_t": 0.372215,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "50"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1194.742,
+          262.729
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 31,
+        "distance_m": 2746.0,
+        "distance_lookup_m": 2637.898,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "Brake",
+          "Left5",
+          "OverCrest"
+        ],
+        "notes_text": "Caution, Brake, Left5, OverCrest",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 281,
+        "ref_segment_t": 0.265136,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1165.985,
+          191.21
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 32,
+        "distance_m": 2830.0,
+        "distance_lookup_m": 2721.898,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.1s_Reset",
+          "Into",
+          "RightHP",
+          "TightensLate"
+        ],
+        "notes_text": "Pause0.1s_Reset, Into, RightHP, TightensLate",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.1s_Reset",
+            "seconds": 0.1,
+            "reset": true
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "RightHP",
+            "side": "right",
+            "style": "hp"
+          },
+          {
+            "kind": "modifier",
+            "source": "TightensLate",
+            "name": "tightens_late"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": true,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 292,
+        "ref_segment_t": 0.545883,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": true,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1110.68,
+          123.225
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 33,
+        "distance_m": 2927.0,
+        "distance_lookup_m": 2818.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist60"
+        ],
+        "notes_text": "Dist60",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 304,
+        "ref_segment_t": 0.845772,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1119.598,
+          68.163
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 34,
+        "distance_m": 2983.0,
+        "distance_lookup_m": 2874.898,
+        "link_to_next": false,
+        "notes": [
+          "Right4",
+          "Tightens"
+        ],
+        "notes_text": "Right4, Tightens",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 311,
+        "ref_segment_t": 0.767476,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1169.032,
+          31.868
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 35,
+        "distance_m": 3049.0,
+        "distance_lookup_m": 2940.898,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.25s",
+          "Dist50"
+        ],
+        "notes_text": "Pause0.25s, Dist50",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "distance",
+            "source": "Dist50",
+            "meters": 50
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            50
+          ],
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 319,
+        "ref_segment_t": 0.955927,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "50",
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1223.133,
+          13.91
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 36,
+        "distance_m": 3106.0,
+        "distance_lookup_m": 2997.898,
+        "link_to_next": false,
+        "notes": [
+          "Left4",
+          "VeryLong",
+          "DontCut"
+        ],
+        "notes_text": "Left4, VeryLong, DontCut",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "VeryLong",
+            "name": "very_long"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 325,
+        "ref_segment_t": 0.850859,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1327.709,
+          -59.835
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 37,
+        "distance_m": 3235.0,
+        "distance_lookup_m": 3126.898,
+        "link_to_next": true,
+        "notes": [
+          "RightKink"
+        ],
+        "notes_text": "RightKink",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "RightKink",
+            "side": "right",
+            "style": "kink"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          }
+        },
+        "ref_segment_index": 337,
+        "ref_segment_t": 0.09117,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1351.639,
+          -93.429
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 38,
+        "distance_m": 3277.0,
+        "distance_lookup_m": 3168.898,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left4"
+        ],
+        "notes_text": "And, Left4",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 341,
+        "ref_segment_t": 0.348331,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1352.263,
+          -172.004
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 39,
+        "distance_m": 3358.0,
+        "distance_lookup_m": 3249.898,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "Right6",
+          "Short"
+        ],
+        "notes_text": "And, Right6, Short",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 349,
+        "ref_segment_t": 0.02487,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1332.53,
+          -227.302
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 40,
+        "distance_m": 3417.0,
+        "distance_lookup_m": 3308.898,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "Left2",
+          "Tightens",
+          "Pause0.1s_Reset",
+          "SmallCut",
+          "KeepIn"
+        ],
+        "notes_text": "Caution, Left2, Tightens, Pause0.1s_Reset, SmallCut, KeepIn",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "turn",
+            "source": "Left2",
+            "side": "left",
+            "severity": 2
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s_Reset",
+            "seconds": 0.1,
+            "reset": true
+          },
+          {
+            "kind": "modifier",
+            "source": "SmallCut",
+            "name": "small_cut"
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepIn",
+            "name": "keep_in"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_in",
+            "cut": "small_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 354,
+        "ref_segment_t": 0.375183,
+        "grp_keep": "keep_in",
+        "grp_cut": "small_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1276.552,
+          -283.964
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 41,
+        "distance_m": 3498.0,
+        "distance_lookup_m": 3389.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 362,
+        "ref_segment_t": 0.134537,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1187.397,
+          -327.731
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 42,
+        "distance_m": 3598.0,
+        "distance_lookup_m": 3489.898,
+        "link_to_next": true,
+        "notes": [
+          "KinksStartingLeft",
+          "OverCrest"
+        ],
+        "notes_text": "KinksStartingLeft, OverCrest",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "KinksStartingLeft",
+            "name": "kinks_starting_left"
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true
+        },
+        "ref_segment_index": 370,
+        "ref_segment_t": 0.617164,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1092.961,
+          -364.739
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 43,
+        "distance_m": 3700.0,
+        "distance_lookup_m": 3591.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist70"
+        ],
+        "notes_text": "Dist70",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist70",
+            "meters": 70
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            70
+          ]
+        },
+        "ref_segment_index": 379,
+        "ref_segment_t": 0.702514,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "70"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1042.278,
+          -423.886
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 44,
+        "distance_m": 3779.0,
+        "distance_lookup_m": 3670.898,
+        "link_to_next": true,
+        "notes": [
+          "KinksStartingRight"
+        ],
+        "notes_text": "KinksStartingRight",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "KinksStartingRight",
+            "name": "kinks_starting_right"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true
+        },
+        "ref_segment_index": 387,
+        "ref_segment_t": 0.417141,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1132.772,
+          -444.827
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 45,
+        "distance_m": 3901.0,
+        "distance_lookup_m": 3792.898,
+        "link_to_next": true,
+        "notes": [
+          "Pause0.25s_Reset",
+          "Caution",
+          "Brake",
+          "Right5",
+          "Tightens"
+        ],
+        "notes_text": "Pause0.25s_Reset, Caution, Brake, Right5, Tightens",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s_Reset",
+            "seconds": 0.25,
+            "reset": true
+          },
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          },
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          },
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 415,
+        "ref_segment_t": 0.861377,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5,
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1193.036,
+          -452.095
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 46,
+        "distance_m": 3962.0,
+        "distance_lookup_m": 3853.898,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Sudden",
+          "LeftAcuteHP"
+        ],
+        "notes_text": "Into, Sudden, LeftAcuteHP",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "modifier",
+            "source": "Sudden",
+            "name": "sudden"
+          },
+          {
+            "kind": "turn",
+            "source": "LeftAcuteHP",
+            "side": "left",
+            "style": "acutehp"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": true
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 422,
+        "ref_segment_t": 0.749875,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": true,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1223.997,
+          -462.841
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 47,
+        "distance_m": 3995.0,
+        "distance_lookup_m": 3886.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist40",
+          "OverCrest"
+        ],
+        "notes_text": "Dist40, OverCrest",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 426,
+        "ref_segment_t": 0.069624,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1259.763,
+          -487.891
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 48,
+        "distance_m": 4039.0,
+        "distance_lookup_m": 3930.898,
+        "link_to_next": true,
+        "notes": [
+          "Pause0.25s",
+          "Right2",
+          "Long",
+          "Opens"
+        ],
+        "notes_text": "Pause0.25s, Right2, Long, Opens",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "turn",
+            "source": "Right2",
+            "side": "right",
+            "severity": 2
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "opening",
+            "source": "Opens",
+            "name": "opens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": "opens",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          },
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 430,
+        "ref_segment_t": 0.475925,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "opens",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2,
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1331.078,
+          -549.974
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 49,
+        "distance_m": 4134.0,
+        "distance_lookup_m": 4025.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist60"
+        ],
+        "notes_text": "Dist60",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 439,
+        "ref_segment_t": 0.453389,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1359.363,
+          -605.358
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 50,
+        "distance_m": 4197.0,
+        "distance_lookup_m": 4088.898,
+        "link_to_next": true,
+        "notes": [
+          "Right4",
+          "BadCamber"
+        ],
+        "notes_text": "Right4, BadCamber",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "hazard",
+            "source": "BadCamber",
+            "name": "bad_camber"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 445,
+        "ref_segment_t": 0.698298,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1372.195,
+          -657.577
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 51,
+        "distance_m": 4251.0,
+        "distance_lookup_m": 4142.898,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left5",
+          "Long"
+        ],
+        "notes_text": "And, Left5, Long",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 450,
+        "ref_segment_t": 0.752713,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1374.393,
+          -731.239
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 52,
+        "distance_m": 4325.0,
+        "distance_lookup_m": 4216.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist60"
+        ],
+        "notes_text": "Dist60",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 457,
+        "ref_segment_t": 0.211646,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1366.301,
+          -796.512
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 53,
+        "distance_m": 4391.0,
+        "distance_lookup_m": 4282.898,
+        "link_to_next": true,
+        "notes": [
+          "RightKink"
+        ],
+        "notes_text": "RightKink",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "RightKink",
+            "side": "right",
+            "style": "kink"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          }
+        },
+        "ref_segment_index": 462,
+        "ref_segment_t": 0.940609,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1329.871,
+          -867.196
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 54,
+        "distance_m": 4471.0,
+        "distance_lookup_m": 4362.898,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left4",
+          "Long",
+          "TightensLate",
+          "Pause0.1s",
+          "DontCut"
+        ],
+        "notes_text": "Into, Left4, Long, TightensLate, Pause0.1s, DontCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "modifier",
+            "source": "TightensLate",
+            "name": "tightens_late"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": true,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 470,
+        "ref_segment_t": 0.117511,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": true,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1222.707,
+          -945.505
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 55,
+        "distance_m": 4606.0,
+        "distance_lookup_m": 4497.898,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "BadCamber",
+          "Pause0.1s_Reset",
+          "Right3",
+          "Long"
+        ],
+        "notes_text": "Caution, BadCamber, Pause0.1s_Reset, Right3, Long",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "hazard",
+            "source": "BadCamber",
+            "name": "bad_camber"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s_Reset",
+            "seconds": 0.1,
+            "reset": true
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 482,
+        "ref_segment_t": 0.303896,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1152.631,
+          -981.959
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 56,
+        "distance_m": 4687.0,
+        "distance_lookup_m": 4578.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 494,
+        "ref_segment_t": 0.100243,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1178.765,
+          -1092.467
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 57,
+        "distance_m": 4809.0,
+        "distance_lookup_m": 4700.898,
+        "link_to_next": true,
+        "notes": [
+          "Left6"
+        ],
+        "notes_text": "Left6",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left6",
+            "side": "left",
+            "severity": 6
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 508,
+        "ref_segment_t": 0.482478,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1227.539,
+          -1125.243
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 58,
+        "distance_m": 4869.0,
+        "distance_lookup_m": 4760.898,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Right5",
+          "Long"
+        ],
+        "notes_text": "And, Right5, Long",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 514,
+        "ref_segment_t": 0.741206,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1290.963,
+          -1158.616
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 59,
+        "distance_m": 4941.0,
+        "distance_lookup_m": 4832.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 521,
+        "ref_segment_t": 0.384976,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1396.207,
+          -1184.648
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 60,
+        "distance_m": 5050.0,
+        "distance_lookup_m": 4941.898,
+        "link_to_next": true,
+        "notes": [
+          "LeftFlat",
+          "IntoDip"
+        ],
+        "notes_text": "LeftFlat, IntoDip",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "LeftFlat",
+            "side": "left",
+            "style": "flat"
+          },
+          {
+            "kind": "feature",
+            "source": "IntoDip",
+            "name": "into_dip"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 530,
+        "ref_segment_t": 0.672802,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1466.557,
+          -1181.305
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 61,
+        "distance_m": 5121.0,
+        "distance_lookup_m": 5012.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist80",
+          "OverBumps"
+        ],
+        "notes_text": "Dist80, OverBumps",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          },
+          {
+            "kind": "feature",
+            "source": "OverBumps",
+            "name": "over_bumps"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ]
+        },
+        "ref_segment_index": 536,
+        "ref_segment_t": 0.367652,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1561.859,
+          -1191.884
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 62,
+        "distance_m": 5218.0,
+        "distance_lookup_m": 5109.898,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "Left4"
+        ],
+        "notes_text": "Caution, Left4",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 544,
+        "ref_segment_t": 0.082836,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1608.23,
+          -1207.518
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 63,
+        "distance_m": 5267.0,
+        "distance_lookup_m": 5158.898,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "Right4",
+          "DontCut"
+        ],
+        "notes_text": "And, Right4, DontCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 547,
+        "ref_segment_t": 0.81832,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1671.102,
+          -1233.214
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 64,
+        "distance_m": 5335.0,
+        "distance_lookup_m": 5226.898,
+        "link_to_next": false,
+        "notes": [
+          "LeftFlat",
+          "Long"
+        ],
+        "notes_text": "LeftFlat, Long",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "LeftFlat",
+            "side": "left",
+            "style": "flat"
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 553,
+        "ref_segment_t": 0.67438,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1732.985,
+          -1288.104
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 65,
+        "distance_m": 5425.0,
+        "distance_lookup_m": 5316.898,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "Left3",
+          "DontCut"
+        ],
+        "notes_text": "Caution, Left3, DontCut",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 568,
+        "ref_segment_t": 0.692097,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1743.541,
+          -1326.947
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 66,
+        "distance_m": 5466.0,
+        "distance_lookup_m": 5357.898,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Sudden",
+          "Right3",
+          "KeepIn"
+        ],
+        "notes_text": "And, Sudden, Right3, KeepIn",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "modifier",
+            "source": "Sudden",
+            "name": "sudden"
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepIn",
+            "name": "keep_in"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_in",
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": true
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 574,
+        "ref_segment_t": 0.189043,
+        "grp_keep": "keep_in",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": true,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1746.571,
+          -1359.741
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 67,
+        "distance_m": 5499.0,
+        "distance_lookup_m": 5390.898,
+        "link_to_next": false,
+        "notes": [
+          "Dist60"
+        ],
+        "notes_text": "Dist60",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 577,
+        "ref_segment_t": 0.978582,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1737.716,
+          -1423.498
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 68,
+        "distance_m": 5564.0,
+        "distance_lookup_m": 5455.898,
+        "link_to_next": true,
+        "notes": [
+          "Left5",
+          "VeryLong",
+          "Tighten4"
+        ],
+        "notes_text": "Left5, VeryLong, Tighten4",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "length",
+            "source": "VeryLong",
+            "name": "very_long"
+          },
+          {
+            "kind": "modifier",
+            "source": "Tighten4",
+            "name": "tighten",
+            "level": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 584,
+        "ref_segment_t": 0.272791,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1697.727,
+          -1545.056
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 69,
+        "distance_m": 5692.0,
+        "distance_lookup_m": 5583.898,
+        "link_to_next": false,
+        "notes": [
+          "OverCrest",
+          "Dist80"
+        ],
+        "notes_text": "OverCrest, Dist80",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          },
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ]
+        },
+        "ref_segment_index": 594,
+        "ref_segment_t": 0.790246,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1674.265,
+          -1622.556
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 70,
+        "distance_m": 5773.0,
+        "distance_lookup_m": 5664.898,
+        "link_to_next": false,
+        "notes": [
+          "Finish"
+        ],
+        "notes_text": "Finish",
+        "atoms": [
+          {
+            "kind": "control",
+            "source": "Finish",
+            "name": "finish"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": true,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false
+        },
+        "ref_segment_index": 600,
+        "ref_segment_t": 0.675935,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": true,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1653.564,
+          -1686.115
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 71,
+        "distance_m": 5840.0,
+        "distance_lookup_m": 5731.898,
+        "link_to_next": false,
+        "notes": [
+          "SlowDown",
+          "Right4",
+          "Tightens"
+        ],
+        "notes_text": "SlowDown, Right4, Tightens",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "SlowDown",
+            "name": "slow_down"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 605,
+        "ref_segment_t": 0.665552,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1556.337,
+          -1790.663
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Col du petit Ballon",
+        "reference_track": "saverne",
+        "note_index": 72,
+        "distance_m": 5984.0,
+        "distance_lookup_m": 5875.898,
+        "link_to_next": false,
+        "notes": [
+          "StopAtMarshals"
+        ],
+        "notes_text": "StopAtMarshals",
+        "atoms": [
+          {
+            "kind": "control",
+            "source": "StopAtMarshals",
+            "name": "stop_at_marshals"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false
+        },
+        "ref_segment_index": 616,
+        "ref_segment_t": 0.776998,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    }
+  ]
+}

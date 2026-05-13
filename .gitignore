@@ -31,6 +31,9 @@ acr-bin/
 /bin/acr_telemetry_bridge.exe
 /bin/acr_telemetry_bridge.toml
 
+# Vendored reference repos (local clone; see vendor/PacenotePal)
+/vendor/PacenotePal/
+
 # Local archives
 /archive/
 /v0.1/

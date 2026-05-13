@@ -1,0 +1,12 @@
+# ACR Recorder – default config for installed app
+# Paths are relative to the installation directory (where the .exe files are).
+# notes_dir: leave unset so app uses %APPDATA%\acr_telemetry (batch scripts use the same).
+
+[recorder]
+raw_output_dir = "telemetry_raw"
+# notes_dir = "telemetry_notes"
+record_graphics = true
+
+[export]
+default_method = "sqlite"
+sqlite_db_path = "telemetry.db"

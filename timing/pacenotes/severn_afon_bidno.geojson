@@ -1,0 +1,6593 @@
+{
+  "type": "FeatureCollection",
+  "name": "pacenotes:Severn - Afon Bidno",
+  "properties": {
+    "source_yaml": "c:\\temp\\acc\\vendor\\PacenotePal\\pacenotes\\Severn - Afon Bidno.yml",
+    "reference_shp": "c:\\temp\\acc\\reference_tracks\\hafren_north.shp",
+    "coordinate_space": "acc_world_zx",
+    "swap_xz": true,
+    "start_dist_m_offset": 153.663,
+    "subtract_start_dist": true,
+    "reference_point_count": 1512,
+    "reference_station_max_m": 11776.209,
+    "pacenote_count": 78,
+    "max_pacenote_distance_m": 5442.0,
+    "notes_beyond_reference_end": 0,
+    "gis_field_schema": {
+      "group_fields": {
+        "grp_keep": [
+          "keep_in",
+          "keep_left",
+          "keep_middle",
+          "keep_out",
+          "keep_right"
+        ],
+        "grp_cut": [
+          "cut",
+          "dont_cut",
+          "small_cut"
+        ],
+        "grp_opening": [
+          "opens",
+          "opens_late",
+          "widens"
+        ],
+        "grp_go": [
+          "go_left",
+          "go_right",
+          "go_straight"
+        ]
+      },
+      "bool_fields": [
+        "flg_caution",
+        "flg_brake",
+        "flg_finish",
+        "flg_narrows",
+        "flg_tightens",
+        "flg_tightens_late",
+        "flg_late",
+        "flg_sudden",
+        "flg_linked_to_next",
+        "flg_turn_left",
+        "flg_turn_right"
+      ],
+      "notes": {
+        "grp_*": "Mutually exclusive categorical flags for QGIS/WebGIS dropdown filters.",
+        "flg_*": "Independent boolean flags for checkbox filters and rule-based styling.",
+        "turn_sides": "Comma-separated turn sides when a numbered/style turn is present.",
+        "notes_text": "Original PacenotePal token sequence for map labels."
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1005.648,
+          680.489
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 0,
+        "distance_m": 239.0,
+        "distance_lookup_m": 85.337,
+        "link_to_next": true,
+        "notes": [
+          "LeftFlat"
+        ],
+        "notes_text": "LeftFlat",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "LeftFlat",
+            "side": "left",
+            "style": "flat"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 80,
+        "ref_segment_t": 0.723715,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -978.275,
+          706.512
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 1,
+        "distance_m": 277.0,
+        "distance_lookup_m": 123.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 86,
+        "ref_segment_t": 0.493696,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -946.766,
+          728.214
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 2,
+        "distance_m": 316.0,
+        "distance_lookup_m": 162.337,
+        "link_to_next": true,
+        "notes": [
+          "KinksStartingRight"
+        ],
+        "notes_text": "KinksStartingRight",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "KinksStartingRight",
+            "name": "kinks_starting_right"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true
+        },
+        "ref_segment_index": 91,
+        "ref_segment_t": 0.361007,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -897.278,
+          759.571
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 3,
+        "distance_m": 375.0,
+        "distance_lookup_m": 221.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 98,
+        "ref_segment_t": 0.226907,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -806.12,
+          793.263
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 4,
+        "distance_m": 474.0,
+        "distance_lookup_m": 320.337,
+        "link_to_next": true,
+        "notes": [
+          "RightFlat"
+        ],
+        "notes_text": "RightFlat",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "RightFlat",
+            "side": "right",
+            "style": "flat"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          }
+        },
+        "ref_segment_index": 113,
+        "ref_segment_t": 0.670614,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -808.691,
+          760.44
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 5,
+        "distance_m": 532.0,
+        "distance_lookup_m": 378.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left5",
+          "OverCrest",
+          "Pause0.1s",
+          "KeepIn"
+        ],
+        "notes_text": "Into, Left5, OverCrest, Pause0.1s, KeepIn",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepIn",
+            "name": "keep_in"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_in",
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 127,
+        "ref_segment_t": 0.089322,
+        "grp_keep": "keep_in",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -862.732,
+          719.425
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 6,
+        "distance_m": 600.0,
+        "distance_lookup_m": 446.337,
+        "link_to_next": true,
+        "notes": [
+          "RightFlat"
+        ],
+        "notes_text": "RightFlat",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "RightFlat",
+            "side": "right",
+            "style": "flat"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          }
+        },
+        "ref_segment_index": 137,
+        "ref_segment_t": 0.790046,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -869.319,
+          689.131
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 7,
+        "distance_m": 640.0,
+        "distance_lookup_m": 486.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist50"
+        ],
+        "notes_text": "Dist50",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist50",
+            "meters": 50
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            50
+          ]
+        },
+        "ref_segment_index": 147,
+        "ref_segment_t": 0.839491,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "50"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -818.505,
+          696.398
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 8,
+        "distance_m": 694.0,
+        "distance_lookup_m": 540.337,
+        "link_to_next": true,
+        "notes": [
+          "LeftFlat",
+          "KeepLeft"
+        ],
+        "notes_text": "LeftFlat, KeepLeft",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "LeftFlat",
+            "side": "left",
+            "style": "flat"
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepLeft",
+            "name": "keep_left"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_left",
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 158,
+        "ref_segment_t": 0.647828,
+        "grp_keep": "keep_left",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -774.275,
+          696.269
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 9,
+        "distance_m": 739.0,
+        "distance_lookup_m": 585.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist60"
+        ],
+        "notes_text": "Dist60",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 164,
+        "ref_segment_t": 0.586274,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -720.116,
+          676.358
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 10,
+        "distance_m": 797.0,
+        "distance_lookup_m": 643.337,
+        "link_to_next": true,
+        "notes": [
+          "Right5",
+          "KeepOut"
+        ],
+        "notes_text": "Right5, KeepOut",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepOut",
+            "name": "keep_out"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_out",
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 171,
+        "ref_segment_t": 0.254057,
+        "grp_keep": "keep_out",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -677.513,
+          659.217
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 11,
+        "distance_m": 843.0,
+        "distance_lookup_m": 689.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist150"
+        ],
+        "notes_text": "Dist150",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist150",
+            "meters": 150
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            150
+          ]
+        },
+        "ref_segment_index": 175,
+        "ref_segment_t": 0.636876,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "150"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -609.345,
+          527.867
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 12,
+        "distance_m": 1026.0,
+        "distance_lookup_m": 872.337,
+        "link_to_next": true,
+        "notes": [
+          "Right6",
+          "OverCrest"
+        ],
+        "notes_text": "Right6, OverCrest",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 202,
+        "ref_segment_t": 0.21957,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -627.225,
+          435.725
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 13,
+        "distance_m": 1121.0,
+        "distance_lookup_m": 967.337,
+        "link_to_next": false,
+        "notes": [
+          "Caution",
+          "Right5"
+        ],
+        "notes_text": "Caution, Right5",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 212,
+        "ref_segment_t": 0.115656,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -638.853,
+          360.587
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 14,
+        "distance_m": 1198.0,
+        "distance_lookup_m": 1044.337,
+        "link_to_next": true,
+        "notes": [
+          "Brake",
+          "Pause0.1s",
+          "Into",
+          "Left3",
+          "Short",
+          "Pause0.1s_Reset",
+          "Dip"
+        ],
+        "notes_text": "Brake, Pause0.1s, Into, Left3, Short, Pause0.1s_Reset, Dip",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s_Reset",
+            "seconds": 0.1,
+            "reset": true
+          },
+          {
+            "kind": "other",
+            "source": "Dip",
+            "name": "Dip"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          },
+          "pause_seconds": [
+            0.1,
+            0.1
+          ]
+        },
+        "ref_segment_index": 219,
+        "ref_segment_t": 0.07792,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3,
+        "pause_seconds": "0.1,0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -644.81,
+          295.138
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 15,
+        "distance_m": 1264.0,
+        "distance_lookup_m": 1110.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist60"
+        ],
+        "notes_text": "Dist60",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 224,
+        "ref_segment_t": 0.943825,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -644.431,
+          235.597
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 16,
+        "distance_m": 1324.0,
+        "distance_lookup_m": 1170.337,
+        "link_to_next": true,
+        "notes": [
+          "KinksStartingRight"
+        ],
+        "notes_text": "KinksStartingRight",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "KinksStartingRight",
+            "name": "kinks_starting_right"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true
+        },
+        "ref_segment_index": 230,
+        "ref_segment_t": 0.407818,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -628.861,
+          143.467
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 17,
+        "distance_m": 1418.0,
+        "distance_lookup_m": 1264.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 238,
+        "ref_segment_t": 0.715047,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -591.44,
+          39.605
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 18,
+        "distance_m": 1530.0,
+        "distance_lookup_m": 1376.337,
+        "link_to_next": true,
+        "notes": [
+          "Right5"
+        ],
+        "notes_text": "Right5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 248,
+        "ref_segment_t": 0.662394,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -553.209,
+          -13.465
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 19,
+        "distance_m": 1596.0,
+        "distance_lookup_m": 1442.337,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "LeftFlat"
+        ],
+        "notes_text": "And, LeftFlat",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "LeftFlat",
+            "side": "left",
+            "style": "flat"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 254,
+        "ref_segment_t": 0.306758,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -510.958,
+          -52.678
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 20,
+        "distance_m": 1654.0,
+        "distance_lookup_m": 1500.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist50"
+        ],
+        "notes_text": "Dist50",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist50",
+            "meters": 50
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            50
+          ]
+        },
+        "ref_segment_index": 259,
+        "ref_segment_t": 0.262217,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "50"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -465.391,
+          -81.312
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 21,
+        "distance_m": 1708.0,
+        "distance_lookup_m": 1554.337,
+        "link_to_next": true,
+        "notes": [
+          "Left4"
+        ],
+        "notes_text": "Left4",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 264,
+        "ref_segment_t": 0.462865,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -421.536,
+          -93.05
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 22,
+        "distance_m": 1755.0,
+        "distance_lookup_m": 1601.337,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "Right4",
+          "Long"
+        ],
+        "notes_text": "And, Right4, Long",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 269,
+        "ref_segment_t": 0.706469,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -367.653,
+          -145.754
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 23,
+        "distance_m": 1842.0,
+        "distance_lookup_m": 1688.337,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Left3",
+          "Short"
+        ],
+        "notes_text": "Into, Left3, Short",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 289,
+        "ref_segment_t": 0.230091,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -352.389,
+          -172.564
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 24,
+        "distance_m": 1873.0,
+        "distance_lookup_m": 1719.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist70"
+        ],
+        "notes_text": "Dist70",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist70",
+            "meters": 70
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            70
+          ]
+        },
+        "ref_segment_index": 293,
+        "ref_segment_t": 0.351735,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "70"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -324.745,
+          -235.603
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 25,
+        "distance_m": 1942.0,
+        "distance_lookup_m": 1788.337,
+        "link_to_next": true,
+        "notes": [
+          "Right4"
+        ],
+        "notes_text": "Right4",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 300,
+        "ref_segment_t": 0.899546,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -306.219,
+          -289.263
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 26,
+        "distance_m": 1999.0,
+        "distance_lookup_m": 1845.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 306,
+        "ref_segment_t": 0.09645,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -291.474,
+          -328.448
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 27,
+        "distance_m": 2041.0,
+        "distance_lookup_m": 1887.337,
+        "link_to_next": false,
+        "notes": [
+          "Right4",
+          "VeryLong",
+          "OverCrest"
+        ],
+        "notes_text": "Right4, VeryLong, OverCrest",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "VeryLong",
+            "name": "very_long"
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 309,
+        "ref_segment_t": 0.629422,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -240.554,
+          -496.132
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 28,
+        "distance_m": 2217.0,
+        "distance_lookup_m": 2063.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left4",
+          "Long",
+          "Pause0.1s_Reset",
+          "Tighten3",
+          "Late",
+          "Pause0.25s_Reset",
+          "Caution",
+          "ThroughGate"
+        ],
+        "notes_text": "Into, Left4, Long, Pause0.1s_Reset, Tighten3, Late, Pause0.25s_Reset, Caution, ThroughGate",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s_Reset",
+            "seconds": 0.1,
+            "reset": true
+          },
+          {
+            "kind": "modifier",
+            "source": "Tighten3",
+            "name": "tighten",
+            "level": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "Late",
+            "name": "late"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.25s_Reset",
+            "seconds": 0.25,
+            "reset": true
+          },
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "other",
+            "source": "ThroughGate",
+            "name": "ThroughGate"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": true,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          },
+          "pause_seconds": [
+            0.1,
+            0.25
+          ]
+        },
+        "ref_segment_index": 323,
+        "ref_segment_t": 0.922033,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": true,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4,
+        "pause_seconds": "0.1,0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -176.064,
+          -590.279
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 29,
+        "distance_m": 2332.0,
+        "distance_lookup_m": 2178.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Right2",
+          "Short",
+          "Cut"
+        ],
+        "notes_text": "Into, Right2, Short, Cut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right2",
+            "side": "right",
+            "severity": 2
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          },
+          {
+            "kind": "modifier",
+            "source": "Cut",
+            "name": "cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 334,
+        "ref_segment_t": 0.387216,
+        "grp_keep": "",
+        "grp_cut": "cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -141.796,
+          -639.04
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 30,
+        "distance_m": 2392.0,
+        "distance_lookup_m": 2238.337,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Right3",
+          "TightensLate",
+          "SmallCut"
+        ],
+        "notes_text": "And, Right3, TightensLate, SmallCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "TightensLate",
+            "name": "tightens_late"
+          },
+          {
+            "kind": "modifier",
+            "source": "SmallCut",
+            "name": "small_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "small_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": true,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 340,
+        "ref_segment_t": 0.031005,
+        "grp_keep": "",
+        "grp_cut": "small_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": true,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.493,
+          -691.957
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 31,
+        "distance_m": 2470.0,
+        "distance_lookup_m": 2316.337,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.25s",
+          "And",
+          "Left5"
+        ],
+        "notes_text": "Pause0.25s, And, Left5",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          },
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 348,
+        "ref_segment_t": 0.120843,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5,
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -53.869,
+          -741.868
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 32,
+        "distance_m": 2530.0,
+        "distance_lookup_m": 2376.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Right3",
+          "Long"
+        ],
+        "notes_text": "Into, Right3, Long",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 354,
+        "ref_segment_t": 0.751566,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.325,
+          -769.134
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 33,
+        "distance_m": 2584.0,
+        "distance_lookup_m": 2430.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left2"
+        ],
+        "notes_text": "Into, Left2",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left2",
+            "side": "left",
+            "severity": 2
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 361,
+        "ref_segment_t": 0.106246,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.592,
+          -805.135
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 34,
+        "distance_m": 2651.0,
+        "distance_lookup_m": 2497.337,
+        "link_to_next": true,
+        "notes": [
+          "Caution",
+          "LeftSquare",
+          "DontCut"
+        ],
+        "notes_text": "Caution, LeftSquare, DontCut",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "turn",
+            "source": "LeftSquare",
+            "side": "left",
+            "style": "square"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 368,
+        "ref_segment_t": 0.224558,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          66.122,
+          -831.207
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 35,
+        "distance_m": 2685.0,
+        "distance_lookup_m": 2531.337,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.5s",
+          "Dist40"
+        ],
+        "notes_text": "Pause0.5s, Dist40",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.5s",
+            "seconds": 0.5,
+            "reset": false
+          },
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ],
+          "pause_seconds": [
+            0.5
+          ]
+        },
+        "ref_segment_index": 372,
+        "ref_segment_t": 0.159609,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40",
+        "pause_seconds": "0.5"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.13,
+          -860.718
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 36,
+        "distance_m": 2722.0,
+        "distance_lookup_m": 2568.337,
+        "link_to_next": true,
+        "notes": [
+          "RightHP"
+        ],
+        "notes_text": "RightHP",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "RightHP",
+            "side": "right",
+            "style": "hp"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          }
+        },
+        "ref_segment_index": 376,
+        "ref_segment_t": 0.276329,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.212,
+          -879.389
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 37,
+        "distance_m": 2752.0,
+        "distance_lookup_m": 2598.337,
+        "link_to_next": false,
+        "notes": [
+          "Pause1s",
+          "Dist40"
+        ],
+        "notes_text": "Pause1s, Dist40",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause1s",
+            "seconds": 1.0,
+            "reset": false
+          },
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ],
+          "pause_seconds": [
+            1.0
+          ]
+        },
+        "ref_segment_index": 379,
+        "ref_segment_t": 0.562535,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40",
+        "pause_seconds": "1.0"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          150.261,
+          -902.81
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 38,
+        "distance_m": 2798.0,
+        "distance_lookup_m": 2644.337,
+        "link_to_next": false,
+        "notes": [
+          "LeftHP"
+        ],
+        "notes_text": "LeftHP",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "LeftHP",
+            "side": "left",
+            "style": "hp"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ]
+          }
+        },
+        "ref_segment_index": 384,
+        "ref_segment_t": 0.468497,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          181.618,
+          -936.227
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 39,
+        "distance_m": 2844.0,
+        "distance_lookup_m": 2690.337,
+        "link_to_next": true,
+        "notes": [
+          "Pause1.5s",
+          "Right5"
+        ],
+        "notes_text": "Pause1.5s, Right5",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause1.5s",
+            "seconds": 1.5,
+            "reset": false
+          },
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          },
+          "pause_seconds": [
+            1.5
+          ]
+        },
+        "ref_segment_index": 389,
+        "ref_segment_t": 0.660119,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5,
+        "pause_seconds": "1.5"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          204.175,
+          -966.358
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 40,
+        "distance_m": 2882.0,
+        "distance_lookup_m": 2728.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 394,
+        "ref_segment_t": 0.475767,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          242.889,
+          -986.084
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 41,
+        "distance_m": 2926.0,
+        "distance_lookup_m": 2772.337,
+        "link_to_next": true,
+        "notes": [
+          "Right6"
+        ],
+        "notes_text": "Right6",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 400,
+        "ref_segment_t": 0.305907,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          276.975,
+          -992.04
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 42,
+        "distance_m": 2961.0,
+        "distance_lookup_m": 2807.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist100"
+        ],
+        "notes_text": "Dist100",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 404,
+        "ref_segment_t": 0.375267,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          382.684,
+          -1015.696
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 43,
+        "distance_m": 3071.0,
+        "distance_lookup_m": 2917.337,
+        "link_to_next": true,
+        "notes": [
+          "Right4",
+          "SmallCut"
+        ],
+        "notes_text": "Right4, SmallCut",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "modifier",
+            "source": "SmallCut",
+            "name": "small_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "small_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 417,
+        "ref_segment_t": 0.387111,
+        "grp_keep": "",
+        "grp_cut": "small_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          463.77,
+          -1045.86
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 44,
+        "distance_m": 3158.0,
+        "distance_lookup_m": 3004.337,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "Pause0.25s",
+          "Left5"
+        ],
+        "notes_text": "And, Pause0.25s, Left5",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          },
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 427,
+        "ref_segment_t": 0.58839,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5,
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          512.334,
+          -1050.559
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 45,
+        "distance_m": 3207.0,
+        "distance_lookup_m": 3053.337,
+        "link_to_next": false,
+        "notes": [
+          "Junction",
+          "GoLeft"
+        ],
+        "notes_text": "Junction, GoLeft",
+        "atoms": [
+          {
+            "kind": "other",
+            "source": "Junction",
+            "name": "Junction"
+          },
+          {
+            "kind": "control",
+            "source": "GoLeft",
+            "name": "go_left"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": "go_left"
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false
+        },
+        "ref_segment_index": 433,
+        "ref_segment_t": 0.332084,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "go_left",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          536.902,
+          -1053.839
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 46,
+        "distance_m": 3232.0,
+        "distance_lookup_m": 3078.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Right3",
+          "Long",
+          "DontCut",
+          "Late"
+        ],
+        "notes_text": "Into, Right3, Long, DontCut, Late",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          },
+          {
+            "kind": "modifier",
+            "source": "Late",
+            "name": "late"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": true,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 436,
+        "ref_segment_t": 0.17898,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": true,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          640.051,
+          -1059.199
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 47,
+        "distance_m": 3336.0,
+        "distance_lookup_m": 3182.337,
+        "link_to_next": true,
+        "notes": [
+          "Left5",
+          "DontCut"
+        ],
+        "notes_text": "Left5, DontCut",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 446,
+        "ref_segment_t": 0.72434,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          703.976,
+          -1060.095
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 48,
+        "distance_m": 3400.0,
+        "distance_lookup_m": 3246.337,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.25s",
+          "And",
+          "Right5"
+        ],
+        "notes_text": "Pause0.25s, And, Right5",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          },
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 452,
+        "ref_segment_t": 0.52083,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5,
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          779.105,
+          -1050.806
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 49,
+        "distance_m": 3476.0,
+        "distance_lookup_m": 3322.337,
+        "link_to_next": true,
+        "notes": [
+          "Right3",
+          "Long",
+          "TightensLate",
+          "SmallCut"
+        ],
+        "notes_text": "Right3, Long, TightensLate, SmallCut",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "modifier",
+            "source": "TightensLate",
+            "name": "tightens_late"
+          },
+          {
+            "kind": "modifier",
+            "source": "SmallCut",
+            "name": "small_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "small_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": true,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 459,
+        "ref_segment_t": 0.119499,
+        "grp_keep": "",
+        "grp_cut": "small_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": true,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          863.059,
+          -1022.616
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 50,
+        "distance_m": 3565.0,
+        "distance_lookup_m": 3411.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist80"
+        ],
+        "notes_text": "Dist80",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ]
+        },
+        "ref_segment_index": 469,
+        "ref_segment_t": 0.870815,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          917.643,
+          -965.232
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 51,
+        "distance_m": 3652.0,
+        "distance_lookup_m": 3498.337,
+        "link_to_next": true,
+        "notes": [
+          "Left3",
+          "Long",
+          "Pause0.1s_Reset",
+          "DontCut",
+          "KeepIn"
+        ],
+        "notes_text": "Left3, Long, Pause0.1s_Reset, DontCut, KeepIn",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s_Reset",
+            "seconds": 0.1,
+            "reset": true
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          },
+          {
+            "kind": "modifier",
+            "source": "KeepIn",
+            "name": "keep_in"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": "keep_in",
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 486,
+        "ref_segment_t": 0.161666,
+        "grp_keep": "keep_in",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          863.234,
+          -977.881
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 52,
+        "distance_m": 3710.0,
+        "distance_lookup_m": 3556.337,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.1s_Reset",
+          "Junction",
+          "GoLeft"
+        ],
+        "notes_text": "Pause0.1s_Reset, Junction, GoLeft",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.1s_Reset",
+            "seconds": 0.1,
+            "reset": true
+          },
+          {
+            "kind": "other",
+            "source": "Junction",
+            "name": "Junction"
+          },
+          {
+            "kind": "control",
+            "source": "GoLeft",
+            "name": "go_left"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": "go_left"
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 500,
+        "ref_segment_t": 0.255333,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "go_left",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          815.888,
+          -984.004
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 53,
+        "distance_m": 3758.0,
+        "distance_lookup_m": 3604.337,
+        "link_to_next": true,
+        "notes": [
+          "Left3",
+          "DontCut"
+        ],
+        "notes_text": "Left3, DontCut",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 506,
+        "ref_segment_t": 0.950205,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          763.075,
+          -981.317
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 54,
+        "distance_m": 3812.0,
+        "distance_lookup_m": 3658.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 514,
+        "ref_segment_t": 0.474787,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          722.019,
+          -963.158
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 55,
+        "distance_m": 3857.0,
+        "distance_lookup_m": 3703.337,
+        "link_to_next": true,
+        "notes": [
+          "Right6"
+        ],
+        "notes_text": "Right6",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right6",
+            "side": "right",
+            "severity": 6
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 6,
+            "severity_min": 6
+          }
+        },
+        "ref_segment_index": 519,
+        "ref_segment_t": 0.965132,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 6,
+        "turn_severity_max": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          665.913,
+          -937.222
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 56,
+        "distance_m": 3919.0,
+        "distance_lookup_m": 3765.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist100",
+          "OverCrest"
+        ],
+        "notes_text": "Dist100, OverCrest",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist100",
+            "meters": 100
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            100
+          ]
+        },
+        "ref_segment_index": 526,
+        "ref_segment_t": 0.707916,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "100"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          562.798,
+          -894.776
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 57,
+        "distance_m": 4031.0,
+        "distance_lookup_m": 3877.337,
+        "link_to_next": false,
+        "notes": [
+          "Late",
+          "Left2",
+          "DontCut"
+        ],
+        "notes_text": "Late, Left2, DontCut",
+        "atoms": [
+          {
+            "kind": "modifier",
+            "source": "Late",
+            "name": "late"
+          },
+          {
+            "kind": "turn",
+            "source": "Left2",
+            "side": "left",
+            "severity": 2
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": true,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 537,
+        "ref_segment_t": 0.414006,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": true,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          466.367,
+          -851.752
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 58,
+        "distance_m": 4138.0,
+        "distance_lookup_m": 3984.337,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Right3"
+        ],
+        "notes_text": "And, Right3",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 548,
+        "ref_segment_t": 0.929007,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          432.071,
+          -829.341
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 59,
+        "distance_m": 4179.0,
+        "distance_lookup_m": 4025.337,
+        "link_to_next": false,
+        "notes": [
+          "Into",
+          "Left2",
+          "DontCut"
+        ],
+        "notes_text": "Into, Left2, DontCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left2",
+            "side": "left",
+            "severity": 2
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 553,
+        "ref_segment_t": 0.111403,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          400.648,
+          -809.967
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 60,
+        "distance_m": 4216.0,
+        "distance_lookup_m": 4062.337,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Right3",
+          "VeryLong",
+          "TightensLate",
+          "Pause0.1s_Reset",
+          "Caution",
+          "LogsInside"
+        ],
+        "notes_text": "And, Right3, VeryLong, TightensLate, Pause0.1s_Reset, Caution, LogsInside",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "VeryLong",
+            "name": "very_long"
+          },
+          {
+            "kind": "modifier",
+            "source": "TightensLate",
+            "name": "tightens_late"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s_Reset",
+            "seconds": 0.1,
+            "reset": true
+          },
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "other",
+            "source": "LogsInside",
+            "name": "LogsInside"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": true,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 556,
+        "ref_segment_t": 0.937375,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": true,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          339.204,
+          -713.32
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 61,
+        "distance_m": 4336.0,
+        "distance_lookup_m": 4182.337,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.25s_Reset",
+          "Dist50",
+          "OverCrest"
+        ],
+        "notes_text": "Pause0.25s_Reset, Dist50, OverCrest",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s_Reset",
+            "seconds": 0.25,
+            "reset": true
+          },
+          {
+            "kind": "distance",
+            "source": "Dist50",
+            "meters": 50
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            50
+          ],
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 570,
+        "ref_segment_t": 0.53678,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "50",
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          339.401,
+          -665.801
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 62,
+        "distance_m": 4384.0,
+        "distance_lookup_m": 4230.337,
+        "link_to_next": true,
+        "notes": [
+          "Into",
+          "Left3",
+          "DontCut"
+        ],
+        "notes_text": "Into, Left3, DontCut",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "modifier",
+            "source": "DontCut",
+            "name": "dont_cut"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": "dont_cut",
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 575,
+        "ref_segment_t": 0.763566,
+        "grp_keep": "",
+        "grp_cut": "dont_cut",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          357.921,
+          -623.78
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 63,
+        "distance_m": 4431.0,
+        "distance_lookup_m": 4277.337,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "Right3",
+          "VeryLong"
+        ],
+        "notes_text": "And, Right3, VeryLong",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Right3",
+            "side": "right",
+            "severity": 3
+          },
+          {
+            "kind": "length",
+            "source": "VeryLong",
+            "name": "very_long"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 581,
+        "ref_segment_t": 0.080191,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          398.056,
+          -553.722
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 64,
+        "distance_m": 4514.0,
+        "distance_lookup_m": 4360.337,
+        "link_to_next": true,
+        "notes": [
+          "Kinks",
+          "OverCrest"
+        ],
+        "notes_text": "Kinks, OverCrest",
+        "atoms": [
+          {
+            "kind": "feature",
+            "source": "Kinks",
+            "name": "kinks"
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true
+        },
+        "ref_segment_index": 591,
+        "ref_segment_t": 0.456737,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          386.931,
+          -522.81
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 65,
+        "distance_m": 4549.0,
+        "distance_lookup_m": 4395.337,
+        "link_to_next": true,
+        "notes": [
+          "Pause0.1s",
+          "Into",
+          "Left5"
+        ],
+        "notes_text": "Pause0.1s, Into, Left5",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.1s",
+            "seconds": 0.1,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 597,
+        "ref_segment_t": 0.78183,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          383.197,
+          -490.966
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 66,
+        "distance_m": 4585.0,
+        "distance_lookup_m": 4431.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist60",
+          "OverCrest"
+        ],
+        "notes_text": "Dist60, OverCrest",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist60",
+            "meters": 60
+          },
+          {
+            "kind": "feature",
+            "source": "OverCrest",
+            "name": "over_crest"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            60
+          ]
+        },
+        "ref_segment_index": 604,
+        "ref_segment_t": 0.703505,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "60"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          433.305,
+          -494.324
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 67,
+        "distance_m": 4643.0,
+        "distance_lookup_m": 4489.337,
+        "link_to_next": false,
+        "notes": [
+          "Caution",
+          "Brake",
+          "Pause0.1s_Reset",
+          "Junction",
+          "RightSquare"
+        ],
+        "notes_text": "Caution, Brake, Pause0.1s_Reset, Junction, RightSquare",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          },
+          {
+            "kind": "pause",
+            "source": "Pause0.1s_Reset",
+            "seconds": 0.1,
+            "reset": true
+          },
+          {
+            "kind": "other",
+            "source": "Junction",
+            "name": "Junction"
+          },
+          {
+            "kind": "turn",
+            "source": "RightSquare",
+            "side": "right",
+            "style": "square"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ]
+          },
+          "pause_seconds": [
+            0.1
+          ]
+        },
+        "ref_segment_index": 616,
+        "ref_segment_t": 0.654939,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "pause_seconds": "0.1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          459.229,
+          -525.84
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 68,
+        "distance_m": 4684.0,
+        "distance_lookup_m": 4530.337,
+        "link_to_next": false,
+        "notes": [
+          "Pause0.25s",
+          "Dist80"
+        ],
+        "notes_text": "Pause0.25s, Dist80",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "distance",
+            "source": "Dist80",
+            "meters": 80
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            80
+          ],
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 622,
+        "ref_segment_t": 0.476014,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "80",
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          521.849,
+          -545.576
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 69,
+        "distance_m": 4759.0,
+        "distance_lookup_m": 4605.337,
+        "link_to_next": true,
+        "notes": [
+          "Right5"
+        ],
+        "notes_text": "Right5",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right5",
+            "side": "right",
+            "severity": 5
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 635,
+        "ref_segment_t": 0.263633,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          572.854,
+          -500.732
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 70,
+        "distance_m": 4827.0,
+        "distance_lookup_m": 4673.337,
+        "link_to_next": true,
+        "notes": [
+          "Pause0.25s",
+          "And",
+          "Left4",
+          "Caution",
+          "LogsOutside"
+        ],
+        "notes_text": "Pause0.25s, And, Left4, Caution, LogsOutside",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause0.25s",
+            "seconds": 0.25,
+            "reset": false
+          },
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left4",
+            "side": "left",
+            "severity": 4
+          },
+          {
+            "kind": "hazard",
+            "source": "Caution",
+            "name": "caution"
+          },
+          {
+            "kind": "other",
+            "source": "LogsOutside",
+            "name": "LogsOutside"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": true,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          },
+          "pause_seconds": [
+            0.25
+          ]
+        },
+        "ref_segment_index": 644,
+        "ref_segment_t": 0.670172,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": true,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4,
+        "pause_seconds": "0.25"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          619.286,
+          -445.954
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 71,
+        "distance_m": 4899.0,
+        "distance_lookup_m": 4745.337,
+        "link_to_next": false,
+        "notes": [
+          "Dist40"
+        ],
+        "notes_text": "Dist40",
+        "atoms": [
+          {
+            "kind": "distance",
+            "source": "Dist40",
+            "meters": 40
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "distance_calls_m": [
+            40
+          ]
+        },
+        "ref_segment_index": 652,
+        "ref_segment_t": 0.26586,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "distance_calls_m": "40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          642.137,
+          -411.971
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 72,
+        "distance_m": 4940.0,
+        "distance_lookup_m": 4786.337,
+        "link_to_next": false,
+        "notes": [
+          "Right4",
+          "Long",
+          "Tightens"
+        ],
+        "notes_text": "Right4, Long, Tightens",
+        "atoms": [
+          {
+            "kind": "turn",
+            "source": "Right4",
+            "side": "right",
+            "severity": 4
+          },
+          {
+            "kind": "length",
+            "source": "Long",
+            "name": "long"
+          },
+          {
+            "kind": "modifier",
+            "source": "Tightens",
+            "name": "tightens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": true,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 4,
+            "severity_min": 4
+          }
+        },
+        "ref_segment_index": 656,
+        "ref_segment_t": 0.065356,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": true,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 4,
+        "turn_severity_max": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          680.821,
+          -339.783
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 73,
+        "distance_m": 5022.0,
+        "distance_lookup_m": 4868.337,
+        "link_to_next": true,
+        "notes": [
+          "And",
+          "Left5",
+          "Short"
+        ],
+        "notes_text": "And, Left5, Short",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left5",
+            "side": "left",
+            "severity": 5
+          },
+          {
+            "kind": "length",
+            "source": "Short",
+            "name": "short"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": true,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 5,
+            "severity_min": 5
+          }
+        },
+        "ref_segment_index": 663,
+        "ref_segment_t": 0.330972,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": true,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 5,
+        "turn_severity_max": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          702.801,
+          -297.116
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 74,
+        "distance_m": 5070.0,
+        "distance_lookup_m": 4916.337,
+        "link_to_next": false,
+        "notes": [
+          "Brake",
+          "Into",
+          "Right2",
+          "VeryLong",
+          "TightensLate"
+        ],
+        "notes_text": "Brake, Into, Right2, VeryLong, TightensLate",
+        "atoms": [
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          },
+          {
+            "kind": "connector",
+            "source": "Into",
+            "name": "into"
+          },
+          {
+            "kind": "turn",
+            "source": "Right2",
+            "side": "right",
+            "severity": 2
+          },
+          {
+            "kind": "length",
+            "source": "VeryLong",
+            "name": "very_long"
+          },
+          {
+            "kind": "modifier",
+            "source": "TightensLate",
+            "name": "tightens_late"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": true,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "right"
+            ],
+            "severity_max": 2,
+            "severity_min": 2
+          }
+        },
+        "ref_segment_index": 667,
+        "ref_segment_t": 0.432101,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": true,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "right",
+        "flg_turn_left": false,
+        "flg_turn_right": true,
+        "turn_severity_min": 2,
+        "turn_severity_max": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          749.463,
+          -226.353
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 75,
+        "distance_m": 5155.0,
+        "distance_lookup_m": 5001.337,
+        "link_to_next": false,
+        "notes": [
+          "And",
+          "Left3",
+          "Opens"
+        ],
+        "notes_text": "And, Left3, Opens",
+        "atoms": [
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "turn",
+            "source": "Left3",
+            "side": "left",
+            "severity": 3
+          },
+          {
+            "kind": "opening",
+            "source": "Opens",
+            "name": "opens"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": "opens",
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "turn": {
+            "sides": [
+              "left"
+            ],
+            "severity_max": 3,
+            "severity_min": 3
+          }
+        },
+        "ref_segment_index": 674,
+        "ref_segment_t": 0.919785,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "opens",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "left",
+        "flg_turn_left": true,
+        "flg_turn_right": false,
+        "turn_severity_min": 3,
+        "turn_severity_max": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          803.424,
+          -153.135
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 76,
+        "distance_m": 5246.0,
+        "distance_lookup_m": 5092.337,
+        "link_to_next": false,
+        "notes": [
+          "Finish"
+        ],
+        "notes_text": "Finish",
+        "atoms": [
+          {
+            "kind": "control",
+            "source": "Finish",
+            "name": "finish"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": false,
+            "finish": true,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false
+        },
+        "ref_segment_index": 683,
+        "ref_segment_t": 0.156482,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": false,
+        "flg_finish": true,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          732.848,
+          -12.665
+        ]
+      },
+      "properties": {
+        "kind": "pacenote",
+        "stage": "Severn - Afon Bidno",
+        "reference_track": "hafren_north",
+        "note_index": 77,
+        "distance_m": 5442.0,
+        "distance_lookup_m": 5288.337,
+        "link_to_next": false,
+        "notes": [
+          "Pause1s",
+          "Brake",
+          "And",
+          "StopAtMarshals"
+        ],
+        "notes_text": "Pause1s, Brake, And, StopAtMarshals",
+        "atoms": [
+          {
+            "kind": "pause",
+            "source": "Pause1s",
+            "seconds": 1.0,
+            "reset": false
+          },
+          {
+            "kind": "hazard",
+            "source": "Brake",
+            "name": "brake"
+          },
+          {
+            "kind": "connector",
+            "source": "And",
+            "name": "and"
+          },
+          {
+            "kind": "control",
+            "source": "StopAtMarshals",
+            "name": "stop_at_marshals"
+          }
+        ],
+        "flags": {
+          "groups": {
+            "keep": null,
+            "cut": null,
+            "opening": null,
+            "go": null
+          },
+          "bools": {
+            "caution": false,
+            "brake": true,
+            "finish": false,
+            "narrows": false,
+            "tightens": false,
+            "tightens_late": false,
+            "late": false,
+            "sudden": false
+          },
+          "linked_to_next": false,
+          "pause_seconds": [
+            1.0
+          ]
+        },
+        "ref_segment_index": 708,
+        "ref_segment_t": 0.774541,
+        "grp_keep": "",
+        "grp_cut": "",
+        "grp_opening": "",
+        "grp_go": "",
+        "flg_caution": false,
+        "flg_brake": true,
+        "flg_finish": false,
+        "flg_narrows": false,
+        "flg_tightens": false,
+        "flg_tightens_late": false,
+        "flg_late": false,
+        "flg_sudden": false,
+        "flg_linked_to_next": false,
+        "turn_sides": "",
+        "flg_turn_left": false,
+        "flg_turn_right": false,
+        "pause_seconds": "1.0"
+      }
+    }
+  ]
+}

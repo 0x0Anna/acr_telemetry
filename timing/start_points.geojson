@@ -1,0 +1,21 @@
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          922.7200927734375,
+          -2847.655517578125
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "car": "Alfa_Romeo_GTA",
+        "kind": "start_anchor",
+        "track": "saverne",
+        "ts_utc": "2026-04-29T19:17:24.343Z"
+      },
+      "type": "Feature"
+    }
+  ],
+  "type": "FeatureCollection"
+}

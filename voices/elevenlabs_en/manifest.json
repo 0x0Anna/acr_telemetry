@@ -1,0 +1,776 @@
+[
+  {
+    "token": "AfterEnd",
+    "status": "ok",
+    "phrase": "after end",
+    "path": "voices\\elevenlabs_en\\AfterEnd.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "AfterFinish",
+    "status": "ok",
+    "phrase": "after finish",
+    "path": "voices\\elevenlabs_en\\AfterFinish.wav",
+    "duration_sec": 0.929
+  },
+  {
+    "token": "AfterJunction",
+    "status": "ok",
+    "phrase": "after junction",
+    "path": "voices\\elevenlabs_en\\AfterJunction.wav",
+    "duration_sec": 1.022
+  },
+  {
+    "token": "And",
+    "status": "ok",
+    "phrase": "and",
+    "path": "voices\\elevenlabs_en\\And.wav",
+    "duration_sec": 0.65
+  },
+  {
+    "token": "AtJunction",
+    "status": "ok",
+    "phrase": "at junction",
+    "path": "voices\\elevenlabs_en\\AtJunction.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "AtTheJunction",
+    "status": "ok",
+    "phrase": "at the junction",
+    "path": "voices\\elevenlabs_en\\AtTheJunction.wav",
+    "duration_sec": 1.068
+  },
+  {
+    "token": "BadCamber",
+    "status": "ok",
+    "phrase": "bad camber",
+    "path": "voices\\elevenlabs_en\\BadCamber.wav",
+    "duration_sec": 0.975
+  },
+  {
+    "token": "BigCut",
+    "status": "ok",
+    "phrase": "big cut",
+    "path": "voices\\elevenlabs_en\\BigCut.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "Brake",
+    "status": "ok",
+    "phrase": "brake",
+    "path": "voices\\elevenlabs_en\\Brake.wav",
+    "duration_sec": 0.743
+  },
+  {
+    "token": "Bumps",
+    "status": "ok",
+    "phrase": "bumps",
+    "path": "voices\\elevenlabs_en\\Bumps.wav",
+    "duration_sec": 0.697
+  },
+  {
+    "token": "Caution",
+    "status": "ok",
+    "phrase": "caution",
+    "path": "voices\\elevenlabs_en\\Caution.wav",
+    "duration_sec": 0.743
+  },
+  {
+    "token": "Crest",
+    "status": "ok",
+    "phrase": "crest",
+    "path": "voices\\elevenlabs_en\\Crest.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "Cut",
+    "status": "ok",
+    "phrase": "cut",
+    "path": "voices\\elevenlabs_en\\Cut.wav",
+    "duration_sec": 0.557
+  },
+  {
+    "token": "Dip",
+    "status": "ok",
+    "phrase": "dip",
+    "path": "voices\\elevenlabs_en\\Dip.wav",
+    "duration_sec": 0.604
+  },
+  {
+    "token": "Dist100",
+    "status": "ok",
+    "phrase": "one hundred",
+    "path": "voices\\elevenlabs_en\\Dist100.wav",
+    "duration_sec": 0.789
+  },
+  {
+    "token": "Dist130",
+    "status": "ok",
+    "phrase": "130",
+    "path": "voices\\elevenlabs_en\\Dist130.wav",
+    "duration_sec": 0.929
+  },
+  {
+    "token": "Dist150",
+    "status": "ok",
+    "phrase": "150",
+    "path": "voices\\elevenlabs_en\\Dist150.wav",
+    "duration_sec": 0.789
+  },
+  {
+    "token": "Dist170",
+    "status": "ok",
+    "phrase": "170",
+    "path": "voices\\elevenlabs_en\\Dist170.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "Dist200",
+    "status": "ok",
+    "phrase": "200",
+    "path": "voices\\elevenlabs_en\\Dist200.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "Dist250",
+    "status": "ok",
+    "phrase": "250",
+    "path": "voices\\elevenlabs_en\\Dist250.wav",
+    "duration_sec": 1.022
+  },
+  {
+    "token": "Dist300",
+    "status": "ok",
+    "phrase": "300",
+    "path": "voices\\elevenlabs_en\\Dist300.wav",
+    "duration_sec": 0.65
+  },
+  {
+    "token": "Dist40",
+    "status": "ok",
+    "phrase": "forty",
+    "path": "voices\\elevenlabs_en\\Dist40.wav",
+    "duration_sec": 0.697
+  },
+  {
+    "token": "Dist50",
+    "status": "ok",
+    "phrase": "fifty",
+    "path": "voices\\elevenlabs_en\\Dist50.wav",
+    "duration_sec": 0.697
+  },
+  {
+    "token": "Dist60",
+    "status": "ok",
+    "phrase": "sixty",
+    "path": "voices\\elevenlabs_en\\Dist60.wav",
+    "duration_sec": 0.789
+  },
+  {
+    "token": "Dist70",
+    "status": "ok",
+    "phrase": "seventy",
+    "path": "voices\\elevenlabs_en\\Dist70.wav",
+    "duration_sec": 0.789
+  },
+  {
+    "token": "Dist80",
+    "status": "ok",
+    "phrase": "eighty",
+    "path": "voices\\elevenlabs_en\\Dist80.wav",
+    "duration_sec": 0.65
+  },
+  {
+    "token": "Dist90",
+    "status": "ok",
+    "phrase": "ninety",
+    "path": "voices\\elevenlabs_en\\Dist90.wav",
+    "duration_sec": 0.697
+  },
+  {
+    "token": "DitchInside",
+    "status": "ok",
+    "phrase": "ditch inside",
+    "path": "voices\\elevenlabs_en\\DitchInside.wav",
+    "duration_sec": 1.115
+  },
+  {
+    "token": "DitchOutside",
+    "status": "ok",
+    "phrase": "ditch outside",
+    "path": "voices\\elevenlabs_en\\DitchOutside.wav",
+    "duration_sec": 1.022
+  },
+  {
+    "token": "DontCut",
+    "status": "ok",
+    "phrase": "don't cut",
+    "path": "voices\\elevenlabs_en\\DontCut.wav",
+    "duration_sec": 0.789
+  },
+  {
+    "token": "Finish",
+    "status": "ok",
+    "phrase": "finish",
+    "path": "voices\\elevenlabs_en\\Finish.wav",
+    "duration_sec": 0.743
+  },
+  {
+    "token": "GoLeft",
+    "status": "ok",
+    "phrase": "go left",
+    "path": "voices\\elevenlabs_en\\GoLeft.wav",
+    "duration_sec": 0.789
+  },
+  {
+    "token": "GoRight",
+    "status": "ok",
+    "phrase": "go right",
+    "path": "voices\\elevenlabs_en\\GoRight.wav",
+    "duration_sec": 0.789
+  },
+  {
+    "token": "GoStraight",
+    "status": "ok",
+    "phrase": "go straight",
+    "path": "voices\\elevenlabs_en\\GoStraight.wav",
+    "duration_sec": 0.929
+  },
+  {
+    "token": "HeavyBrake",
+    "status": "ok",
+    "phrase": "heavy brake",
+    "path": "voices\\elevenlabs_en\\HeavyBrake.wav",
+    "duration_sec": 0.929
+  },
+  {
+    "token": "Into",
+    "status": "ok",
+    "phrase": "into",
+    "path": "voices\\elevenlabs_en\\Into.wav",
+    "duration_sec": 0.697
+  },
+  {
+    "token": "IntoDip",
+    "status": "ok",
+    "phrase": "into dip",
+    "path": "voices\\elevenlabs_en\\IntoDip.wav",
+    "duration_sec": 0.882
+  },
+  {
+    "token": "JumpMaybe",
+    "status": "ok",
+    "phrase": "jump maybe",
+    "path": "voices\\elevenlabs_en\\JumpMaybe.wav",
+    "duration_sec": 0.975
+  },
+  {
+    "token": "Junction",
+    "status": "ok",
+    "phrase": "junction",
+    "path": "voices\\elevenlabs_en\\Junction.wav",
+    "duration_sec": 0.789
+  },
+  {
+    "token": "KeepIn",
+    "status": "ok",
+    "phrase": "keep in",
+    "path": "voices\\elevenlabs_en\\KeepIn.wav",
+    "duration_sec": 0.789
+  },
+  {
+    "token": "KeepLeft",
+    "status": "ok",
+    "phrase": "keep left",
+    "path": "voices\\elevenlabs_en\\KeepLeft.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "KeepOut",
+    "status": "ok",
+    "phrase": "keep out",
+    "path": "voices\\elevenlabs_en\\KeepOut.wav",
+    "duration_sec": 0.789
+  },
+  {
+    "token": "KeepRight",
+    "status": "ok",
+    "phrase": "keep right",
+    "path": "voices\\elevenlabs_en\\KeepRight.wav",
+    "duration_sec": 0.789
+  },
+  {
+    "token": "Kinks",
+    "status": "ok",
+    "phrase": "kinks",
+    "path": "voices\\elevenlabs_en\\Kinks.wav",
+    "duration_sec": 0.743
+  },
+  {
+    "token": "KinksStartingLeft",
+    "status": "ok",
+    "phrase": "kinks starting left",
+    "path": "voices\\elevenlabs_en\\KinksStartingLeft.wav",
+    "duration_sec": 1.486
+  },
+  {
+    "token": "KinksStartingRight",
+    "status": "ok",
+    "phrase": "kinks starting right",
+    "path": "voices\\elevenlabs_en\\KinksStartingRight.wav",
+    "duration_sec": 1.3
+  },
+  {
+    "token": "Late",
+    "status": "ok",
+    "phrase": "late",
+    "path": "voices\\elevenlabs_en\\Late.wav",
+    "duration_sec": 0.697
+  },
+  {
+    "token": "Left1",
+    "status": "ok",
+    "phrase": "left one",
+    "path": "voices\\elevenlabs_en\\Left1.wav",
+    "duration_sec": 0.882
+  },
+  {
+    "token": "Left2",
+    "status": "ok",
+    "phrase": "left two",
+    "path": "voices\\elevenlabs_en\\Left2.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "Left3",
+    "status": "ok",
+    "phrase": "left three",
+    "path": "voices\\elevenlabs_en\\Left3.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "Left4",
+    "status": "ok",
+    "phrase": "left four",
+    "path": "voices\\elevenlabs_en\\Left4.wav",
+    "duration_sec": 0.882
+  },
+  {
+    "token": "Left5",
+    "status": "ok",
+    "phrase": "left five",
+    "path": "voices\\elevenlabs_en\\Left5.wav",
+    "duration_sec": 0.929
+  },
+  {
+    "token": "Left6",
+    "status": "ok",
+    "phrase": "left six",
+    "path": "voices\\elevenlabs_en\\Left6.wav",
+    "duration_sec": 0.975
+  },
+  {
+    "token": "LeftAcuteHP",
+    "status": "ok",
+    "phrase": "left acute hairpin",
+    "path": "voices\\elevenlabs_en\\LeftAcuteHP.wav",
+    "duration_sec": 1.347
+  },
+  {
+    "token": "LeftFlat",
+    "status": "ok",
+    "phrase": "left flat",
+    "path": "voices\\elevenlabs_en\\LeftFlat.wav",
+    "duration_sec": 1.022
+  },
+  {
+    "token": "LeftHP",
+    "status": "ok",
+    "phrase": "left hairpin",
+    "path": "voices\\elevenlabs_en\\LeftHP.wav",
+    "duration_sec": 1.022
+  },
+  {
+    "token": "LeftKink",
+    "status": "ok",
+    "phrase": "left kink",
+    "path": "voices\\elevenlabs_en\\LeftKink.wav",
+    "duration_sec": 0.882
+  },
+  {
+    "token": "LeftOpenHP",
+    "status": "ok",
+    "phrase": "left open hairpin",
+    "path": "voices\\elevenlabs_en\\LeftOpenHP.wav",
+    "duration_sec": 1.254
+  },
+  {
+    "token": "LeftSquare",
+    "status": "ok",
+    "phrase": "left square",
+    "path": "voices\\elevenlabs_en\\LeftSquare.wav",
+    "duration_sec": 0.975
+  },
+  {
+    "token": "LogsInside",
+    "status": "ok",
+    "phrase": "logs inside",
+    "path": "voices\\elevenlabs_en\\LogsInside.wav",
+    "duration_sec": 1.161
+  },
+  {
+    "token": "LogsOutside",
+    "status": "ok",
+    "phrase": "logs outside",
+    "path": "voices\\elevenlabs_en\\LogsOutside.wav",
+    "duration_sec": 1.207
+  },
+  {
+    "token": "Long",
+    "status": "ok",
+    "phrase": "long",
+    "path": "voices\\elevenlabs_en\\Long.wav",
+    "duration_sec": 0.65
+  },
+  {
+    "token": "Narrows",
+    "status": "ok",
+    "phrase": "narrows",
+    "path": "voices\\elevenlabs_en\\Narrows.wav",
+    "duration_sec": 0.789
+  },
+  {
+    "token": "Opens",
+    "status": "ok",
+    "phrase": "opens",
+    "path": "voices\\elevenlabs_en\\Opens.wav",
+    "duration_sec": 0.697
+  },
+  {
+    "token": "OpensLate",
+    "status": "ok",
+    "phrase": "opens late",
+    "path": "voices\\elevenlabs_en\\OpensLate.wav",
+    "duration_sec": 1.022
+  },
+  {
+    "token": "Over",
+    "status": "ok",
+    "phrase": "over",
+    "path": "voices\\elevenlabs_en\\Over.wav",
+    "duration_sec": 0.65
+  },
+  {
+    "token": "OverBridge",
+    "status": "ok",
+    "phrase": "over bridge",
+    "path": "voices\\elevenlabs_en\\OverBridge.wav",
+    "duration_sec": 0.882
+  },
+  {
+    "token": "OverBump",
+    "status": "ok",
+    "phrase": "over bump",
+    "path": "voices\\elevenlabs_en\\OverBump.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "OverBumps",
+    "status": "ok",
+    "phrase": "over bumps",
+    "path": "voices\\elevenlabs_en\\OverBumps.wav",
+    "duration_sec": 0.929
+  },
+  {
+    "token": "OverCrest",
+    "status": "ok",
+    "phrase": "over crest",
+    "path": "voices\\elevenlabs_en\\OverCrest.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "OverJumpSmall",
+    "status": "ok",
+    "phrase": "over jump small",
+    "path": "voices\\elevenlabs_en\\OverJumpSmall.wav",
+    "duration_sec": 1.115
+  },
+  {
+    "token": "Pause0.1s",
+    "status": "pause",
+    "seconds": 0.1,
+    "path": "voices\\elevenlabs_en\\Pause0.1s.wav"
+  },
+  {
+    "token": "Pause0.1s_Reset",
+    "status": "pause",
+    "seconds": 0.1,
+    "path": "voices\\elevenlabs_en\\Pause0.1s_Reset.wav"
+  },
+  {
+    "token": "Pause0.25s",
+    "status": "pause",
+    "seconds": 0.25,
+    "path": "voices\\elevenlabs_en\\Pause0.25s.wav"
+  },
+  {
+    "token": "Pause0.25s_Reset",
+    "status": "pause",
+    "seconds": 0.25,
+    "path": "voices\\elevenlabs_en\\Pause0.25s_Reset.wav"
+  },
+  {
+    "token": "Pause0.5s",
+    "status": "pause",
+    "seconds": 0.5,
+    "path": "voices\\elevenlabs_en\\Pause0.5s.wav"
+  },
+  {
+    "token": "Pause0.5s_Reset",
+    "status": "pause",
+    "seconds": 0.5,
+    "path": "voices\\elevenlabs_en\\Pause0.5s_Reset.wav"
+  },
+  {
+    "token": "Pause1.5s",
+    "status": "pause",
+    "seconds": 1.5,
+    "path": "voices\\elevenlabs_en\\Pause1.5s.wav"
+  },
+  {
+    "token": "Pause1.5s_Reset",
+    "status": "pause",
+    "seconds": 1.5,
+    "path": "voices\\elevenlabs_en\\Pause1.5s_Reset.wav"
+  },
+  {
+    "token": "Pause1s",
+    "status": "pause",
+    "seconds": 1.0,
+    "path": "voices\\elevenlabs_en\\Pause1s.wav"
+  },
+  {
+    "token": "Pause1s_Reset",
+    "status": "pause",
+    "seconds": 1.0,
+    "path": "voices\\elevenlabs_en\\Pause1s_Reset.wav"
+  },
+  {
+    "token": "Right1",
+    "status": "ok",
+    "phrase": "right one",
+    "path": "voices\\elevenlabs_en\\Right1.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "Right2",
+    "status": "ok",
+    "phrase": "right two",
+    "path": "voices\\elevenlabs_en\\Right2.wav",
+    "duration_sec": 0.882
+  },
+  {
+    "token": "Right3",
+    "status": "ok",
+    "phrase": "right three",
+    "path": "voices\\elevenlabs_en\\Right3.wav",
+    "duration_sec": 0.929
+  },
+  {
+    "token": "Right4",
+    "status": "ok",
+    "phrase": "right four",
+    "path": "voices\\elevenlabs_en\\Right4.wav",
+    "duration_sec": 0.975
+  },
+  {
+    "token": "Right5",
+    "status": "ok",
+    "phrase": "right five",
+    "path": "voices\\elevenlabs_en\\Right5.wav",
+    "duration_sec": 0.975
+  },
+  {
+    "token": "Right6",
+    "status": "ok",
+    "phrase": "right six",
+    "path": "voices\\elevenlabs_en\\Right6.wav",
+    "duration_sec": 0.882
+  },
+  {
+    "token": "RightAcuteHP",
+    "status": "ok",
+    "phrase": "right acute hairpin",
+    "path": "voices\\elevenlabs_en\\RightAcuteHP.wav",
+    "duration_sec": 1.44
+  },
+  {
+    "token": "RightChicane",
+    "status": "ok",
+    "phrase": "right chicane",
+    "path": "voices\\elevenlabs_en\\RightChicane.wav",
+    "duration_sec": 1.068
+  },
+  {
+    "token": "RightChicaneEntry",
+    "status": "ok",
+    "phrase": "right chicane entry",
+    "path": "voices\\elevenlabs_en\\RightChicaneEntry.wav",
+    "duration_sec": 1.3
+  },
+  {
+    "token": "RightFlat",
+    "status": "ok",
+    "phrase": "right flat",
+    "path": "voices\\elevenlabs_en\\RightFlat.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "RightHP",
+    "status": "ok",
+    "phrase": "right hairpin",
+    "path": "voices\\elevenlabs_en\\RightHP.wav",
+    "duration_sec": 1.115
+  },
+  {
+    "token": "RightKink",
+    "status": "ok",
+    "phrase": "right kink",
+    "path": "voices\\elevenlabs_en\\RightKink.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "RightOpenHP",
+    "status": "ok",
+    "phrase": "right open hairpin",
+    "path": "voices\\elevenlabs_en\\RightOpenHP.wav",
+    "duration_sec": 1.533
+  },
+  {
+    "token": "RightSquare",
+    "status": "ok",
+    "phrase": "right square",
+    "path": "voices\\elevenlabs_en\\RightSquare.wav",
+    "duration_sec": 1.115
+  },
+  {
+    "token": "Short",
+    "status": "ok",
+    "phrase": "short",
+    "path": "voices\\elevenlabs_en\\Short.wav",
+    "duration_sec": 0.65
+  },
+  {
+    "token": "SlowDown",
+    "status": "ok",
+    "phrase": "slow down",
+    "path": "voices\\elevenlabs_en\\SlowDown.wav",
+    "duration_sec": 0.929
+  },
+  {
+    "token": "SmallCut",
+    "status": "ok",
+    "phrase": "small cut",
+    "path": "voices\\elevenlabs_en\\SmallCut.wav",
+    "duration_sec": 0.929
+  },
+  {
+    "token": "StopAtMarshals",
+    "status": "ok",
+    "phrase": "stop at marshals",
+    "path": "voices\\elevenlabs_en\\StopAtMarshals.wav",
+    "duration_sec": 1.254
+  },
+  {
+    "token": "Sudden",
+    "status": "ok",
+    "phrase": "sudden",
+    "path": "voices\\elevenlabs_en\\Sudden.wav",
+    "duration_sec": 0.697
+  },
+  {
+    "token": "ThroughGate",
+    "status": "ok",
+    "phrase": "through gate",
+    "path": "voices\\elevenlabs_en\\ThroughGate.wav",
+    "duration_sec": 1.022
+  },
+  {
+    "token": "ThroughTunnel",
+    "status": "ok",
+    "phrase": "through tunnel",
+    "path": "voices\\elevenlabs_en\\ThroughTunnel.wav",
+    "duration_sec": 1.022
+  },
+  {
+    "token": "Tighten1",
+    "status": "ok",
+    "phrase": "tighten1",
+    "path": "voices\\elevenlabs_en\\Tighten1.wav",
+    "duration_sec": 0.789
+  },
+  {
+    "token": "Tighten2",
+    "status": "ok",
+    "phrase": "tighten2",
+    "path": "voices\\elevenlabs_en\\Tighten2.wav",
+    "duration_sec": 0.929
+  },
+  {
+    "token": "Tighten3",
+    "status": "ok",
+    "phrase": "tighten3",
+    "path": "voices\\elevenlabs_en\\Tighten3.wav",
+    "duration_sec": 0.929
+  },
+  {
+    "token": "Tighten4",
+    "status": "ok",
+    "phrase": "tighten4",
+    "path": "voices\\elevenlabs_en\\Tighten4.wav",
+    "duration_sec": 0.882
+  },
+  {
+    "token": "Tighten5",
+    "status": "ok",
+    "phrase": "tighten5",
+    "path": "voices\\elevenlabs_en\\Tighten5.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "Tightens",
+    "status": "ok",
+    "phrase": "tightens",
+    "path": "voices\\elevenlabs_en\\Tightens.wav",
+    "duration_sec": 0.836
+  },
+  {
+    "token": "TightensLate",
+    "status": "ok",
+    "phrase": "tightens late",
+    "path": "voices\\elevenlabs_en\\TightensLate.wav",
+    "duration_sec": 1.207
+  },
+  {
+    "token": "UpHill",
+    "status": "ok",
+    "phrase": "up hill",
+    "path": "voices\\elevenlabs_en\\UpHill.wav",
+    "duration_sec": 0.743
+  },
+  {
+    "token": "VeryLong",
+    "status": "ok",
+    "phrase": "very long",
+    "path": "voices\\elevenlabs_en\\VeryLong.wav",
+    "duration_sec": 0.882
+  },
+  {
+    "token": "Widens",
+    "status": "ok",
+    "phrase": "widens",
+    "path": "voices\\elevenlabs_en\\Widens.wav",
+    "duration_sec": 0.789
+  }
+]

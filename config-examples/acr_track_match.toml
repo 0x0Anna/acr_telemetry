@@ -33,6 +33,9 @@ volume = 0.5
 # slower_wav = "sounds/split_slower.wav"
 
 # Pre-recorded pacenotes (trigger on marker crossing while track lock is active).
+# After converting PacenotePal YAML -> GeoJSON, run:
+#   python scripts/ensure_reference_pacenote_aliases.py
+# so timing/pacenotes/<reference_shp_stem>.geojson exists for each reference_tracks/*.shp (default stage copy).
 [pacenotes]
 enabled = false
 pacenotes_dir = "timing/pacenotes"
@@ -53,6 +56,10 @@ skip_buffer_m = 5.0
 trigger_radius_m = 12.0
 min_speed_kmh = 8.0
 volume = 0.7
+# Unique first-anchor lock (m) at grid; wider menu radius lists ambiguous stages -> RTSS + Ctrl+arrows / Ctrl+Enter. Prompt: WhereDoWeWantToGo.wav in voice_dir.
+# first_anchor_lock_radius_m = 2.0
+# first_anchor_menu_radius_m = 12.0
+# first_anchor_pick_max_speed_kmh = 15.0
 
 # Optional tuning (defaults shown)
 # downsample = 10
