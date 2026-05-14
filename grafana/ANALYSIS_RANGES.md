@@ -1,44 +1,45 @@
-# Analysis-Segmente aus Grafana-Annotations
+# Analysis segments from Grafana annotations
 
-Workflow: Annotations in Grafana mit Tag `rid_<recording_id>` versehen → per Link `acr_analysis_export --serve` aufrufen → Tool schreibt in **analysis.db** (recordings, statics, graphics, analysis mit geschnittenen physics).
+Workflow: tag annotations in Grafana with `rid_<recording_id>` → call `acr_analysis_export --serve` via link → tool writes **analysis.db** (recordings, statics, graphics, analysis table with physics sliced to annotation time ranges).
 
-## Ablauf
+## Steps
 
-1. **acr_analysis_export --serve** starten (einmalig im Hintergrund).
-2. **In Grafana** (Single-Recording-Dashboard): Annotations anlegen (Strg+Ziehen) und Tag `rid_55` setzen (für Recording 55).
-3. **Dashboard-Link** (Button): `http://localhost:9876/export?recording_id=${recording_id}`
-4. Klick auf den Link → Tool liest `grafana.db`, erstellt Backup `analysis.db.bak`, schreibt in **analysis.db**.
+1. Start **acr_analysis_export --serve** once (in the background).
+2. **In Grafana** (single-recording dashboard): create annotations (Ctrl+drag) and set tag `rid_55` (for recording 55).
+3. **Dashboard link** (button): `http://localhost:9876/export?recording_id=${recording_id}`
+4. Click the link → tool reads `grafana.db`, backs up to `analysis.db.bak`, writes **analysis.db**.
 
 ## acr_analysis_export
 
-Schreibt in **analysis.db** (gleiches Verzeichnis wie telemetry.db, oder `--analysis-db PATH`). Vor dem Schreiben wird `analysis.db` nach `analysis.db.bak` gesichert.
+Writes **analysis.db** (same directory as `telemetry.db`, or `--analysis-db PATH`). Before overwriting, `analysis.db` is copied to `analysis.db.bak`.
 
-**Server-Modus (für Grafana-Links):**
+**Server mode (for Grafana links):**
+
 ```
 acr_analysis_export --serve [--port 9876] [--grafana-db PATH] [--telemetry-db PATH] [--analysis-db PATH]
 ```
 
-**CLI-Modus:**
+**CLI mode:**
+
 ```
 acr_analysis_export <recording_id> [--grafana-db PATH] [--telemetry-db PATH] [--analysis-db PATH]
 ```
 
-Pfade: `--grafana-db` (oder `GRAFANA_DB`), `--telemetry-db` (oder acr_recorder.toml), `--analysis-db` (Default: Verzeichnis von telemetry.db + `analysis.db`).
+Paths: `--grafana-db` (or `GRAFANA_DB`), `--telemetry-db` (or `acr_recorder.toml`), `--analysis-db` (default: directory of `telemetry.db` + `analysis.db`).
 
-## Inhalt von analysis.db
+## Contents of analysis.db
 
-- **recordings**: Zeilen für die verwendeten recording_ids (Spalte `id`)
-- **statics**: Zeilen mit passender recording_id
-- **graphics**: nach Zeitbereichen der Annotations geschnitten
-- **analysis**: physics geschnitten + annotation_id
+- **recordings**: rows for the recording_ids used (column `id`)
+- **statics**: rows with matching `recording_id`
+- **graphics**: sliced to annotation time ranges
+- **analysis**: sliced physics + `annotation_id`
 
-## Grafana-Dashboard-Link
+## Grafana dashboard link
 
-1. Dashboard bearbeiten → **Dashboard settings** (Zahnrad) → **Links** → **New link**
-2. **Title**: z.B. `In Analysis exportieren`
+1. Edit dashboard → **Dashboard settings** (gear) → **Links** → **New link**
+2. **Title**: e.g. `Export to analysis`
 3. **URL**: `http://localhost:9876/export?recording_id=${recording_id}`
-4. **Open in new tab**: aktivieren
-5. Speichern
+4. Enable **Open in new tab**
+5. Save
 
-Die Variable `recording_id` muss im Dashboard existieren (z.B. Recording-Dropdown). In **AC Rally full** ist der Link bereits eingebaut.
-
+The `recording_id` variable must exist on the dashboard (e.g. recording dropdown). **AC Rally full** already includes this link.

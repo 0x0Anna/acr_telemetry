@@ -303,10 +303,10 @@ impl Decoder {
     }
 }
 
-/// Lädt Modell und Tokenizer vom HuggingFace Hub
+/// Loads model and tokenizer from the Hugging Face Hub.
 pub fn load_model(model_name: &str, device: &Device) -> Result<(Model, Tokenizer, Config)> {
     let which = WhichModel::from_str(model_name)
-        .ok_or_else(|| E::msg(format!("Unbekanntes Modell: {model_name}")))?;
+        .ok_or_else(|| E::msg(format!("Unknown model: {model_name}")))?;
     let (model_id, revision) = which.model_and_revision();
 
     let api = Api::new()?;

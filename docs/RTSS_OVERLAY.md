@@ -1,29 +1,29 @@
-# RTSS OSD: erkannte Strecke / freier Text
+# RTSS OSD: detected track / plain text
 
-Dieses Repo kann Text **direkt in RTSS** schreiben, ohne dass der RTSS *Overlay Editor* eine „Datei-Data-Source“ braucht.
+This repository can write text **directly to RTSS** without the RTSS *Overlay Editor* needing a file-based data source.
 
-RTSS stellt dafür eine **Shared Memory**-Schnittstelle bereit (typischer Name: `RTSSSharedMemoryV2`). Unsere Implementierung folgt dem üblichen Muster aus RTSS-Beispielen/SDK:
+RTSS exposes a **shared memory** interface (typical name: `RTSSSharedMemoryV2`). Our implementation follows the usual pattern from RTSS samples/SDK:
 
-- Mapping öffnen: `OpenFileMappingW("RTSSSharedMemoryV2")`
-- Signatur prüfen: `RTSS`
-- OSD-Einträge über Offsets: `dwOSDArrOffset`, `dwOSDEntrySize`, `dwOSDArrSize`
+- Open mapping: `OpenFileMappingW("RTSSSharedMemoryV2")`
+- Check signature: `RTSS`
+- OSD entries via offsets: `dwOSDArrOffset`, `dwOSDEntrySize`, `dwOSDArrSize`
 - Text:
-  - RTSS **< 2.7**: `szOSD` (kurz)
-  - RTSS **>= 2.7**: `szOSDEx` (lang; typisch bis 4095 Zeichen + NUL)
-- Update auslösen: `dwOSDFrame++`
-  - Wichtig: In der RTSS v2 Header-Struktur liegt `dwOSDArrSize` bei Byte-Offset **28** und `dwOSDFrame` bei **32**. `acr_recorder` incrementiert `dwOSDFrame` bei Offset 32.
+  - RTSS **< 2.7**: `szOSD` (short)
+  - RTSS **>= 2.7**: `szOSDEx` (long; typically up to 4095 characters + NUL)
+- Trigger refresh: `dwOSDFrame++`
+  - Note: in the RTSS v2 header layout, `dwOSDArrSize` is at byte offset **28** and `dwOSDFrame` at **32**. `acr_recorder` increments `dwOSDFrame` at offset 32.
 
-## Voraussetzungen
+## Requirements
 
-- **RivaTuner Statistics Server (RTSS)** läuft (Tray/Service).
-- RTSS OSD ist im Spiel sichtbar (so wie bei FPS/Afterburner-OSD).
+- **RivaTuner Statistics Server (RTSS)** is running (tray/service).
+- RTSS OSD is visible in-game (same idea as FPS/Afterburner OSD).
 
 ## Binaries
 
-Nach Build findest du die Tools unter `target/release/`:
+After building, tools are under `target/release/`:
 
-- `acr_rtss_osd.exe` — generischer RTSS-Text-Pusher
-- `acr_track_match.exe` — Track-Matching; optional `--rtss`
+- `acr_rtss_osd.exe` — generic RTSS text pusher
+- `acr_track_match.exe` — track matching; optional `--rtss`
 
 Build:
 
@@ -31,88 +31,88 @@ Build:
 cargo build --release --bin acr_rtss_osd --bin acr_track_match
 ```
 
-## `acr_rtss_osd` (manuell / Scripting)
+## `acr_rtss_osd` (manual / scripting)
 
-### Einmaliger Text
+### One-shot text
 
 ```powershell
 .\target\release\acr_rtss_osd.exe --owner acr_demo --text "hello from acr"
 ```
 
-### Text aus Datei
+### Text from file
 
 ```powershell
 .\target\release\acr_rtss_osd.exe --owner acr_demo --file .\note.txt
 ```
 
-### Datei „followen“ (poll)
+### Follow file (poll)
 
 ```powershell
 .\target\release\acr_rtss_osd.exe --owner acr_demo --file "$env:APPDATA\acr_telemetry\acr_detected_track.txt" --follow --poll-ms 200
 ```
 
-### Slot erzwingen (optional)
+### Force slot (optional)
 
-Wenn du Kollisionen mit anderen Tools vermeiden willst:
+To avoid clashes with other tools:
 
 ```powershell
 .\target\release\acr_rtss_osd.exe --owner acr_demo --text "..." --slot 3
 ```
 
-`--slot 0` bedeutet: automatisch freien Slot suchen / Owner wiederfinden (Default).
+`--slot 0` means: find a free slot automatically / re-find owner (default).
 
-### Aufräumen / freigeben
+### Clean up / release
 
 ```powershell
 .\target\release\acr_rtss_osd.exe --owner acr_demo --release
 ```
 
-## `acr_track_match` + RTSS (empfohlen für „detected track …“)
+## `acr_track_match` + RTSS (recommended for “detected track …”)
 
-`acr_track_match` kann parallel zur Textdatei auch RTSS updaten:
+`acr_track_match` can update RTSS alongside the text file:
 
 ```powershell
 .\target\release\acr_track_match.exe --refs .\reference_tracks --live --rtss --rtss-owner acr_track_match
 ```
 
-Optional Slot erzwingen:
+Optional forced slot:
 
 ```powershell
 .\target\release\acr_track_match.exe --refs .\reference_tracks --live --rtss --rtss-owner acr_track_match --rtss-slot 3
 ```
 
-Beim Beenden wird versucht, den Owner-Slot per `release` zu leeren.
+On exit, the tool tries to clear the owner slot via `release`.
 
-## Textdatei (Fallback / andere Overlays)
+## Text file (fallback / other overlays)
 
-Standardpfad (wenn nicht überschrieben):
+Default path (unless overridden):
 
 - `%APPDATA%\acr_telemetry\acr_detected_track.txt`
 
-`acr_track_match` schreibt dort **atomisch** (temp + rename), damit Reader nicht „halb“ lesen.
+`acr_track_match` writes there **atomically** (temp + rename) so readers do not see half-written content.
 
-`acr_telemetry_bridge` kann den Text zusätzlich als JSON-Feld bereitstellen:
+`acr_telemetry_bridge` can also expose the text as a JSON field:
 
 - `detected_track_message`
 
-## Grenzen / Realitätscheck
+## Limits / reality check
 
-- RTSS OSD ist **Text/Markup** (je nach RTSS-Version). Kein „beliebiges Binary“ im Sinne von eingebetteten Objekten über den einfachen Textpfad.
-- Unsere Strings gehen über **ANSI `CString`** (wie viele RTSS-Samples): **keine NUL-Bytes** im Text; Umlaute können je nach Codepage/RTSS/OSD anders aussehen.
-- RTSS rendert Updates **nicht zwingend pro Frame**; `dwOSDFrame++` ist der übliche „bitte neu zeichnen“-Trigger.
+- RTSS OSD is **text/markup** (depends on RTSS version). Not “arbitrary binary” in the sense of embedded objects through the simple text path.
+- Our strings go through **ANSI `CString`** (like many RTSS samples): **no NUL bytes** in the text; non-ASCII characters may look different depending on code page/RTSS/OSD.
+- RTSS does **not** necessarily redraw every frame; `dwOSDFrame++` is the usual “please redraw” trigger.
 
 ## Troubleshooting
 
-- **`OpenFileMappingW` schlägt fehl**: RTSS läuft nicht / keine Shared Memory Session.
-- **Signatur != `RTSS` / „header didn't validate“**:
-  - In `acr_recorder` wird beim Öffnen nacheinander versucht:
+- **`OpenFileMappingW` fails**: RTSS is not running / no shared memory session.
+- **Signature != `RTSS` / “header didn't validate”**:
+  - In `acr_recorder`, opening tries in order:
     - `RTSSSharedMemoryV2`
     - `Global\\RTSSSharedMemoryV2`
     - `Local\\RTSSSharedMemoryV2`
-  - Wenn trotzdem keine gültige Signatur gelesen wird, ist typischerweise **kein RTSS‑Shared‑Memory‑Objekt** in deiner Session sichtbar (oder es wird von Policies/AV blockiert), oder es gibt ein **Session/Isolation**-Thema (selten, aber möglich).
-  - Praktischer Check: starte RTSS einmal neu und stelle sicher, dass OSD im Spiel wirklich aktiv ist (RTSS zeigt ja sonst auch nichts an).
-- **Kein Slot frei**: andere Tools belegen OSD-Slots; `--slot` setzen oder Owner wechseln.
-- **`dwOSDEntrySize` wirkt „zu klein“ (z.B. 256)**:
-  - Das Feld ist bei manchen RTSS-Versionen **nicht zuverlässig** als „tatsächliche Speicherbreite“ eines Slots zu lesen.
-  - `acr_recorder` nutzt deshalb einen **konservativen Mindest‑Stride** (Textfelder + ggf. großer Buffer ab v2.12) und nimmt `max(dwOSDEntrySize, mindestens_nötig)`.
-- **Text erscheint, aber „komisch“ formatiert**: RTSS-Markup/Tags prüfen (RTSS-Doku/Foren), Länge prüfen (4095+).
+  - If no valid signature is read, there is typically **no RTSS shared memory object** visible to your session (or it is blocked by policy/AV), or a **session/isolation** issue (rare).
+  - Practical check: restart RTSS once and confirm OSD is actually active in-game (otherwise RTSS would not show anything either).
+- **No free slot**: other tools occupy OSD slots; set `--slot` or change owner.
+- **`dwOSDEntrySize` looks “too small” (e.g. 256)**:
+  - On some RTSS versions this field is **not reliable** as the true memory width of a slot.
+  - `acr_recorder` therefore uses a **conservative minimum stride** (text fields plus large buffer where needed from v2.12) and takes `max(dwOSDEntrySize, minimum_required)`.
+- **Text shows but looks “wrong”**: check RTSS markup/tags (RTSS docs/forums) and length (4095+).

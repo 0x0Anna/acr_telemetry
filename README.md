@@ -39,7 +39,7 @@ This compilation uses Rust (https://rust-lang.org/tools/install/). Please instal
    This will automatically download all required libraries. Binaries will be created in `target/release/`: `acr_recorder.exe`, `acr_export.exe`, `acr_telemetry_bridge.exe`.
 
 2. **Configure**
-   - **Recorder / Export:** `acr_recorder.toml` in the current working directory or `~/.config/acr_recorder/config.toml`. Copy from **`config-examples/acr_recorder.toml`** and adjust paths.
+   - **Recorder / Export:** `acr_recorder.toml` in the current working directory or `~/.config/acr_recorder/config.toml`. Copy from **`config-examples/acr_recorder.toml`** and adjust paths. Recorder-specific options (graphics CLI, ~333 Hz / ~60 Hz behaviour, ring mode): **[docs/RECORDER.md](docs/RECORDER.md)**.
    - **Bridge:** `acr_telemetry_bridge.toml` next to the bridge executable, or in CWD, or `~/.config/acr_recorder/acr_telemetry_bridge.toml`. Example: **`config-examples/acr_telemetry_bridge.toml`**.
    - **Please adapt the paths in these configuration files**
 
@@ -82,9 +82,11 @@ This folder `%APPDATA%\acr_telemetry` will serve as the location for temporary n
 
 
 ## Documentation
+- **[docs/RECORDER.md](docs/RECORDER.md)** – acr_recorder: config file, `--graphics` / `--no-graphics`, sampling rates, ring mode, stop/notes paths.
+- **[docs/MOTEC.md](docs/MOTEC.md)** – MoTeC: generate `.ld` (and CSV) from `.rkyv` with acr_export.
 - **[docs/EXPORT.md](docs/EXPORT.md)** – acr_export: options, batch mode, CSV vs SQLite, sidecars.
 - **[docs/FIELDS.md](docs/FIELDS.md)** – Available telemetry fields (data variables) with short descriptions.
-- **[docs/GRAPHICS_AND_STATISTICS.md](docs/GRAPHICS_AND_STATISTICS.md)** – Details about graphics/statistics outputs (at 0.3: very minimal content).
+- **[docs/GRAPHICS_STATICS_FIELDS.md](docs/GRAPHICS_STATICS_FIELDS.md)** – Graphics/statics field variability and ranges (AC Rally).
 - **[docs/BRIDGE.md](docs/BRIDGE.md)** – Bridge web dashboard readme.
 - **[grafana/DASHBOARD_SETUP.md](grafana/DASHBOARD_SETUP.md)** – Grafana installation and dashboard setup.
 - **[grafana/ANNOTATIONS.md](grafana/ANNOTATIONS.md)** – Using recording markers as Grafana annotations.
