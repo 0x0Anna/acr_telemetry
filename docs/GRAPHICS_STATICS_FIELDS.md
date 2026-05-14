@@ -119,7 +119,7 @@ Analysis of graphics and statics tables showing field variability and ranges.
 | `aid_mechanical_damage` | Mechanical damage aid multiplier | no | constant 0 (no data) |
 | `aid_stability` | Stability aid level | no | constant 0 (no data) |
 | `aid_tyre_rate` | Tyre wear aid multiplier | no | constant 0 (no data) |
-| `car_model` | Car model name | yes | 6 cars: FIAT 131 Abarth, Hyundai i20N Rally2, Lancia 037, Citroen Xsara WRC, Lancia Stratos HF, Lancia Delta Integrale Evo |
+| `car_model` | Car model name | yes | i.e. FIAT 131 Abarth, Hyundai i20N Rally2, Lancia 037, Citroen Xsara WRC, Lancia Stratos HF, Lancia Delta Integrale Evo... |
 | `dry_tyres_name` | Dry tyres name | no | empty/null |
 | `is_online` | Online session | no | constant 0 (no data) |
 | `max_fuel` | Maximum fuel capacity (L) | no | constant 0 (no data) |
