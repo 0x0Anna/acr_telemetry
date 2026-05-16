@@ -3,9 +3,11 @@
 //! Records complete physics data to rkyv format.
 //! Ctrl+C or stop file (acr_stop) to stop. Run acr_stop.bat or create the stop file to stop from game.
 //!
-//! Usage: acr_recorder [--graphics | --no-graphics]
+//! Usage: acr_recorder [--graphics | --no-graphics] [--motec] [--out <dir>]
 //!   --graphics: Record GraphicsMap data (~60 Hz); default when record_graphics = true in config.
 //!   --no-graphics: Disable graphics recording (overrides config).
+//!   --motec: Write a MoTeC LD file on stop (physics only, no rkyv). Same as the `acr_motec` binary.
+//!   --out <dir>: With --motec, output directory for the LD file (default: raw_output_dir from config).
 
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -80,6 +82,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     ctrlc_handler();
 
     let args: Vec<String> = std::env::args().collect();
+
+    if args.iter().any(|a| a == "--motec") {
+        return acr_recorder::motec_live::run(
+            acr_recorder::motec_live::Options {
+                out_dir: acr_recorder::motec_live::parse_out_dir(&args),
+            },
+            &RUNNING,
+        );
+    }
+
     let cli_graphics = args.iter().any(|a| a == "--graphics");
     let cli_no_graphics = args.iter().any(|a| a == "--no-graphics");
 

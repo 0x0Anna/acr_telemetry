@@ -8,6 +8,7 @@ pub mod format_meta;
 pub mod notes;
 pub mod record;
 pub mod recorder;
+pub mod motec_live;
 pub mod recording_position;
 pub mod track_match_app;
 

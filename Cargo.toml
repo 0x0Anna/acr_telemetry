@@ -41,6 +41,10 @@ name = "acr_rtss_osd"
 path = "src/bin/acr_rtss_osd.rs"
 
 [[bin]]
+name = "acr_motec"
+path = "src/bin/acr_motec.rs"
+
+[[bin]]
 name = "acr_grip_estimator"
 path = "src/bin/acr_grip_estimator.rs"
 
