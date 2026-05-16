@@ -22,8 +22,11 @@ use acr_pacenote::pacenote_course::{
 };
 use acr_pacenote::pacenote_voice::{PacenoteConfig, PacenoteVoicePlayer};
 use acr_pacenote::win_picker_input::{PacenotePickerKeyTracker, PacenotePickerNav};
+use acr_timing::sector_leg_stats::{SectorLegStatsAccumulator, SectorLegStatsSnapshot};
 use acr_timing::split_beep::SplitBeepConfig;
 use acr_timing::subtiming::{SectorPassEvent, SectorPassTracker, SectorTravelDirection};
+use acc_shared_memory_rs::datatypes::Wheels;
+use acc_shared_memory_rs::maps::PhysicsMap;
 use serde::Deserialize;
 use shapefile::dbase::FieldValue;
 
@@ -193,6 +196,33 @@ struct LiveTimingState {
     overall_finish_recorded: bool,
     /// Calibrated stage sectors (`[timing.ref_stage_sectors]` → GeoJSON). Independent of pacenotes.
     stage_sector_session: Option<acr_timing::stage_sector_timing::StageSectorSession>,
+    /// Physics aggregates for the current subsection leg (anchor → next cross).
+    leg_stats: SectorLegStatsAccumulator,
+}
+
+fn wheels4(w: &Wheels) -> [f32; 4] {
+    [
+        w.front_left,
+        w.front_right,
+        w.rear_left,
+        w.rear_right,
+    ]
+}
+
+fn observe_active_leg_stats(state: &mut LiveTimingState, physics: &PhysicsMap) {
+    if state.last_anchor_instant.is_some() || state.start_armed {
+        state.leg_stats.observe_sample(
+            physics.gas,
+            wheels4(&physics.slip_ratio),
+            wheels4(&physics.slip_angle),
+        );
+    }
+}
+
+fn take_leg_stats(state: &mut LiveTimingState) -> Option<SectorLegStatsSnapshot> {
+    let stats = state.leg_stats.finalize();
+    state.leg_stats.reset();
+    stats
 }
 
 fn attach_stage_overall_markers(
@@ -307,6 +337,7 @@ impl LiveTimingState {
             overall_markers: None,
             overall_finish_recorded: false,
             stage_sector_session: None,
+            leg_stats: SectorLegStatsAccumulator::default(),
         }
     }
 
@@ -2013,6 +2044,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                 Some((p.x, p.z)),
                             );
                             let now_inst = Instant::now();
+                            observe_active_leg_stats(state, &data.physics);
                             let rpm_now = data.physics.rpm as f64;
                             // Start staging: hold rpm > threshold while nearly stationary at same place.
                             if !state.start_armed {
@@ -2040,6 +2072,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 .unwrap_or(false)
                                             {
                                                 state.start_armed = true;
+                                                state.leg_stats.reset();
                                                 state.start_anchor_t_sec = Some(data.graphics.clock as f64);
                                                 state.start_anchor_instant = Some(now_inst);
                                                 state.start_anchor_drive_m = Some(total_drive_m);
@@ -2120,6 +2153,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                     } else {
                                                         car_model
                                                     };
+                                                    let leg_stats = take_leg_stats(state);
                                                     let direction_s = state
                                                         .tracker
                                                         .locked_direction()
@@ -2142,6 +2176,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                             duration_sec: dt,
                                                             distance_m: (total_drive_m - sm)
                                                                 .max(0.0),
+                                                            stats: leg_stats,
                                                         };
                                                     let (line, delta) =
                                                         if let Some(locked) =
@@ -2355,6 +2390,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                             } else {
                                                                 car_model
                                                             };
+                                                            let leg_stats = take_leg_stats(state);
                                                             let split = acr_timing::timing_db::SplitRecord {
                                                                 track_name,
                                                                 car_model,
@@ -2363,6 +2399,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                                 to_sector: to_sector_id,
                                                                 duration_sec: dt,
                                                                 distance_m: (total_drive_m - sm).max(0.0),
+                                                                stats: leg_stats,
                                                             };
                                                             let (line, delta) = if let Some(locked) =
                                                                 locked_track.as_deref()
@@ -2421,6 +2458,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 state.last_anchor_instant = Some(Instant::now());
                                                 state.last_anchor_drive_m = Some(total_drive_m);
                                                 state.last_sector_idx = Some(sector);
+                                                state.leg_stats.reset();
                                                 let anchor_line =
                                                     format!("sector [{}]...", state.ring_ids[sector]);
                                                 eprintln!("{}", anchor_line);
@@ -2458,6 +2496,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                             car_model
                                                         };
 
+                                                        let leg_stats = take_leg_stats(state);
                                                         let split = acr_timing::timing_db::SplitRecord {
                                                             track_name,
                                                             car_model,
@@ -2466,6 +2505,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                             to_sector: to_sector_id,
                                                             duration_sec: dt,
                                                             distance_m: dist_m,
+                                                            stats: leg_stats,
                                                         };
                                                         let (line, delta) = if let Some(locked) =
                                                             locked_track.as_deref()
@@ -2535,6 +2575,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                     state.last_anchor_t_sec = Some(now_t2);
                                                     state.last_anchor_instant = Some(now_inst2);
                                                     state.last_anchor_drive_m = Some(total_drive_m);
+                                                    state.leg_stats.reset();
                                                     if let Some(si) = state.last_sector_idx {
                                                         let line = format!("sector [{}]...", state.ring_ids[si]);
                                                         eprintln!("re-anchored at same sector: {}", line);

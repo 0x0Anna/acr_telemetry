@@ -2,6 +2,7 @@
 
 pub mod physics_wheel;
 pub mod rtss_osd;
+pub mod sector_leg_stats;
 pub mod split_beep;
 pub mod stage_overall_markers;
 pub mod stage_sector_timing;

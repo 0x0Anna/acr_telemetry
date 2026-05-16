@@ -486,6 +486,7 @@ pub fn persist_stage_leg(
         to_sector: to_order,
         duration_sec,
         distance_m: 0.0,
+        stats: None,
     };
     let best_before = timing_db::best_time(
         conn,
