@@ -11,14 +11,18 @@ pub struct SectorLegStatsAccumulator {
     has_slip: bool,
 }
 
-/// Finalized stats stored with a sector split row.
+/// Finalized stats stored with a subsection split row (ring SHP sectors).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct SectorLegStatsSnapshot {
-    /// Share of physics samples with gas > 0.9 (0–100).
+    /// Share of physics samples with gas > 0.9 (0–100); 0 if no samples in leg.
     pub throttle_open_pct: f64,
     pub max_slip_angle: f32,
     pub max_slip_ratio: f32,
     pub min_slip_ratio: f32,
+    /// Speed when entering the subsection (anchor / previous cross).
+    pub entry_speed_kmh: f32,
+    /// Speed when leaving the subsection (sector cross).
+    pub exit_speed_kmh: f32,
 }
 
 impl SectorLegStatsAccumulator {
@@ -52,18 +56,33 @@ impl SectorLegStatsAccumulator {
         }
     }
 
-    pub fn finalize(&self) -> Option<SectorLegStatsSnapshot> {
-        if self.sample_count == 0 {
-            return None;
-        }
-        let throttle_open_pct =
-            self.throttle_open_samples as f64 / self.sample_count as f64 * 100.0;
-        Some(SectorLegStatsSnapshot {
+    /// Build snapshot for a completed leg; slip/throttle need ≥1 sample, speeds always set.
+    pub fn finalize_leg(
+        &self,
+        entry_speed_kmh: f32,
+        exit_speed_kmh: f32,
+    ) -> SectorLegStatsSnapshot {
+        let throttle_open_pct = if self.sample_count > 0 {
+            self.throttle_open_samples as f64 / self.sample_count as f64 * 100.0
+        } else {
+            0.0
+        };
+        SectorLegStatsSnapshot {
             throttle_open_pct,
-            max_slip_angle: self.max_slip_angle,
-            max_slip_ratio: self.max_slip_ratio,
-            min_slip_ratio: self.min_slip_ratio,
-        })
+            max_slip_angle: if self.has_slip { self.max_slip_angle } else { 0.0 },
+            max_slip_ratio: if self.has_slip {
+                self.max_slip_ratio
+            } else {
+                0.0
+            },
+            min_slip_ratio: if self.has_slip {
+                self.min_slip_ratio
+            } else {
+                0.0
+            },
+            entry_speed_kmh,
+            exit_speed_kmh,
+        }
     }
 }
 
@@ -77,10 +96,12 @@ mod tests {
         acc.observe_sample(0.95, [0.1, 0.2, 0.0, 0.0], [1.0, 2.0, 0.5, 0.0]);
         acc.observe_sample(0.5, [0.3, -0.1, 0.0, 0.0], [-3.0, 1.0, 0.0, 0.0]);
         acc.observe_sample(1.0, [0.05, 0.05, 0.05, 0.05], [0.0, 0.0, 0.0, 0.0]);
-        let s = acc.finalize().unwrap();
+        let s = acc.finalize_leg(80.0, 120.0);
         assert!((s.throttle_open_pct - 200.0 / 3.0).abs() < 0.1); // 2/3 samples > 0.9
         assert!((s.max_slip_angle - 3.0).abs() < 1e-6);
         assert!((s.max_slip_ratio - 0.3).abs() < 1e-6);
         assert!((s.min_slip_ratio - (-0.1)).abs() < 1e-6);
+        assert!((s.entry_speed_kmh - 80.0).abs() < 1e-6);
+        assert!((s.exit_speed_kmh - 120.0).abs() < 1e-6);
     }
 }

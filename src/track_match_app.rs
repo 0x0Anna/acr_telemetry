@@ -198,6 +198,12 @@ struct LiveTimingState {
     stage_sector_session: Option<acr_timing::stage_sector_timing::StageSectorSession>,
     /// Physics aggregates for the current subsection leg (anchor → next cross).
     leg_stats: SectorLegStatsAccumulator,
+    /// Speed (km/h) at subsection leg entry (set with anchor).
+    leg_entry_speed_kmh: Option<f32>,
+}
+
+fn set_leg_entry_speed(state: &mut LiveTimingState, speed_kmh: f32) {
+    state.leg_entry_speed_kmh = Some(speed_kmh);
 }
 
 fn wheels4(w: &Wheels) -> [f32; 4] {
@@ -219,10 +225,12 @@ fn observe_active_leg_stats(state: &mut LiveTimingState, physics: &PhysicsMap) {
     }
 }
 
-fn take_leg_stats(state: &mut LiveTimingState) -> Option<SectorLegStatsSnapshot> {
-    let stats = state.leg_stats.finalize();
+fn take_leg_stats(state: &mut LiveTimingState, exit_speed_kmh: f32) -> Option<SectorLegStatsSnapshot> {
+    let entry = state.leg_entry_speed_kmh?;
+    let snapshot = state.leg_stats.finalize_leg(entry, exit_speed_kmh);
     state.leg_stats.reset();
-    stats
+    state.leg_entry_speed_kmh = None;
+    Some(snapshot)
 }
 
 fn attach_stage_overall_markers(
@@ -338,6 +346,7 @@ impl LiveTimingState {
             overall_finish_recorded: false,
             stage_sector_session: None,
             leg_stats: SectorLegStatsAccumulator::default(),
+            leg_entry_speed_kmh: None,
         }
     }
 
@@ -2073,6 +2082,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                             {
                                                 state.start_armed = true;
                                                 state.leg_stats.reset();
+                                                set_leg_entry_speed(state, data.physics.speed_kmh);
                                                 state.start_anchor_t_sec = Some(data.graphics.clock as f64);
                                                 state.start_anchor_instant = Some(now_inst);
                                                 state.start_anchor_drive_m = Some(total_drive_m);
@@ -2124,6 +2134,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                     state.start_anchor_t_sec = Some(data.graphics.clock as f64);
                                     state.start_anchor_instant = Some(now_inst);
                                     state.start_anchor_drive_m = Some(total_drive_m);
+                                    set_leg_entry_speed(state, data.physics.speed_kmh);
                                 }
                             }
                             if !state.overall_finish_recorded {
@@ -2153,7 +2164,8 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                     } else {
                                                         car_model
                                                     };
-                                                    let leg_stats = take_leg_stats(state);
+                                                    let exit_speed = data.physics.speed_kmh;
+                                                    let leg_stats = take_leg_stats(state, exit_speed);
                                                     let direction_s = state
                                                         .tracker
                                                         .locked_direction()
@@ -2390,7 +2402,8 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                             } else {
                                                                 car_model
                                                             };
-                                                            let leg_stats = take_leg_stats(state);
+                                                            let exit_speed = data.physics.speed_kmh;
+                                                            let leg_stats = take_leg_stats(state, exit_speed);
                                                             let split = acr_timing::timing_db::SplitRecord {
                                                                 track_name,
                                                                 car_model,
@@ -2459,6 +2472,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 state.last_anchor_drive_m = Some(total_drive_m);
                                                 state.last_sector_idx = Some(sector);
                                                 state.leg_stats.reset();
+                                                set_leg_entry_speed(state, data.physics.speed_kmh);
                                                 let anchor_line =
                                                     format!("sector [{}]...", state.ring_ids[sector]);
                                                 eprintln!("{}", anchor_line);
@@ -2496,7 +2510,8 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                             car_model
                                                         };
 
-                                                        let leg_stats = take_leg_stats(state);
+                                                        let exit_speed = data.physics.speed_kmh;
+                                                        let leg_stats = take_leg_stats(state, exit_speed);
                                                         let split = acr_timing::timing_db::SplitRecord {
                                                             track_name,
                                                             car_model,
@@ -2560,6 +2575,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 state.last_anchor_instant = Some(now_inst);
                                                 state.last_anchor_drive_m = Some(total_drive_m);
                                                 state.last_sector_idx = Some(to);
+                                                set_leg_entry_speed(state, data.physics.speed_kmh);
                                             }
                                             SectorPassEvent::NoStep { .. }
                                             => {
@@ -2576,6 +2592,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                     state.last_anchor_instant = Some(now_inst2);
                                                     state.last_anchor_drive_m = Some(total_drive_m);
                                                     state.leg_stats.reset();
+                                                    set_leg_entry_speed(state, data.physics.speed_kmh);
                                                     if let Some(si) = state.last_sector_idx {
                                                         let line = format!("sector [{}]...", state.ring_ids[si]);
                                                         eprintln!("re-anchored at same sector: {}", line);

@@ -22,10 +22,14 @@ fn migrate_split_stats_columns(conn: &Connection) -> Result<(), rusqlite::Error>
         "ALTER TABLE sector_splits ADD COLUMN max_slip_angle REAL",
         "ALTER TABLE sector_splits ADD COLUMN max_slip_ratio REAL",
         "ALTER TABLE sector_splits ADD COLUMN min_slip_ratio REAL",
+        "ALTER TABLE sector_splits ADD COLUMN entry_speed_kmh REAL",
+        "ALTER TABLE sector_splits ADD COLUMN exit_speed_kmh REAL",
         "ALTER TABLE pending_splits ADD COLUMN throttle_open_pct REAL",
         "ALTER TABLE pending_splits ADD COLUMN max_slip_angle REAL",
         "ALTER TABLE pending_splits ADD COLUMN max_slip_ratio REAL",
         "ALTER TABLE pending_splits ADD COLUMN min_slip_ratio REAL",
+        "ALTER TABLE pending_splits ADD COLUMN entry_speed_kmh REAL",
+        "ALTER TABLE pending_splits ADD COLUMN exit_speed_kmh REAL",
     ] {
         let _ = conn.execute(sql, []);
     }
@@ -52,7 +56,9 @@ CREATE TABLE IF NOT EXISTS sector_splits (
     throttle_open_pct REAL,
     max_slip_angle REAL,
     max_slip_ratio REAL,
-    min_slip_ratio REAL
+    min_slip_ratio REAL,
+    entry_speed_kmh REAL,
+    exit_speed_kmh REAL
 );
 
 CREATE TABLE IF NOT EXISTS pending_splits (
@@ -68,7 +74,9 @@ CREATE TABLE IF NOT EXISTS pending_splits (
     throttle_open_pct REAL,
     max_slip_angle REAL,
     max_slip_ratio REAL,
-    min_slip_ratio REAL
+    min_slip_ratio REAL,
+    entry_speed_kmh REAL,
+    exit_speed_kmh REAL
 );
 
 CREATE INDEX IF NOT EXISTS idx_sector_splits_lookup
@@ -82,15 +90,15 @@ ON pending_splits(track_name, created_at_utc);
     Ok(conn)
 }
 
-pub fn insert_split(conn: &Connection, rec: &SplitRecord<'_>) -> Result<(), Box<dyn std::error::Error>> {
-    let (throttle_open_pct, max_slip_angle, max_slip_ratio, min_slip_ratio) = stats_params(rec.stats);
-    conn.execute(
-        r#"
-INSERT INTO sector_splits (
+const SPLIT_INSERT_COLS: &str = r#"
     track_name, car_model, direction, from_sector, to_sector, duration_sec, distance_m,
-    throttle_open_pct, max_slip_angle, max_slip_ratio, min_slip_ratio
-) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
-"#,
+    throttle_open_pct, max_slip_angle, max_slip_ratio, min_slip_ratio, entry_speed_kmh, exit_speed_kmh
+"#;
+
+pub fn insert_split(conn: &Connection, rec: &SplitRecord<'_>) -> Result<(), Box<dyn std::error::Error>> {
+    let p = stats_params(rec.stats);
+    conn.execute(
+        &format!("INSERT INTO sector_splits ({SPLIT_INSERT_COLS}) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)"),
         params![
             rec.track_name,
             rec.car_model,
@@ -99,10 +107,12 @@ INSERT INTO sector_splits (
             rec.to_sector,
             rec.duration_sec,
             rec.distance_m,
-            throttle_open_pct,
-            max_slip_angle,
-            max_slip_ratio,
-            min_slip_ratio,
+            p.0,
+            p.1,
+            p.2,
+            p.3,
+            p.4,
+            p.5,
         ],
     )?;
     Ok(())
@@ -133,14 +143,9 @@ WHERE track_name = ?1
 }
 
 pub fn insert_pending_split(conn: &Connection, rec: &SplitRecord<'_>) -> Result<(), Box<dyn std::error::Error>> {
-    let (throttle_open_pct, max_slip_angle, max_slip_ratio, min_slip_ratio) = stats_params(rec.stats);
+    let p = stats_params(rec.stats);
     conn.execute(
-        r#"
-INSERT INTO pending_splits (
-    track_name, car_model, direction, from_sector, to_sector, duration_sec, distance_m,
-    throttle_open_pct, max_slip_angle, max_slip_ratio, min_slip_ratio
-) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
-"#,
+        &format!("INSERT INTO pending_splits ({SPLIT_INSERT_COLS}) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)"),
         params![
             rec.track_name,
             rec.car_model,
@@ -149,10 +154,12 @@ INSERT INTO pending_splits (
             rec.to_sector,
             rec.duration_sec,
             rec.distance_m,
-            throttle_open_pct,
-            max_slip_angle,
-            max_slip_ratio,
-            min_slip_ratio,
+            p.0,
+            p.1,
+            p.2,
+            p.3,
+            p.4,
+            p.5,
         ],
     )?;
     Ok(())
@@ -161,16 +168,11 @@ INSERT INTO pending_splits (
 pub fn promote_pending_for_track(conn: &Connection, track_name: &str) -> Result<usize, Box<dyn std::error::Error>> {
     let tx = conn.unchecked_transaction()?;
     tx.execute(
-        r#"
-INSERT INTO sector_splits (
-    track_name, car_model, direction, from_sector, to_sector, duration_sec, distance_m,
-    throttle_open_pct, max_slip_angle, max_slip_ratio, min_slip_ratio
-)
-SELECT track_name, car_model, direction, from_sector, to_sector, duration_sec, distance_m,
-       throttle_open_pct, max_slip_angle, max_slip_ratio, min_slip_ratio
-FROM pending_splits
-WHERE track_name = ?1
-"#,
+        &format!(
+            "INSERT INTO sector_splits ({SPLIT_INSERT_COLS})
+             SELECT {SPLIT_INSERT_COLS}
+             FROM pending_splits WHERE track_name = ?1"
+        ),
         params![track_name],
     )?;
     let deleted = tx.execute(
@@ -184,15 +186,10 @@ WHERE track_name = ?1
 pub fn promote_all_pending(conn: &Connection) -> Result<usize, Box<dyn std::error::Error>> {
     let tx = conn.unchecked_transaction()?;
     tx.execute(
-        r#"
-INSERT INTO sector_splits (
-    track_name, car_model, direction, from_sector, to_sector, duration_sec, distance_m,
-    throttle_open_pct, max_slip_angle, max_slip_ratio, min_slip_ratio
-)
-SELECT track_name, car_model, direction, from_sector, to_sector, duration_sec, distance_m,
-       throttle_open_pct, max_slip_angle, max_slip_ratio, min_slip_ratio
-FROM pending_splits
-"#,
+        &format!(
+            "INSERT INTO sector_splits ({SPLIT_INSERT_COLS})
+             SELECT {SPLIT_INSERT_COLS} FROM pending_splits"
+        ),
         [],
     )?;
     let deleted = tx.execute("DELETE FROM pending_splits", [])?;
@@ -200,13 +197,25 @@ FROM pending_splits
     Ok(deleted)
 }
 
-fn stats_params(stats: Option<SectorLegStatsSnapshot>) -> (Option<f64>, Option<f32>, Option<f32>, Option<f32>) {
-    stats.map_or((None, None, None, None), |s| {
+/// (throttle_open_pct, max_slip_angle, max_slip_ratio, min_slip_ratio, entry_speed_kmh, exit_speed_kmh)
+fn stats_params(
+    stats: Option<SectorLegStatsSnapshot>,
+) -> (
+    Option<f64>,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+) {
+    stats.map_or((None, None, None, None, None, None), |s| {
         (
             Some(s.throttle_open_pct),
             Some(s.max_slip_angle),
             Some(s.max_slip_ratio),
             Some(s.min_slip_ratio),
+            Some(s.entry_speed_kmh),
+            Some(s.exit_speed_kmh),
         )
     })
 }
