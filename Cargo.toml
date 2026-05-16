@@ -41,18 +41,6 @@ name = "acr_rtss_osd"
 path = "src/bin/acr_rtss_osd.rs"
 
 [[bin]]
-name = "acr_beep_demo"
-path = "src/bin/acr_beep_demo.rs"
-
-[[bin]]
-name = "acr_overlay_picker_demo"
-path = "src/bin/acr_overlay_picker_demo.rs"
-
-[[bin]]
-name = "acr_sectors_filter"
-path = "src/bin/acr_sectors_filter.rs"
-
-[[bin]]
 name = "acr_grip_estimator"
 path = "src/bin/acr_grip_estimator.rs"
 
