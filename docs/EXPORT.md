@@ -56,9 +56,15 @@ So you can re-run `acr_export --rawDir --sqlite` after new recordings; only new 
 
 For each `<stem>.rkyv` file, the exporter expects (optional):
 
-- **`<stem>.json`** – format metadata written by the recorder; used for **statics** when exporting to SQLite.
+- **`<stem>.json`** – format contract (`binary_file_version`, `physics_record_schema`, `graphics_record_schema`, field catalog). **All** rkyv readers use this with the binary header via `export::rkyv_format` (not raw `PhysicsRecord` deserialize).
 - **`<stem>.graphics.rkyv`** – graphics recording (~60 Hz). Created by default by acr_recorder (config: `record_graphics = true` in `acr_recorder.toml`). If present, exported to SQLite (graphics table) or to `<stem>.graphics.csv` when using CSV.
 - **`<stem>.notes.json`** – written by the recorder on stop (recording start/end times only) and by acr_export (notes, annotations, tags). acr_export reads **acr_notes** from the notes directory when there is no user content yet; it filters by recording time (10 s padding) and interactively prompts: include notes, edit/delete, set recording label (suggested from first 5 voice notes), add tags. Output goes to `recording_notes`, `annotations`, and tag tables (`acr_telemetry_tags`, `acr_tag_lookup`). Sync annotations (e.g. `sync_air_temp_gt_0`, `sync_speed_gt_0`) appear as vertical lines on Grafana dashboards. See [Recording notes](../README.md#recording-notes-voice--manual) and [Grafana annotations](../grafana/ANNOTATIONS.md).
+
+### Format versions (rkyv & SQLite)
+
+- **SQLite:** New columns are added via `ALTER TABLE … ADD COLUMN` when exporting, so existing `telemetry.db` files pick up fields such as `statics.track_spline_length`, extra `graphics.*` slots, and `physics.tyre_temp_extra_*` without recreating the DB.
+- **rkyv:** Header `version` 1 = record schema v1 (`record::v1`), version 2 = current layout. Readers upgrade v1 → current in memory. New recordings use header version 2; sidecar JSON `format_version` 2 lists schemas. When adding fields, bump `RKYV_BINARY_VERSION_*` / `*_RECORD_SCHEMA_*` in `format_meta.rs` and add `record::vN`.
+- **Docs:** [GRAPHICS_STATICS_FIELDS.md](GRAPHICS_STATICS_FIELDS.md) describes graphics/statics/SQLite alignment; vendor `GRAPHICS_MAP.md` / `STATICS_MAP.md` / `PHYSICS_MAP.md` describe ACC shared-memory fields.
 
 ---
 

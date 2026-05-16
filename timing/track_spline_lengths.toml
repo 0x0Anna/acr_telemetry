@@ -1,0 +1,9 @@
+# ACC StaticsMap.track_spline_length (metres) per reference_tracks/*.shp stem.
+# Compare after rounding both sides to 0.1 m (see acr_timing::track_spline_ref).
+#
+# ref stem = basename of the reference polyline (driving direction of that SHP).
+
+[hafren_north]
+length_m = 12078.0
+# Typical stage: cwmbiga_afon_biga (Cwmbiga → Afon Biga)
+# Raw game value: 12077.95 m

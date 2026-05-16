@@ -1,0 +1,31 @@
+[package]
+name = "acr_timing"
+version = "0.1.0"
+edition = "2024"
+description = "Live sector timing, splits DB, and track matching for ACC / AC Rally"
+
+[lib]
+name = "acr_timing"
+path = "src/lib.rs"
+
+[dependencies]
+acr_telemetry = { path = "../acr-telemetry" }
+acc_shared_memory_rs = { path = "../../vendor/acc_shared_memory_rs" }
+rusqlite = { version = "0.32", features = ["bundled"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = "0.4"
+toml = "0.8"
+shapefile = "0.8.0"
+rodio = { version = "0.19", default-features = false, features = ["wav"] }
+dirs = "5.0"
+ctrlc = "3.4"
+
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = [
+    "handleapi",
+    "memoryapi",
+    "synchapi",
+    "winnt",
+    "errhandlingapi",
+] }

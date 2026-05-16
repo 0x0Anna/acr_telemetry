@@ -48,6 +48,10 @@ use serde::{Deserialize, Serialize};
 /// - `front_brake_compound`: i32 - Front brake compound index.
 /// - `rear_brake_compound`: i32 - Rear brake compound index.
 ///
+/// ## Tyre surface temperatures (per wheel)
+/// - `tyre_temp_i` / `tyre_temp_m` / `tyre_temp_o`: Wheels - Inner / middle / outer layer (°C).
+/// - `tyre_temp_extra`: Wheels - Fourth `Wheels` block in shared memory after `suspension_damage` (previously discarded as duplicate layout slot).
+///
 /// ## Tyre Contact Patches (3D)
 /// - `tyre_contact_point`: ContactPoint - Contact point for each tyre (3D position).
 /// - `tyre_contact_normal`: ContactPoint - Contact normal for each tyre (3D vector).
@@ -124,6 +128,7 @@ pub struct PhysicsMap {
     pub tyre_temp_i: Wheels,
     pub tyre_temp_m: Wheels,
     pub tyre_temp_o: Wheels,
+    pub tyre_temp_extra: Wheels,
 
     // Tyre Contact Patches (3D)
     pub tyre_contact_point: ContactPoint,
@@ -179,8 +184,8 @@ pub struct PhysicsMap {
 }
 
 impl PhysicsMap {
-    /// Compare two PhysicsMap instances for equality based on suspension travel.
-    /// This is used to detect when fresh telemetry data is available.
+    /// Historical helper: compares **only** `suspension_travel`. Do not use this to decide
+    /// whether a new physics packet arrived; use `packet_id` (see `read_shared_memory`).
     pub fn is_equal(&self, other: &PhysicsMap) -> bool {
         self.suspension_travel == other.suspension_travel
     }

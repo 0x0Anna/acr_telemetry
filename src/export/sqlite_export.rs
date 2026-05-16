@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS physics (
     tyre_temp_i_fl REAL, tyre_temp_i_fr REAL, tyre_temp_i_rl REAL, tyre_temp_i_rr REAL,
     tyre_temp_m_fl REAL, tyre_temp_m_fr REAL, tyre_temp_m_rl REAL, tyre_temp_m_rr REAL,
     tyre_temp_o_fl REAL, tyre_temp_o_fr REAL, tyre_temp_o_rl REAL, tyre_temp_o_rr REAL,
+    tyre_temp_extra_fl REAL, tyre_temp_extra_fr REAL, tyre_temp_extra_rl REAL, tyre_temp_extra_rr REAL,
     tyre_contact_point_fl_x REAL, tyre_contact_point_fl_y REAL, tyre_contact_point_fl_z REAL,
     tyre_contact_point_fr_x REAL, tyre_contact_point_fr_y REAL, tyre_contact_point_fr_z REAL,
     tyre_contact_point_rl_x REAL, tyre_contact_point_rl_y REAL, tyre_contact_point_rl_z REAL,
@@ -112,6 +113,7 @@ CREATE TABLE IF NOT EXISTS statics (
     is_online INTEGER,
     dry_tyres_name TEXT,
     wet_tyres_name TEXT,
+    track_spline_length REAL,
     FOREIGN KEY (recording_id) REFERENCES recordings(id)
 );
 
@@ -152,6 +154,7 @@ CREATE TABLE IF NOT EXISTS graphics (
     mfd_tyre_set INTEGER, mfd_fuel_to_add REAL,
     mfd_tyre_pressure_fl REAL, mfd_tyre_pressure_fr REAL, mfd_tyre_pressure_rl REAL, mfd_tyre_pressure_rr REAL,
     current_tyre_set INTEGER, strategy_tyre_set INTEGER,
+    replay_time_multiplier REAL, surface_grip REAL, i_split INTEGER,
     FOREIGN KEY (recording_id) REFERENCES recordings(id)
 );
 
@@ -250,6 +253,21 @@ pub fn export_to_sqlite(
     conn.execute_batch(SCHEMA)?;
     // Add label column if missing (for existing DBs)
     let _ = conn.execute("ALTER TABLE recordings ADD COLUMN label TEXT", []);
+    let _ = conn.execute(
+        "ALTER TABLE statics ADD COLUMN track_spline_length REAL",
+        [],
+    );
+    for col in [
+        "ALTER TABLE physics ADD COLUMN tyre_temp_extra_fl REAL",
+        "ALTER TABLE physics ADD COLUMN tyre_temp_extra_fr REAL",
+        "ALTER TABLE physics ADD COLUMN tyre_temp_extra_rl REAL",
+        "ALTER TABLE physics ADD COLUMN tyre_temp_extra_rr REAL",
+        "ALTER TABLE graphics ADD COLUMN replay_time_multiplier REAL",
+        "ALTER TABLE graphics ADD COLUMN surface_grip REAL",
+        "ALTER TABLE graphics ADD COLUMN i_split INTEGER",
+    ] {
+        let _ = conn.execute(col, []);
+    }
 
     let dt = 1.0 / sample_rate_hz as f64;
     let duration_secs = records.len() as f64 * dt;
@@ -333,6 +351,7 @@ pub fn export_to_sqlite(
             tyre_temp_i_fl, tyre_temp_i_fr, tyre_temp_i_rl, tyre_temp_i_rr,
             tyre_temp_m_fl, tyre_temp_m_fr, tyre_temp_m_rl, tyre_temp_m_rr,
             tyre_temp_o_fl, tyre_temp_o_fr, tyre_temp_o_rl, tyre_temp_o_rr,
+            tyre_temp_extra_fl, tyre_temp_extra_fr, tyre_temp_extra_rl, tyre_temp_extra_rr,
             tyre_contact_point_fl_x, tyre_contact_point_fl_y, tyre_contact_point_fl_z,
             tyre_contact_point_fr_x, tyre_contact_point_fr_y, tyre_contact_point_fr_z,
             tyre_contact_point_rl_x, tyre_contact_point_rl_y, tyre_contact_point_rl_z,
@@ -374,7 +393,7 @@ pub fn export_to_sqlite(
             ?155, ?156, ?157, ?158, ?159, ?160, ?161, ?162, ?163, ?164, ?165, ?166, ?167, ?168,
             ?169, ?170, ?171, ?172, ?173, ?174, ?175, ?176, ?177, ?178, ?179, ?180, ?181, ?182,
             ?183, ?184, ?185, ?186, ?187, ?188, ?189, ?190, ?191, ?192, ?193, ?194, ?195, ?196,
-            ?197, ?198
+            ?197, ?198, ?199, ?200, ?201, ?202
         )
         "#,
     )?;
@@ -492,6 +511,10 @@ pub fn export_to_sqlite(
             r.tyre_temp_o.front_right,
             r.tyre_temp_o.rear_left,
             r.tyre_temp_o.rear_right,
+            r.tyre_temp_extra.front_left,
+            r.tyre_temp_extra.front_right,
+            r.tyre_temp_extra.rear_left,
+            r.tyre_temp_extra.rear_right,
             r.tyre_contact_point.front_left.x,
             r.tyre_contact_point.front_left.y,
             r.tyre_contact_point.front_left.z,
@@ -594,8 +617,8 @@ pub fn export_to_sqlite(
                 recording_id, sm_version, ac_version, number_of_sessions, num_cars, track, sector_count,
                 player_name, player_surname, player_nick, car_model, max_rpm, max_fuel,
                 penalty_enabled, aid_fuel_rate, aid_tyre_rate, aid_mechanical_damage, aid_stability, aid_auto_clutch,
-                pit_window_start, pit_window_end, is_online, dry_tyres_name, wet_tyres_name
-            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24)"#,
+                pit_window_start, pit_window_end, is_online, dry_tyres_name, wet_tyres_name, track_spline_length
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25)"#,
             params![
                 recording_id,
                 s.sm_version,
@@ -621,6 +644,7 @@ pub fn export_to_sqlite(
                 b(s.is_online),
                 s.dry_tyres_name,
                 s.wet_tyres_name,
+                s.track_spline_length,
             ],
         )?;
     } else {
@@ -686,6 +710,13 @@ pub fn export_graphics_to_sqlite(
     sample_rate_hz: u32,
 ) -> rusqlite::Result<()> {
     let mut conn = Connection::open(db_path)?;
+    for col in [
+        "ALTER TABLE graphics ADD COLUMN replay_time_multiplier REAL",
+        "ALTER TABLE graphics ADD COLUMN surface_grip REAL",
+        "ALTER TABLE graphics ADD COLUMN i_split INTEGER",
+    ] {
+        let _ = conn.execute(col, []);
+    }
     let dt = 1.0 / sample_rate_hz as f64;
     
     let tx = conn.transaction()?;
@@ -723,7 +754,8 @@ pub fn export_graphics_to_sqlite(
             global_white, global_green, global_chequered, global_red,
             mfd_tyre_set, mfd_fuel_to_add,
             mfd_tyre_pressure_fl, mfd_tyre_pressure_fr, mfd_tyre_pressure_rl, mfd_tyre_pressure_rr,
-            current_tyre_set, strategy_tyre_set
+            current_tyre_set, strategy_tyre_set,
+            replay_time_multiplier, surface_grip, i_split
         ) VALUES (
             ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10,
             ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20,
@@ -733,7 +765,7 @@ pub fn export_graphics_to_sqlite(
             ?51, ?52, ?53, ?54, ?55, ?56, ?57, ?58, ?59, ?60,
             ?61, ?62, ?63, ?64, ?65, ?66, ?67, ?68, ?69, ?70,
             ?71, ?72, ?73, ?74, ?75, ?76, ?77, ?78, ?79, ?80,
-            ?81, ?82, ?83, ?84, ?85, ?86, ?87
+            ?81, ?82, ?83, ?84, ?85, ?86, ?87, ?88, ?89, ?90
         )
         "#,
     )?;
@@ -830,6 +862,9 @@ pub fn export_graphics_to_sqlite(
             r.mfd_tyre_pressure_rr,
             r.current_tyre_set,
             r.strategy_tyre_set,
+            r.replay_time_multiplier,
+            r.surface_grip,
+            r.i_split,
         ])?;
     }
     

@@ -1,0 +1,62 @@
+{
+  "type": "FeatureCollection",
+  "name": "overall_markers:cwmbiga_afon_biga",
+  "properties": {
+    "source_pacenotes": "timing/pacenotes/cwmbiga_afon_biga.geojson",
+    "stage": "Cwmbiga - Afon Biga",
+    "stage_slug": "cwmbiga_afon_biga",
+    "reference_track": "hafren_north",
+    "coordinate_space": "acc_world_zx",
+    "start_distance_lookup_m": 0.037,
+    "finish_distance_lookup_m": 11581.037,
+    "overall_route_lookup_m": 11581.0,
+    "sector_marker_count": 0,
+    "pacenote_count": 177
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1086.933,
+          657.711
+        ]
+      },
+      "properties": {
+        "kind": "overall_start",
+        "marker_role": "start",
+        "marker_order": 0,
+        "stage": "Cwmbiga - Afon Biga",
+        "stage_slug": "cwmbiga_afon_biga",
+        "reference_track": "hafren_north",
+        "source_pacenote_index": 0,
+        "distance_m": 153.7,
+        "distance_lookup_m": 0.037,
+        "notes_text": "Dist40"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1092.951,
+          1131.301
+        ]
+      },
+      "properties": {
+        "kind": "overall_finish",
+        "marker_role": "finish",
+        "marker_order": 1,
+        "stage": "Cwmbiga - Afon Biga",
+        "stage_slug": "cwmbiga_afon_biga",
+        "reference_track": "hafren_north",
+        "source_pacenote_index": 175,
+        "distance_m": 11734.7,
+        "distance_lookup_m": 11581.037,
+        "notes_text": "Finish"
+      }
+    }
+  ]
+}

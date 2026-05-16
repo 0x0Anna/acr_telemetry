@@ -1,14 +1,147 @@
 //! Format metadata JSON for rkyv recordings.
+//!
+//! Companion `.json` is the **contract** for readers: `binary_file_version` and `*_record_schema`
+//! must match the on-disk rkyv layout. All tools read rkyv via `export::rkyv_format` (not raw structs).
 
 use std::path::Path;
 use std::time::SystemTime;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+
+/// Binary header `version` field written by `recorder` (little-endian u16 after magic).
+pub const RKYV_BINARY_VERSION_V1: u16 = 1;
+pub const RKYV_BINARY_VERSION_V2: u16 = 2;
+/// Current JSON sidecar document version.
+pub const FORMAT_JSON_VERSION: u16 = 2;
+
+pub const PHYSICS_RECORD_SCHEMA_V1: u32 = 1;
+pub const PHYSICS_RECORD_SCHEMA_V2: u32 = 2;
+pub const GRAPHICS_RECORD_SCHEMA_V1: u32 = 1;
+pub const GRAPHICS_RECORD_SCHEMA_V2: u32 = 2;
+pub const STATICS_RECORD_SCHEMA_V1: u32 = 1;
+pub const STATICS_RECORD_SCHEMA_V2: u32 = 2;
+
+/// Parsed companion metadata (read by all rkyv consumers).
+#[derive(Debug, Clone, Deserialize)]
+pub struct FormatMetadataDoc {
+    pub format_version: u16,
+    pub binary_file: String,
+    #[serde(default)]
+    pub binary_file_version: Option<u16>,
+    #[serde(default)]
+    pub physics_record_schema: Option<u32>,
+    #[serde(default)]
+    pub graphics_record_schema: Option<u32>,
+    #[serde(default)]
+    pub statics_record_schema: Option<u32>,
+    #[serde(default)]
+    pub sample_rate_hz: Option<u32>,
+    #[serde(default)]
+    pub source: Option<String>,
+    #[serde(default)]
+    pub statics: Option<serde_json::Value>,
+}
+
+impl FormatMetadataDoc {
+    pub fn inferred_from_binary_only(binary_file: &str) -> Self {
+        Self {
+            format_version: 1,
+            binary_file: binary_file.to_string(),
+            binary_file_version: None,
+            physics_record_schema: None,
+            graphics_record_schema: None,
+            statics_record_schema: None,
+            sample_rate_hz: None,
+            source: None,
+            statics: None,
+        }
+    }
+
+    pub fn infer_physics_schema(&self, binary_version: u16) -> u32 {
+        self.physics_record_schema.unwrap_or_else(|| match binary_version {
+            RKYV_BINARY_VERSION_V1 => PHYSICS_RECORD_SCHEMA_V1,
+            _ => PHYSICS_RECORD_SCHEMA_V2,
+        })
+    }
+
+    pub fn infer_graphics_schema(&self, binary_version: u16) -> u32 {
+        self.graphics_record_schema.unwrap_or_else(|| match binary_version {
+            RKYV_BINARY_VERSION_V1 => GRAPHICS_RECORD_SCHEMA_V1,
+            _ => GRAPHICS_RECORD_SCHEMA_V2,
+        })
+    }
+
+    pub fn infer_statics_schema(&self, binary_version: u16) -> u32 {
+        self.statics_record_schema.unwrap_or_else(|| match binary_version {
+            RKYV_BINARY_VERSION_V1 => STATICS_RECORD_SCHEMA_V1,
+            _ => STATICS_RECORD_SCHEMA_V2,
+        })
+    }
+
+    pub fn validate_physics(&self, binary_version: u16, schema: u32) -> std::io::Result<()> {
+        if let Some(expected) = self.physics_record_schema {
+            if expected != schema {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    format!(
+                        "physics_record_schema mismatch: json={expected}, inferred={schema}"
+                    ),
+                ));
+            }
+        }
+        if let Some(bv) = self.binary_file_version {
+            if bv != binary_version {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    format!(
+                        "binary_file_version mismatch: json={bv}, header={binary_version}"
+                    ),
+                ));
+            }
+        }
+        Ok(())
+    }
+
+    pub fn validate_graphics(&self, binary_version: u16, schema: u32) -> std::io::Result<()> {
+        if let Some(expected) = self.graphics_record_schema {
+            if expected != schema {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    format!(
+                        "graphics_record_schema mismatch: json={expected}, inferred={schema}"
+                    ),
+                ));
+            }
+        }
+        if let Some(bv) = self.binary_file_version {
+            if bv != binary_version {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    format!(
+                        "binary_file_version mismatch: json={bv}, header={binary_version}"
+                    ),
+                ));
+            }
+        }
+        Ok(())
+    }
+}
+
+/// Load companion `<stem>.json` for a physics or graphics rkyv path.
+pub fn read_format_metadata(json_path: &Path) -> std::io::Result<FormatMetadataDoc> {
+    let raw = std::fs::read_to_string(json_path)?;
+    serde_json::from_str(&raw)
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e.to_string()))
+}
 
 #[derive(Serialize)]
 struct FormatMetadata<'a> {
     format_version: u16,
     binary_file: &'a str,
+    binary_file_version: u16,
+    physics_record_schema: u32,
+    graphics_record_schema: u32,
+    statics_record_schema: u32,
     created_at: String,
     sample_rate_hz: u32,
     source: &'static str,
@@ -93,8 +226,12 @@ pub fn write_format_metadata(
     let created_at = format_iso8601(created_at);
 
     let meta = FormatMetadata {
-        format_version: 1,
+        format_version: FORMAT_JSON_VERSION,
         binary_file: binary_name,
+        binary_file_version: RKYV_BINARY_VERSION_V2,
+        physics_record_schema: PHYSICS_RECORD_SCHEMA_V2,
+        graphics_record_schema: GRAPHICS_RECORD_SCHEMA_V2,
+        statics_record_schema: STATICS_RECORD_SCHEMA_V2,
         created_at,
         sample_rate_hz: 333,
         source: "ACC/AC Rally shared memory (acc_shared_memory_rs)",
@@ -142,12 +279,12 @@ pub fn write_format_metadata(
                 },
                 payload: "rkyv-serialized Vec<PhysicsRecord>",
             },
-            serialization: "rkyv 0.7 (https://rkyv.org). Use rkyv::from_bytes::<Vec<PhysicsRecord>>() with the schema below.",
+            serialization: "rkyv 0.7. Read via acr_recorder::export::rkyv_format using binary_file_version and *_record_schema from this file.",
         },
         schema: Schema {
-            root_type: "Vec<PhysicsRecord>",
-            root_description: "Array of physics snapshots, one per sample",
-            types: schema_types(),
+            root_type: "Vec<PhysicsRecord> | Vec<GraphicsRecord>",
+            root_description: "Chunk payloads; layout version = physics_record_schema / graphics_record_schema",
+            types: schema_types_all(),
         },
         statics: statics.and_then(|s| serde_json::to_value(s).ok()),
     };
@@ -182,11 +319,17 @@ fn days_to_ymd(days: u64) -> (u32, u32, u32) {
     (year, month, day)
 }
 
-fn schema_types() -> Vec<TypeDef> {
+fn schema_types_all() -> Vec<TypeDef> {
+    let mut types = schema_types_physics();
+    types.extend(schema_types_graphics());
+    types
+}
+
+fn schema_types_physics() -> Vec<TypeDef> {
     vec![
         TypeDef {
             name: "PhysicsRecord",
-            description: "Complete physics snapshot at one timestep (~333 Hz)",
+            description: "Physics schema v2 (~333 Hz); v1 omits tyre_temp_extra (see record::v1)",
             fields: vec![
                 FieldDef { name: "packet_id", r#type: "i32", unit: None },
                 FieldDef { name: "gas", r#type: "f32", unit: Some("0–1") },
@@ -209,9 +352,13 @@ fn schema_types() -> Vec<TypeDef> {
                 FieldDef { name: "roll", r#type: "f32", unit: Some("rad") },
                 FieldDef { name: "final_ff", r#type: "f32", unit: None },
                 FieldDef { name: "wheel_slip", r#type: "WheelsRecord", unit: None },
+                FieldDef { name: "wheel_load", r#type: "WheelsRecord", unit: None },
                 FieldDef { name: "wheel_pressure", r#type: "WheelsRecord", unit: Some("psi") },
                 FieldDef { name: "wheel_angular_speed", r#type: "WheelsRecord", unit: Some("rad/s") },
+                FieldDef { name: "tyre_wear", r#type: "WheelsRecord", unit: None },
+                FieldDef { name: "tyre_dirty_level", r#type: "WheelsRecord", unit: None },
                 FieldDef { name: "tyre_core_temp", r#type: "WheelsRecord", unit: Some("°C") },
+                FieldDef { name: "camber_rad", r#type: "WheelsRecord", unit: Some("rad") },
                 FieldDef { name: "suspension_travel", r#type: "WheelsRecord", unit: Some("mm") },
                 FieldDef { name: "brake_temp", r#type: "WheelsRecord", unit: Some("°C") },
                 FieldDef { name: "brake_pressure", r#type: "WheelsRecord", unit: Some("bar") },
@@ -222,6 +369,14 @@ fn schema_types() -> Vec<TypeDef> {
                 FieldDef { name: "disc_life", r#type: "WheelsRecord", unit: Some("%") },
                 FieldDef { name: "front_brake_compound", r#type: "i32", unit: None },
                 FieldDef { name: "rear_brake_compound", r#type: "i32", unit: None },
+                FieldDef { name: "tyre_temp_i", r#type: "WheelsRecord", unit: Some("°C") },
+                FieldDef { name: "tyre_temp_m", r#type: "WheelsRecord", unit: Some("°C") },
+                FieldDef { name: "tyre_temp_o", r#type: "WheelsRecord", unit: Some("°C") },
+                FieldDef {
+                    name: "tyre_temp_extra",
+                    r#type: "WheelsRecord",
+                    unit: Some("°C (4th SHM block; see PhysicsMap)"),
+                },
                 FieldDef { name: "tyre_contact_point", r#type: "ContactPointRecord", unit: None },
                 FieldDef { name: "tyre_contact_normal", r#type: "ContactPointRecord", unit: None },
                 FieldDef { name: "tyre_contact_heading", r#type: "ContactPointRecord", unit: None },
@@ -236,6 +391,32 @@ fn schema_types() -> Vec<TypeDef> {
                 FieldDef { name: "car_damage", r#type: "CarDamageRecord", unit: None },
                 FieldDef { name: "is_ai_controlled", r#type: "bool", unit: None },
                 FieldDef { name: "brake_bias", r#type: "f32", unit: None },
+                FieldDef { name: "tc_in_action", r#type: "bool", unit: None },
+                FieldDef { name: "abs_in_action", r#type: "bool", unit: None },
+                FieldDef { name: "drs", r#type: "i32", unit: None },
+                FieldDef { name: "cg_height", r#type: "f32", unit: None },
+                FieldDef { name: "number_of_tyres_out", r#type: "i32", unit: None },
+                FieldDef { name: "kers_charge", r#type: "f32", unit: None },
+                FieldDef { name: "kers_input", r#type: "f32", unit: None },
+                FieldDef { name: "ride_height_front", r#type: "f32", unit: None },
+                FieldDef { name: "ride_height_rear", r#type: "f32", unit: None },
+                FieldDef { name: "ballast", r#type: "f32", unit: None },
+                FieldDef { name: "air_density", r#type: "f32", unit: None },
+                FieldDef { name: "performance_meter", r#type: "f32", unit: None },
+                FieldDef { name: "engine_brake", r#type: "i32", unit: None },
+                FieldDef { name: "ers_recovery_level", r#type: "i32", unit: None },
+                FieldDef { name: "ers_power_level", r#type: "i32", unit: None },
+                FieldDef { name: "ers_heat_charging", r#type: "i32", unit: None },
+                FieldDef { name: "ers_is_charging", r#type: "i32", unit: None },
+                FieldDef { name: "kers_current_kj", r#type: "f32", unit: None },
+                FieldDef { name: "drs_available", r#type: "i32", unit: None },
+                FieldDef { name: "drs_enabled", r#type: "i32", unit: None },
+                FieldDef { name: "p2p_activation", r#type: "i32", unit: None },
+                FieldDef { name: "p2p_status", r#type: "i32", unit: None },
+                FieldDef { name: "current_max_rpm", r#type: "i32", unit: None },
+                FieldDef { name: "mz", r#type: "WheelsRecord", unit: None },
+                FieldDef { name: "fz", r#type: "WheelsRecord", unit: None },
+                FieldDef { name: "my", r#type: "WheelsRecord", unit: None },
                 FieldDef { name: "kerb_vibration", r#type: "f32", unit: None },
                 FieldDef { name: "slip_vibration", r#type: "f32", unit: None },
                 FieldDef { name: "g_vibration", r#type: "f32", unit: None },
@@ -283,4 +464,22 @@ fn schema_types() -> Vec<TypeDef> {
             ],
         },
     ]
+}
+
+fn schema_types_graphics() -> Vec<TypeDef> {
+    vec![TypeDef {
+        name: "GraphicsRecord",
+        description: "Graphics snapshot schema v2 (~60 Hz); v1 omits replay_time_multiplier, surface_grip, i_split",
+        fields: vec![
+            FieldDef { name: "packet_id", r#type: "i32", unit: None },
+            FieldDef { name: "car_coordinates_x", r#type: "f32", unit: Some("game world") },
+            FieldDef { name: "car_coordinates_y", r#type: "f32", unit: Some("game world") },
+            FieldDef { name: "car_coordinates_z", r#type: "f32", unit: Some("game world") },
+            FieldDef { name: "distance_traveled", r#type: "f32", unit: Some("m") },
+            FieldDef { name: "speed_kmh", r#type: "f32", unit: None },
+            FieldDef { name: "replay_time_multiplier", r#type: "f32", unit: Some("v2 only") },
+            FieldDef { name: "surface_grip", r#type: "f32", unit: Some("v2 only") },
+            FieldDef { name: "i_split", r#type: "i32", unit: Some("v2 only") },
+        ],
+    }]
 }

@@ -1,3 +1,7 @@
+[workspace]
+members = [".", "crates/acr-telemetry", "crates/acr-pacenote", "crates/acr-timing"]
+resolver = "2"
+
 [package]
 name = "acr_recorder"
 version = "0.1.0"
@@ -28,10 +32,71 @@ name = "acr_track_match"
 path = "src/bin/acr_track_match.rs"
 
 [[bin]]
+name = "acr_timing"
+path = "src/bin/acr_timing.rs"
+required-features = ["acr_timing_bin"]
+
+[[bin]]
 name = "acr_rtss_osd"
 path = "src/bin/acr_rtss_osd.rs"
 
+[[bin]]
+name = "acr_beep_demo"
+path = "src/bin/acr_beep_demo.rs"
+
+[[bin]]
+name = "acr_overlay_picker_demo"
+path = "src/bin/acr_overlay_picker_demo.rs"
+
+[[bin]]
+name = "acr_sectors_filter"
+path = "src/bin/acr_sectors_filter.rs"
+
+[[bin]]
+name = "acr_grip_estimator"
+path = "src/bin/acr_grip_estimator.rs"
+
+[[bin]]
+name = "acr_extract_timing_sectors"
+path = "src/bin/acr_extract_timing_sectors.rs"
+
+[[bin]]
+name = "acr_plot_recording"
+path = "src/bin/acr_plot_recording.rs"
+
+[[bin]]
+name = "acr_lookup_split_positions"
+path = "src/bin/acr_lookup_split_positions.rs"
+
+[[bin]]
+name = "acr_compare_gfx_physics"
+path = "src/bin/acr_compare_gfx_physics.rs"
+
+[[bin]]
+name = "acr_time_analysis"
+path = "src/bin/acr_time_analysis.rs"
+
+[[bin]]
+name = "acr_segment_speed_report"
+path = "src/bin/acr_segment_speed_report.rs"
+
+[[bin]]
+name = "acr_find_position_times"
+path = "src/bin/acr_find_position_times.rs"
+
+[[bin]]
+name = "acr_stream_lag_test"
+path = "src/bin/acr_stream_lag_test.rs"
+
+[features]
+default = []
+# Build `acr_timing` binary: same entry as acr_track_match but pacenotes disabled at runtime.
+acr_timing_bin = []
+
 [dependencies]
+acr_telemetry = { path = "crates/acr-telemetry" }
+acr_timing = { path = "crates/acr-timing" }
+acr_pacenote = { path = "crates/acr-pacenote" }
 acc_shared_memory_rs = { path = "vendor/acc_shared_memory_rs" }
 rkyv = { version = "0.7", features = ["std"] }
 ctrlc = "3.4"
@@ -43,6 +108,7 @@ toml = "0.8"
 dirs = "5.0"
 tiny_http = "0.12"
 shapefile = "0.8.0"
+rodio = { version = "0.19", default-features = false, features = ["wav"] }
 
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = [
@@ -52,4 +118,5 @@ winapi = { version = "0.3", features = [
     "synchapi",
     "winnt",
     "errhandlingapi",
+    "winuser",
 ] }

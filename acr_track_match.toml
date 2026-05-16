@@ -1,0 +1,23 @@
+# Track geometry matching + RTSS overlay (minimal).
+# Timing: acr_timing.toml | Pacenotes: acr_pacenotes.toml
+
+refs = ["reference_tracks"]
+live = true
+rtss = true
+rtss_owner = "acr_track_match"
+rtss_slot = 3
+
+track_lock_after_sec = 10.0
+track_keep_max_dist = 15.0
+track_switch_min_gain = 0.8
+
+# Optional tuning (defaults shown)
+# downsample = 10
+# buffer = 30.0
+# required_ratio = 0.5
+# history_points = 200
+# rate = 5
+# min_ref_spacing = 2.0
+# overlay_file = "..."
+# rtss_clear_all = false
+# debug_physics_1hz = false

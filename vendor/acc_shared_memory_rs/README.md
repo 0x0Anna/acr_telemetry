@@ -48,9 +48,11 @@ fn main() -> Result<(), ACCError> {
 
 The library provides three main data structures:
 
-- [PhysicsMap (~333Hz)](PHYSICS_MAP.md): High-frequency telemetry data (car dynamics, driver inputs, tyres, engine, suspension, brakes, etc.)
-- [GraphicsMap (~60Hz)](GRAPHICS_MAP.md): Session and timing information (lap times, session status, car positions, flags, weather, etc.)
-- [StaticsMap (Session constants)](STATICS_MAP.md): Static configuration data (car/track info, player details, session rules, pit window, etc.)
+- [PhysicsMap (~333Hz)](PHYSICS_MAP.md): High-frequency telemetry (inputs, motion, wheels, tyres including `tyre_temp_extra`, contact patches, car status, ERS/DRS, vibrations, …)
+- [GraphicsMap (~60Hz)](GRAPHICS_MAP.md): Session and timing (lap strings, flags, weather, MFD, `replay_time_multiplier` / `surface_grip` / `i_split`, …)
+- [StaticsMap (Session constants)](STATICS_MAP.md): Static configuration (car/track, `track_spline_length`, player, session rules, pit window, …)
+
+This crate in `vendor/acc_shared_memory_rs` is a **fork** of upstream `acc_shared_memory_rs`; see **`PATCHES.md`** for ACC/AC Rally layout extensions and recently exposed fields.
 
 See the linked documentation files above for a full list of fields and their descriptions.
 

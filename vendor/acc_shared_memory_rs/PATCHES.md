@@ -30,6 +30,18 @@ This directory contains a modified version of [acc_shared_memory_rs](https://git
 
 The byte offsets and field order follow the SPageFilePhysics structure used by AC Rally / ACC.
 
+### `src/maps/statics_map.rs` / `src/parsers/statics_parser.rs`
+
+- Expose `track_spline_length` (`f32`, meters) on `StaticsMap` (previously read only to preserve layout, then discarded).
+
+### `src/maps/graphics_map.rs` / `src/parsers/graphics_parser.rs`
+
+- Expose `replay_time_multiplier`, `surface_grip`, `i_split` (previously read for layout only).
+
+### `src/maps/physics_map.rs` / `src/parsers/physics_parser.rs`
+
+- Expose `tyre_temp_extra` (`Wheels`) for the per-wheel block after `suspension_damage` (previously discarded).
+
 ## Upstream Version
 
 Based on upstream `acc_shared_memory_rs` (version 0.8.0 or equivalent). The upstream project may have evolved; this fork is maintained for ACR Recorder compatibility.

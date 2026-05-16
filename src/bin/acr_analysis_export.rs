@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS statics (
     car_model TEXT, max_rpm INTEGER, max_fuel REAL, penalty_enabled INTEGER,
     aid_fuel_rate REAL, aid_tyre_rate REAL, aid_mechanical_damage REAL, aid_stability REAL,
     aid_auto_clutch INTEGER, pit_window_start INTEGER, pit_window_end INTEGER, is_online INTEGER,
-    dry_tyres_name TEXT, wet_tyres_name TEXT,
+    dry_tyres_name TEXT, wet_tyres_name TEXT, track_spline_length REAL,
     FOREIGN KEY (recording_id) REFERENCES recordings(id)
 );
 
@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS graphics (
     mfd_tyre_set INTEGER, mfd_fuel_to_add REAL,
     mfd_tyre_pressure_fl REAL, mfd_tyre_pressure_fr REAL, mfd_tyre_pressure_rl REAL, mfd_tyre_pressure_rr REAL,
     current_tyre_set INTEGER, strategy_tyre_set INTEGER,
+    replay_time_multiplier REAL, surface_grip REAL, i_split INTEGER,
     FOREIGN KEY (recording_id) REFERENCES recordings(id)
 );
 
@@ -100,6 +101,7 @@ CREATE TABLE IF NOT EXISTS physics (
     tyre_temp_i_fl REAL, tyre_temp_i_fr REAL, tyre_temp_i_rl REAL, tyre_temp_i_rr REAL,
     tyre_temp_m_fl REAL, tyre_temp_m_fr REAL, tyre_temp_m_rl REAL, tyre_temp_m_rr REAL,
     tyre_temp_o_fl REAL, tyre_temp_o_fr REAL, tyre_temp_o_rl REAL, tyre_temp_o_rr REAL,
+    tyre_temp_extra_fl REAL, tyre_temp_extra_fr REAL, tyre_temp_extra_rl REAL, tyre_temp_extra_rr REAL,
     tyre_contact_point_fl_x REAL, tyre_contact_point_fl_y REAL, tyre_contact_point_fl_z REAL,
     tyre_contact_point_fr_x REAL, tyre_contact_point_fr_y REAL, tyre_contact_point_fr_z REAL,
     tyre_contact_point_rl_x REAL, tyre_contact_point_rl_y REAL, tyre_contact_point_rl_z REAL,
@@ -220,6 +222,18 @@ fn run_export(
     let mut conn = Connection::open(analysis_db)?;
     conn.execute_batch(ANALYSIS_DB_SCHEMA)?;
 
+    for col in [
+        "ALTER TABLE graphics ADD COLUMN replay_time_multiplier REAL",
+        "ALTER TABLE graphics ADD COLUMN surface_grip REAL",
+        "ALTER TABLE graphics ADD COLUMN i_split INTEGER",
+        "ALTER TABLE physics ADD COLUMN tyre_temp_extra_fl REAL",
+        "ALTER TABLE physics ADD COLUMN tyre_temp_extra_fr REAL",
+        "ALTER TABLE physics ADD COLUMN tyre_temp_extra_rl REAL",
+        "ALTER TABLE physics ADD COLUMN tyre_temp_extra_rr REAL",
+    ] {
+        let _ = conn.execute(col, []);
+    }
+
     let telemetry_path = telemetry_db.canonicalize().unwrap_or_else(|_| telemetry_db.to_path_buf());
     let telemetry_str = telemetry_path.to_str().ok_or("telemetry path invalid")?;
 
@@ -228,6 +242,22 @@ fn run_export(
 
     conn.execute("ATTACH DATABASE ?1 AS src", rusqlite::params![telemetry_str])?;
     conn.execute("ATTACH DATABASE ?1 AS grafana", rusqlite::params![grafana_str])?;
+
+    let _ = conn.execute(
+        "ALTER TABLE src.statics ADD COLUMN track_spline_length REAL",
+        [],
+    );
+    for col in [
+        "ALTER TABLE src.graphics ADD COLUMN replay_time_multiplier REAL",
+        "ALTER TABLE src.graphics ADD COLUMN surface_grip REAL",
+        "ALTER TABLE src.graphics ADD COLUMN i_split INTEGER",
+        "ALTER TABLE src.physics ADD COLUMN tyre_temp_extra_fl REAL",
+        "ALTER TABLE src.physics ADD COLUMN tyre_temp_extra_fr REAL",
+        "ALTER TABLE src.physics ADD COLUMN tyre_temp_extra_rl REAL",
+        "ALTER TABLE src.physics ADD COLUMN tyre_temp_extra_rr REAL",
+    ] {
+        let _ = conn.execute(col, []);
+    }
 
     let ann_ids: Vec<i64> = ranges.iter().map(|(id, _, _)| *id).collect();
     let placeholders = ann_ids.iter().map(|_| "?").collect::<Vec<_>>().join(",");

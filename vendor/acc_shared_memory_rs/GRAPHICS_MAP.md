@@ -192,6 +192,13 @@ The `GraphicsMap` struct contains medium-frequency simulation state information 
 - **`strategy_tyre_set: i32`**  
   Strategy tyre set index.
 
+### Additional `SPageFileGraphic` slots (exposed on `GraphicsMap`)
+These fields occupy fixed offsets in ACC’s graphics shared memory; they were previously read only to keep the parser aligned and are now available on the struct:
+
+- **`replay_time_multiplier: f32`** — Replay speed multiplier slot; often unused during live driving.
+- **`surface_grip: f32`** — Surface grip slot (ACC layout).
+- **`i_split: i32`** — Split / timing-related integer slot (ACC layout).
+
 ---
 
 ## Usage
@@ -200,4 +207,4 @@ This struct is used in the `ACCMap` object to provide access to all simulation s
 
 ---
 
-*Generated on: 2025-05-30*
+*Last updated: 2026-05-15*

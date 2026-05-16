@@ -1,0 +1,9 @@
+[package]
+name = "acr_telemetry"
+version = "0.1.0"
+edition = "2024"
+description = "ACC shared-memory polling and coordinate helpers for ACR tools"
+
+[dependencies]
+acc_shared_memory_rs = { path = "../../vendor/acc_shared_memory_rs" }
+dirs = "5.0"

@@ -386,3 +386,35 @@ pub fn clear_all() -> Result<(), String> {
 pub fn sleep_ms(ms: u32) {
     std::thread::sleep(std::time::Duration::from_millis(ms as u64));
 }
+
+/// Prepare arbitrary multi-line text for RTSS OSD: strip characters RTSS may treat as layout
+/// separators, normalize whitespace per line, pad to at least two lines, then truncate to
+/// `max_lines` (clamped to 2..32).
+pub fn sanitize_multiline_osd_text(msg: &str, max_lines: usize) -> String {
+    let mut out = String::with_capacity(msg.len());
+    for ch in msg.chars() {
+        let mapped = match ch {
+            '|' => ' ',
+            '[' => '(',
+            ']' => ')',
+            '\r' => '\n',
+            '\n' => '\n',
+            '\t' => ' ',
+            c if c.is_ascii() && !c.is_ascii_control() => c,
+            _ => '?',
+        };
+        out.push(mapped);
+    }
+    let mut lines: Vec<String> = out
+        .lines()
+        .map(|l| l.split_whitespace().collect::<Vec<_>>().join(" "))
+        .collect();
+    let max_lines = max_lines.clamp(2, 32);
+    while lines.len() < 2 {
+        lines.push(String::new());
+    }
+    if lines.len() > max_lines {
+        lines.truncate(max_lines);
+    }
+    lines.join("\n")
+}

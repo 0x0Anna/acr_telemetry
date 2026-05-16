@@ -82,6 +82,16 @@ The `PhysicsMap` struct contains high-frequency telemetry and dynamic physics da
 - **`rear_brake_compound: i32`**  
   Rear brake compound index.
 
+### Tyre surface temperatures (per wheel)
+- **`tyre_temp_i: Wheels`**  
+  Inner-layer tyre temperature (°C) per wheel.
+- **`tyre_temp_m: Wheels`**  
+  Middle-layer tyre temperature (°C) per wheel.
+- **`tyre_temp_o: Wheels`**  
+  Outer-layer tyre temperature (°C) per wheel.
+- **`tyre_temp_extra: Wheels`**  
+  Fourth `Wheels` block in `SPageFilePhysics` at the memory offset immediately after `suspension_damage` and before `water_temp` in the wire layout. Older parsers discarded this read as a duplicate slot; it is now exposed for tools that want the raw value (may correlate with layered temps depending on game version).
+
 ### Tyre Contact Patches (3D)
 - **`tyre_contact_point: ContactPoint`**  
   Contact point for each tyre (3D position).
@@ -132,4 +142,4 @@ This struct is used in the `ACCMap` object to provide access to all real-time ph
 
 ---
 
-*Generated on: 2025-05-30*
+*Last updated: 2026-05-15*

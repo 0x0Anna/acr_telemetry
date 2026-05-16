@@ -115,6 +115,11 @@ use serde::{Deserialize, Serialize};
 /// - `current_tyre_set`: i32 - Current tyre set index.
 /// - `strategy_tyre_set`: i32 - Strategy tyre set index.
 ///
+/// ## ACC layout extras
+/// - `replay_time_multiplier`: f32 - Replay speed multiplier (often unused live).
+/// - `surface_grip`: f32 - Surface grip slot in ACC graphics memory.
+/// - `i_split`: i32 - Split / timing-related integer slot.
+///
 /// This struct is used in the `ACCMap` object to provide access to all simulation state and session data from ACC. Consumers of this library can use these fields to perform analytics, UI updates, or make decisions based on the current session state.
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -223,6 +228,11 @@ pub struct GraphicsMap {
     // Tyre Strategy
     pub current_tyre_set: i32,
     pub strategy_tyre_set: i32,
+
+    // ACC layout extras (see GRAPHICS_MAP.md)
+    pub replay_time_multiplier: f32,
+    pub surface_grip: f32,
+    pub i_split: i32,
 }
 
 impl GraphicsMap {

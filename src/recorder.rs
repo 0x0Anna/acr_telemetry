@@ -16,7 +16,7 @@ const BUFFER_FLUSH_SAMPLES: usize = 333; // flush every ~1 second
 const GRAPHICS_BUFFER_FLUSH_SAMPLES: usize = 60; // flush every ~1 second
 const FILE_MAGIC: [u8; 4] = *b"ACCR";
 const GRAPHICS_FILE_MAGIC: [u8; 4] = *b"ACCG";
-const FILE_VERSION: u16 = 1;
+const FILE_VERSION: u16 = crate::format_meta::RKYV_BINARY_VERSION_V2;
 
 /// Records physics data to an rkyv file at maximum rate.
 pub struct Recorder {

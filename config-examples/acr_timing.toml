@@ -1,0 +1,32 @@
+# Sector timing + start grid + split beeps + calibrated stage sectors.
+
+sectors_shp = "timing/sectors_filtered.shp"
+sectors_coord_space = "game"
+sector_track_field = "src_layer"
+sector_id_field = "seg_id"
+timing_db = "timing/timing.db"
+
+start_points_geojson = "timing/start_points.geojson"
+start_prefilter_radius = 20.0
+grid_standstill_max_speed_kmh = 2.0
+grid_start_trigger_radius_m = 2.0
+grid_start_list_radius_initial_m = 2.0
+grid_start_wide_after_sec = 10.0
+grid_start_list_radius_wide_m = 100.0
+beep_on_split = true
+
+[beep]
+mode = "sine"
+faster_freq_hz = 1700.0
+faster_duration_ms = 45
+slower_freq_hz = 950.0
+slower_duration_ms = 140
+gap_ms = 200
+volume = 0.5
+
+[stage_timing]
+timing_sectors_html_dir = "timing/runs"
+sectors_dir = "timing/timing_sectors"
+
+[stage_timing.ref_stage_sectors]
+# hafren_north = "cwmbiga_afon_biga"

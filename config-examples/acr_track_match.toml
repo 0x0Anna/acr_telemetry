@@ -1,0 +1,11 @@
+# Track geometry matching + RTSS (see also acr_timing.toml, acr_pacenotes.toml).
+
+refs = ["reference_tracks"]
+live = true
+rtss = true
+rtss_owner = "acr_track_match"
+rtss_slot = 3
+
+track_lock_after_sec = 10.0
+track_keep_max_dist = 15.0
+track_switch_min_gain = 0.8

@@ -151,7 +151,7 @@ pub fn parse_physics_map(reader: &SharedMemoryReader) -> Result<PhysicsMap> {
     let tc_in_action = read_value!(i32) != 0;
     let abs_in_action = read_value!(i32) != 0;
     let suspension_damage = read_wheels(&mut _offset)?;
-    let _tyre_temp = read_wheels(&mut _offset)?; // Duplicate, skip
+    let tyre_temp_extra = read_wheels(&mut _offset)?;
     let water_temp = read_value!(f32);
 
     let brake_pressure = read_wheels(&mut _offset)?;
@@ -211,6 +211,7 @@ pub fn parse_physics_map(reader: &SharedMemoryReader) -> Result<PhysicsMap> {
         tyre_temp_i,
         tyre_temp_m,
         tyre_temp_o,
+        tyre_temp_extra,
         tyre_contact_point,
         tyre_contact_normal,
         tyre_contact_heading,

@@ -1,0 +1,704 @@
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          -630.543,
+          351.568
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "afon_bidno_severn.geojson",
+        "source_slug": "afon_bidno_severn",
+        "stage": "Afon Bidno - Severn",
+        "track": "hafren_south"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -568.615,
+          376.626
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "afon_biga_banc_gwyn.geojson",
+        "source_slug": "afon_biga_banc_gwyn",
+        "stage": "Afon Biga - Banc Gwyn",
+        "track": "hafren_south"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -568.615,
+          376.626
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "afon_biga_cwmbiga.geojson",
+        "source_slug": "afon_biga_cwmbiga",
+        "stage": "Afon Biga - Cwmbiga",
+        "track": "hafren_south"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          74.111,
+          93.019
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "banc_gwyn_afon_biga.geojson",
+        "source_slug": "banc_gwyn_afon_biga",
+        "stage": "Banc Gwyn - Afon Biga",
+        "track": "hafren_north"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1991.171,
+          2721.071
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "col_de_turini.geojson",
+        "source_slug": "col_de_turini",
+        "stage": "La Bollène-Vésubie - Peïra Cava",
+        "track": "col_de_turini"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          525.874,
+          1700.447
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "col_du_petit_ballon.geojson",
+        "source_slug": "col_du_petit_ballon",
+        "stage": "Col du petit Ballon",
+        "track": "saverne"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1065.109,
+          662.235
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "cwmbiga_afon_biga.geojson",
+        "source_slug": "cwmbiga_afon_biga",
+        "stage": "Cwmbiga - Afon Biga",
+        "track": "hafren_north"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -674.764,
+          338.616
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "cwmbiga_fedw_fain.geojson",
+        "source_slug": "cwmbiga_fedw_fain",
+        "stage": "Cwmbiga - Fedw Fain",
+        "track": "hafren_south"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          578.275,
+          -16.134
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "fedw_fain_cwmbiga.geojson",
+        "source_slug": "fedw_fain_cwmbiga",
+        "stage": "Fedw Fain - Cwmbiga",
+        "track": "hafren_north"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          866.939,
+          -4494.904
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "foret_de_munster.geojson",
+        "source_slug": "foret_de_munster",
+        "stage": "Forêt de Munster",
+        "track": "valee_de_munster"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          466.43,
+          1637.099
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "foret_de_saverne.geojson",
+        "source_slug": "foret_de_saverne",
+        "stage": "Forêt de Saverne",
+        "track": "saverne"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          74.111,
+          93.019
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "hafren_north.geojson",
+        "source_slug": "hafren_north",
+        "stage": "Banc Gwyn - Afon Biga",
+        "track": "hafren_north"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -630.543,
+          351.568
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "hafren_south.geojson",
+        "source_slug": "hafren_south",
+        "stage": "Afon Bidno - Severn",
+        "track": "hafren_south"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1991.171,
+          2721.071
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "la_bollene_vesubie_peira_cava.geojson",
+        "source_slug": "la_bollene_vesubie_peira_cava",
+        "stage": "La Bollène-Vésubie - Peïra Cava",
+        "track": "col_de_turini"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1991.171,
+          2721.071
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "la_bollene_vesubie_turini.geojson",
+        "source_slug": "la_bollene_vesubie_turini",
+        "stage": "La Bollène-Vésubie - Turini",
+        "track": "col_de_turini"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          577.741,
+          1761.252
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "la_traversee_de_la_mossig.geojson",
+        "source_slug": "la_traversee_de_la_mossig",
+        "stage": "La traversée de La Mossig",
+        "track": "saverne"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          261.669,
+          -1922.465
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "livigno.geojson",
+        "source_slug": "livigno",
+        "stage": "Pra d'Alart",
+        "track": "livigno"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1103.441,
+          -5863.201
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "luttenbach_pres_munster.geojson",
+        "source_slug": "luttenbach_pres_munster",
+        "stage": "Luttenbach près Munster",
+        "track": "valee_de_munster"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1773.051,
+          -2419.501
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "mezien_sisteron.geojson",
+        "source_slug": "mezien_sisteron",
+        "stage": "Mézien - Sisteron",
+        "track": "sisteron"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -825.549,
+          -1020.902
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "mezien_st_geniez.geojson",
+        "source_slug": "mezien_st_geniez",
+        "stage": "Mézien - St. Geniez",
+        "track": "sisteron"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          838.609,
+          -3791.471
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "obersteigen.geojson",
+        "source_slug": "obersteigen",
+        "stage": "Obersteigen",
+        "track": "valee_de_munster"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1998.657,
+          2683.743
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "peira_cava_la_bollene_vesubie.geojson",
+        "source_slug": "peira_cava_la_bollene_vesubie",
+        "stage": "Peïra Cava - La Bollène-Vésubie",
+        "track": "col_de_turini"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1998.657,
+          2683.743
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "peira_cava_turini.geojson",
+        "source_slug": "peira_cava_turini",
+        "stage": "Peïra Cava - Turini",
+        "track": "col_de_turini"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          261.669,
+          -1922.465
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "pra_d_alart.geojson",
+        "source_slug": "pra_d_alart",
+        "stage": "Pra d'Alart",
+        "track": "livigno"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          525.874,
+          1700.447
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "saverne.geojson",
+        "source_slug": "saverne",
+        "stage": "Col du petit Ballon",
+        "track": "saverne"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1005.648,
+          680.489
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "severn_afon_bidno.geojson",
+        "source_slug": "severn_afon_bidno",
+        "stage": "Severn - Afon Bidno",
+        "track": "hafren_north"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1773.051,
+          -2419.501
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "sisteron.geojson",
+        "source_slug": "sisteron",
+        "stage": "Mézien - Sisteron",
+        "track": "sisteron"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -4546.635,
+          -2919.037
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "sisteron_mezien.geojson",
+        "source_slug": "sisteron_mezien",
+        "stage": "Sisteron - Mézien",
+        "track": "sisteron"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -4546.635,
+          -2919.037
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "sisteron_st_geniez.geojson",
+        "source_slug": "sisteron_st_geniez",
+        "stage": "Sisteron - St. Geniez",
+        "track": "sisteron"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          1060.561,
+          -3316.703
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "sommet_de_munster.geojson",
+        "source_slug": "sommet_de_munster",
+        "stage": "Sommet de Munster",
+        "track": "valee_de_munster"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -2.545,
+          2269.617
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "sommet_de_turini.geojson",
+        "source_slug": "sommet_de_turini",
+        "stage": "Sommet de Turini",
+        "track": "col_de_turini"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -4499.489,
+          -2935.487
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "st_geniez_mezien.geojson",
+        "source_slug": "st_geniez_mezien",
+        "stage": "St. Geniez - Mézien",
+        "track": "sisteron"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -4499.489,
+          -2935.487
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "st_geniez_sisteron.geojson",
+        "source_slug": "st_geniez_sisteron",
+        "stage": "St. Geniez - Sisteron",
+        "track": "sisteron"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1014.112,
+          -5862.34
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "steigenbach.geojson",
+        "source_slug": "steigenbach",
+        "stage": "Steigenbach",
+        "track": "valee_de_munster"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          587.515,
+          2182.377
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "turini_la_bollene_vesubie.geojson",
+        "source_slug": "turini_la_bollene_vesubie",
+        "stage": "Turini - La Bollène-Vésubie",
+        "track": "col_de_turini"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          2761.879,
+          1362.994
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "turini_peira_cava.geojson",
+        "source_slug": "turini_peira_cava",
+        "stage": "Turini - Peïra Cava",
+        "track": "col_de_turini"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          866.939,
+          -4494.904
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "valee_de_munster.geojson",
+        "source_slug": "valee_de_munster",
+        "stage": "Forêt de Munster",
+        "track": "valee_de_munster"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1093.584,
+          -5861.817
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "vallee_de_munster_descente.geojson",
+        "source_slug": "vallee_de_munster_descente",
+        "stage": "Vallée de Munster Descente",
+        "track": "valee_de_munster"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1102.455,
+          -5863.042
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "pacenote_first_anchor",
+        "source_geojson": "vallee_de_munster_montee.geojson",
+        "source_slug": "vallee_de_munster_montee",
+        "stage": "Vallée de Munster Montée",
+        "track": "valee_de_munster"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1111.3011474609375,
+          -5864.7763671875
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "car": "FIAT 131 Abarth",
+        "kind": "start_anchor",
+        "track": "valee_de_munster",
+        "ts_utc": "2026-05-14T16:12:11.175Z"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1086.8504638671875,
+          657.7327880859375
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "car": "Hyundai i20N Rally2",
+        "kind": "start_anchor",
+        "track": "hafren_north",
+        "ts_utc": "2026-05-14T21:56:23.682Z"
+      },
+      "type": "Feature"
+    }
+  ],
+  "properties": {
+    "description": "First pacenote anchor per stage GeoJSON; used by acr_track_match start_points index.",
+    "generator": "scripts/build_start_points_from_pacenotes.py"
+  },
+  "type": "FeatureCollection"
+}

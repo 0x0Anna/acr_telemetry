@@ -15,6 +15,7 @@ use serde::{Deserialize, Serialize};
 /// - `num_cars`: i32 - Number of cars in the session.
 /// - `track`: String - Track name.
 /// - `sector_count`: i32 - Number of sectors on the track.
+/// - `track_spline_length`: f32 - Track spline length (meters), from static shared memory.
 ///
 /// ## Player Profile
 /// - `player_name`: String - Player's first name.
@@ -58,6 +59,7 @@ pub struct StaticsMap {
     pub num_cars: i32,
     pub track: String,
     pub sector_count: i32,
+    pub track_spline_length: f32,
 
     // Player Profile
     pub player_name: String,

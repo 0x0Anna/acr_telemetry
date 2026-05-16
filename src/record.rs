@@ -1,5 +1,7 @@
 //! rkyv-serializable physics snapshot for high-rate recording.
 
+pub mod v1;
+
 use acc_shared_memory_rs::maps::{GraphicsMap, PhysicsMap, StaticsMap};
 use rkyv::{Archive, Deserialize, Serialize};
 
@@ -94,6 +96,7 @@ pub struct PhysicsRecord {
     pub tyre_temp_i: WheelsRecord,
     pub tyre_temp_m: WheelsRecord,
     pub tyre_temp_o: WheelsRecord,
+    pub tyre_temp_extra: WheelsRecord,
 
     // Tyre contact patches
     pub tyre_contact_point: ContactPointRecord,
@@ -290,6 +293,12 @@ impl PhysicsRecord {
                 rear_left: p.tyre_temp_o.rear_left,
                 rear_right: p.tyre_temp_o.rear_right,
             },
+            tyre_temp_extra: WheelsRecord {
+                front_left: p.tyre_temp_extra.front_left,
+                front_right: p.tyre_temp_extra.front_right,
+                rear_left: p.tyre_temp_extra.rear_left,
+                rear_right: p.tyre_temp_extra.rear_right,
+            },
 
             tyre_contact_point: ContactPointRecord {
                 front_left: Vector3fRecord { x: p.tyre_contact_point.front_left.x, y: p.tyre_contact_point.front_left.y, z: p.tyre_contact_point.front_left.z },
@@ -406,6 +415,8 @@ pub struct StaticsRecord {
     pub is_online: bool,
     pub dry_tyres_name: String,
     pub wet_tyres_name: String,
+    #[serde(default)]
+    pub track_spline_length: f32,
 }
 
 impl StaticsRecord {
@@ -434,6 +445,7 @@ impl StaticsRecord {
             is_online: s.is_online,
             dry_tyres_name: s.dry_tyres_name.clone(),
             wet_tyres_name: s.wet_tyres_name.clone(),
+            track_spline_length: s.track_spline_length,
         }
     }
 }
@@ -539,6 +551,13 @@ pub struct GraphicsRecord {
     
     pub current_tyre_set: i32,
     pub strategy_tyre_set: i32,
+
+    #[serde(default)]
+    pub replay_time_multiplier: f32,
+    #[serde(default)]
+    pub surface_grip: f32,
+    #[serde(default)]
+    pub i_split: i32,
 }
 
 impl GraphicsRecord {
@@ -637,6 +656,9 @@ impl GraphicsRecord {
             mfd_tyre_pressure_rr: g.mfd_tyre_pressure.rear_right,
             current_tyre_set: g.current_tyre_set,
             strategy_tyre_set: g.strategy_tyre_set,
+            replay_time_multiplier: g.replay_time_multiplier,
+            surface_grip: g.surface_grip,
+            i_split: g.i_split,
         }
     }
 }

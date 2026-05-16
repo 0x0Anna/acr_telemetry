@@ -75,7 +75,7 @@ pub fn parse_statics_map(reader: &SharedMemoryReader) -> Result<StaticsMap> {
     let _kers_max_j = read_value!(f32);
     let _engine_brake_settings_count = read_value!(i32);
     let _ers_power_controller_count = read_value!(i32);
-    let _track_spline_length = read_value!(f32);
+    let track_spline_length = read_value!(f32);
 
     let _track_configuration = read_string(&mut _offset, 33, 2)?;
 
@@ -100,6 +100,7 @@ pub fn parse_statics_map(reader: &SharedMemoryReader) -> Result<StaticsMap> {
         num_cars,
         track,
         sector_count,
+        track_spline_length,
         player_name,
         player_surname,
         player_nick,

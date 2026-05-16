@@ -575,14 +575,7 @@ fn export_single(
     downsample: usize,
     subtiming: Option<&SubtimingParams>,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let json_path = input.with_extension("json");
-    let statics = std::fs::read_to_string(&json_path)
-        .ok()
-        .and_then(|json_str| serde_json::from_str::<serde_json::Value>(&json_str).ok())
-        .and_then(|json| {
-            json.get("statics")
-                .and_then(|s| serde_json::from_value::<acr_recorder::record::StaticsRecord>(s.clone()).ok())
-        });
+    let statics = acr_recorder::export::rkyv_format::load_statics(input);
 
     let (sample_rate, records) = acr_recorder::export::rkyv_reader::read_rkyv(input)?;
     eprintln!(
@@ -825,7 +818,11 @@ fn export_shapefile_points(
     let mut written = 0usize;
     let mut sub_samples: Vec<ShpSample> = Vec::new();
     for (i, gr) in graphics_records.iter().enumerate().step_by(downsample) {
-        let pt = Point::new(gr.car_coordinates_x as f64, gr.car_coordinates_z as f64);
+        let (fx, fy) = acr_recorder::gis::game_xz_to_file(
+            gr.car_coordinates_x as f64,
+            gr.car_coordinates_z as f64,
+        );
+        let pt = Point::new(fx, fy);
         let physics_idx =
             ((i as f64 * physics_sample_rate as f64 / sample_rate as f64).round() as usize)
                 .min(physics_records.len() - 1);

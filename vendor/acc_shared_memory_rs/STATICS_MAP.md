@@ -21,6 +21,8 @@ The `StaticsMap` struct contains low-frequency static configuration data from As
   Track name.
 - **`sector_count: i32`**  
   Number of sectors on the track.
+- **`track_spline_length: f32`**  
+  Track spline length in metres (`SPageFileStatic`); useful for lap-distance sanity checks and parity with other telemetry tools.
 
 ### Player Profile
 - **`player_name: String`**  
@@ -76,4 +78,4 @@ This struct is used in the `ACCMap` object to provide access to all static confi
 
 ---
 
-*Generated on: 2025-05-30*
+*Last updated: 2026-05-15*

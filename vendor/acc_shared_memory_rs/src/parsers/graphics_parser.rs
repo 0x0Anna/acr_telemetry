@@ -68,7 +68,7 @@ pub fn parse_graphics_map(reader: &SharedMemoryReader) -> Result<GraphicsMap> {
     let number_of_laps = read_value!(i32);
 
     let tyre_compound = read_string(&mut _offset, 33, 2)?;
-    let _replay_time_multiplier = read_value!(f32); // Not used in ACC
+    let replay_time_multiplier = read_value!(f32);
     let normalized_car_position = read_value!(f32);
     let active_cars = read_value!(i32);
 
@@ -90,7 +90,7 @@ pub fn parse_graphics_map(reader: &SharedMemoryReader) -> Result<GraphicsMap> {
 
     let ideal_line_on = read_value!(i32) != 0;
     let is_in_pit_lane = read_value!(i32) != 0;
-    let _surface_grip = read_value!(f32); // Not used
+    let surface_grip = read_value!(f32);
     let mandatory_pit_done = read_value!(i32) != 0;
     let wind_speed = read_value!(f32);
     let wind_direction = read_value!(f32);
@@ -118,7 +118,7 @@ pub fn parse_graphics_map(reader: &SharedMemoryReader) -> Result<GraphicsMap> {
     let estimated_lap_time_str = read_string(&mut _offset, 15, 2)?;
     let estimated_lap_time = read_value!(i32);
     let is_delta_positive = read_value!(i32) != 0;
-    let _i_split = read_value!(i32); // Not used
+    let i_split = read_value!(i32);
     let is_valid_lap = read_value!(i32) != 0;
     let fuel_estimated_laps = read_value!(f32);
 
@@ -251,5 +251,8 @@ pub fn parse_graphics_map(reader: &SharedMemoryReader) -> Result<GraphicsMap> {
         mfd_tyre_pressure,
         current_tyre_set,
         strategy_tyre_set,
+        replay_time_multiplier,
+        surface_grip,
+        i_split,
     })
 }
