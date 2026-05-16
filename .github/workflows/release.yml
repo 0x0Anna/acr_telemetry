@@ -30,7 +30,7 @@ jobs:
           restore-keys: ${{ runner.os }}-cargo-
 
       - name: Build release binaries
-        run: cargo build --release
+        run: cargo build --release --features acr_timing_bin
 
       - name: Package artifacts
         shell: pwsh

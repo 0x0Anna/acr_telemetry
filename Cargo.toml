@@ -89,8 +89,8 @@ name = "acr_stream_lag_test"
 path = "src/bin/acr_stream_lag_test.rs"
 
 [features]
-default = []
-# Build `acr_timing` binary: same entry as acr_track_match but pacenotes disabled at runtime.
+default = ["acr_timing_bin"]
+# Timing-only build: pacenotes disabled at runtime (`acr_timing` bin always sets this).
 acr_timing_bin = []
 
 [dependencies]
