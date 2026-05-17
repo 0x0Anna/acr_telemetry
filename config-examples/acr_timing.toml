@@ -29,4 +29,4 @@ timing_sectors_html_dir = "timing/runs"
 sectors_dir = "timing/timing_sectors"
 
 [stage_timing.ref_stage_sectors]
-# hafren_north = "cwmbiga_afon_biga"
+hafren_north = "cwmbiga_afon_biga"

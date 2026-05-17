@@ -1,8 +1,13 @@
-Timing data for sector splits (shapefiles and start grid).
+Timing data for sector splits.
 
-The installer copies bundled sector geometry here. timing.db is created
-on first use when you run acr_timing or acr_track_match with timing enabled.
+Ring sectors (subsector splits A-B):
+  sectors_filtered.shp — polyline crossings, stored in timing/timing.db
 
-Subfolders:
-  timing_sectors/   Per-stage sector polylines (optional)
-  runs/             HTML sector reports (created at runtime)
+Stage sectors (S1, S2, … leg times on a calibrated stage):
+  timing_sectors/<slug>.geojson — gate lines per stage
+  acr_timing.toml [stage_timing.ref_stage_sectors] — maps reference track name to <slug>
+
+Bundled calibration: hafren_north → cwmbiga_afon_biga.geojson
+
+timing.db is created on first run. Add more stages: new GeoJSON under timing_sectors/
+and a matching entry in [stage_timing.ref_stage_sectors].
