@@ -43,14 +43,19 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          $tag = '${{ github.ref_name }}'
           $version = (Select-String -Path Cargo.toml -Pattern '^\s*version\s*=\s*"(.+)"\s*$' | Select-Object -First 1).Matches.Groups[1].Value
           powershell -NoProfile -ExecutionPolicy Bypass -File install/build.ps1 -SkipCargoBuild
-          Copy-Item "target/install/ACR_Recorder_${version}_windows-x64_portable.zip" "acr-${{ github.ref_name }}-windows-x86_64.zip"
+          Copy-Item "target/install/ACR_Recorder_${version}_windows-x64_portable.zip" "acr-$tag-windows-x86_64.zip"
+          Compress-Archive -Path config-examples\*.toml -DestinationPath "acr-$tag-config-examples.zip"
+          Compress-Archive -Path docs\*.md -DestinationPath "acr-$tag-docs.zip"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             acr-${{ github.ref_name }}-windows-x86_64.zip
+            acr-${{ github.ref_name }}-config-examples.zip
+            acr-${{ github.ref_name }}-docs.zip
             target/install/ACR_Recorder_*_setup.exe
           generate_release_notes: true

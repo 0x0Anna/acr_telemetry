@@ -76,7 +76,7 @@ CI: `pwsh install/build.ps1 -SkipCargoBuild` after `cargo build` (see `.github/w
 
 
 
-Templates live in `install\config\`; edit there before building.
+Installer-ready templates: `install\config\` (relative paths). Reference copies with comments: `config-examples\` (bundled in zip/setup; also `acr-<tag>-config-examples.zip` on Releases). All `docs\*.md` are included in `docs\` and as `acr-<tag>-docs.zip`.
 
 
 

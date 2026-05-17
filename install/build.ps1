@@ -31,8 +31,6 @@ $Bins = @(
     'acr_rtss_osd'
 )
 
-$Docs = @('RECORDER.md', 'EXPORT.md', 'BRIDGE.md', 'MOTEC.md')
-
 if (-not $SkipCargoBuild) {
     Write-Host "==> cargo build --release (version $Version)"
     $cargoArgs = @('build', '--release', '--features', 'acr_timing_bin')
@@ -49,7 +47,7 @@ if (-not $SkipCargoBuild) {
 $Staging = Join-Path $InstallDir 'staging'
 if (Test-Path $Staging) { Remove-Item $Staging -Recurse -Force }
 New-Item -ItemType Directory -Path $Staging | Out-Null
-foreach ($sub in @('batch', 'docs', 'reference_tracks', 'telemetry_raw')) {
+foreach ($sub in @('batch', 'docs', 'config-examples', 'reference_tracks', 'telemetry_raw')) {
     New-Item -ItemType Directory -Path (Join-Path $Staging $sub) -Force | Out-Null
 }
 
@@ -68,9 +66,18 @@ Copy-Item (Join-Path $Root 'batch\*.bat') (Join-Path $Staging 'batch')
 Copy-Item (Join-Path $Root 'LICENSE') $Staging
 Copy-Item (Join-Path $InstallDir 'PACKAGE_README.txt') (Join-Path $Staging 'README.txt')
 
-foreach ($doc in $Docs) {
-    $src = Join-Path $Root "docs\$doc"
-    if (Test-Path $src) { Copy-Item $src (Join-Path $Staging 'docs') }
+$docsSrc = Join-Path $Root 'docs'
+if (Test-Path $docsSrc) {
+    Get-ChildItem $docsSrc -Filter '*.md' -File | ForEach-Object {
+        Copy-Item $_.FullName (Join-Path $Staging 'docs')
+    }
+}
+
+$configExamplesSrc = Join-Path $Root 'config-examples'
+if (Test-Path $configExamplesSrc) {
+    Get-ChildItem $configExamplesSrc -Filter '*.toml' -File | ForEach-Object {
+        Copy-Item $_.FullName (Join-Path $Staging 'config-examples')
+    }
 }
 
 $timingSrc = Join-Path $Root 'timing'
