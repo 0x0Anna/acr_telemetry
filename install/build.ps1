@@ -95,7 +95,14 @@ if (Test-Path $timingSrc) {
 Copy-Item (Join-Path $InstallDir 'assets\timing\README.txt') $timingDst -Force
 New-Item -ItemType Directory -Path (Join-Path $timingDst 'runs') -Force | Out-Null
 
-Copy-Item (Join-Path $InstallDir 'assets\reference_tracks\README.txt') (Join-Path $Staging 'reference_tracks') -Force
+$refSrc = Join-Path $Root 'reference_tracks'
+$refDst = Join-Path $Staging 'reference_tracks'
+if (Test-Path $refSrc) {
+    Get-ChildItem $refSrc -File | Where-Object {
+        $_.Extension -match '^\.(shp|shx|dbf|cpg|qix)$'
+    } | ForEach-Object { Copy-Item $_.FullName $refDst }
+}
+Copy-Item (Join-Path $InstallDir 'assets\reference_tracks\README.txt') $refDst -Force
 
 $OutDir = Join-Path $Root 'target\install'
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null

@@ -27,7 +27,7 @@ Folders (created by installer; paths in TOML are relative to this directory):
   telemetry_raw\              Raw .rkyv recordings
   telemetry.db                SQLite database (after export)
   timing\                     Sector shapefiles, start grid, timing.db
-  reference_tracks\           Your reference tracks for track match
+  reference_tracks\           Bundled .shp reference tracks (track match / timing)
 
 Notes and stop signal (default, not in install dir):
 

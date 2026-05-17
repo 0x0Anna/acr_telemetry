@@ -102,7 +102,7 @@ Installer-ready templates: `install\config\` (relative paths). Reference copies 
 
   timing/runs/         HTML reports at runtime
 
-  reference_tracks/    README only – add your own refs
+  reference_tracks/    Bundled shapefiles (hafren_north, saverne, …)
 
 ```
 
