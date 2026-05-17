@@ -48,6 +48,29 @@ pub fn write_ld_with_graphics(
     let rf_deflection: Vec<f32> = records.iter().map(|r| r.suspension_travel.front_right).collect();
     let lb_deflection: Vec<f32> = records.iter().map(|r| r.suspension_travel.rear_left).collect();
     let rb_deflection: Vec<f32> = records.iter().map(|r| r.suspension_travel.rear_right).collect();
+    let (lf_wheel_x, lf_wheel_y, lf_wheel_z) = vec3_from_records(records, |r| {
+        let v = &r.tyre_contact_point.front_left;
+        (v.x, v.y, v.z)
+    });
+    let (rf_wheel_x, rf_wheel_y, rf_wheel_z) = vec3_from_records(records, |r| {
+        let v = &r.tyre_contact_point.front_right;
+        (v.x, v.y, v.z)
+    });
+    let (lb_wheel_x, lb_wheel_y, lb_wheel_z) = vec3_from_records(records, |r| {
+        let v = &r.tyre_contact_point.rear_left;
+        (v.x, v.y, v.z)
+    });
+    let (rb_wheel_x, rb_wheel_y, rb_wheel_z) = vec3_from_records(records, |r| {
+        let v = &r.tyre_contact_point.rear_right;
+        (v.x, v.y, v.z)
+    });
+    let (car_pos_x, car_pos_y, car_pos_z) = vec3_from_records(records, |r| {
+        let p = &r.tyre_contact_point;
+        let x = (p.front_left.x + p.front_right.x + p.rear_left.x + p.rear_right.x) * 0.25;
+        let y = (p.front_left.y + p.front_right.y + p.rear_left.y + p.rear_right.y) * 0.25;
+        let z = (p.front_left.z + p.front_right.z + p.rear_left.z + p.rear_right.z) * 0.25;
+        (x, y, z)
+    });
     // Workspace-compatible aliases (RBR Motec v105).
     let speed_alias: Vec<f32> = speed.clone();
     let throttle_alias: Vec<f32> = records.iter().map(|r| r.gas).collect();
@@ -116,10 +139,29 @@ pub fn write_ld_with_graphics(
         ("vecLinearAccelerationCar.x", "g", g_lat),
         ("vecLinearAccelerationCar.y", "g", g_lon),
         ("G ForceTotal", "g", g_total),
+        ("LF.suspensionTravel", "m", lf_deflection.clone()),
+        ("RF.suspensionTravel", "m", rf_deflection.clone()),
+        ("LB.suspensionTravel", "m", lb_deflection.clone()),
+        ("RB.suspensionTravel", "m", rb_deflection.clone()),
         ("LF.deflection", "m", lf_deflection),
         ("RF.deflection", "m", rf_deflection),
         ("LB.deflection", "m", lb_deflection),
         ("RB.deflection", "m", rb_deflection),
+        ("car.pos.x", "m", car_pos_x),
+        ("car.pos.y", "m", car_pos_y),
+        ("car.pos.z", "m", car_pos_z),
+        ("LF.wheelPos.x", "m", lf_wheel_x),
+        ("LF.wheelPos.y", "m", lf_wheel_y),
+        ("LF.wheelPos.z", "m", lf_wheel_z),
+        ("RF.wheelPos.x", "m", rf_wheel_x),
+        ("RF.wheelPos.y", "m", rf_wheel_y),
+        ("RF.wheelPos.z", "m", rf_wheel_z),
+        ("LB.wheelPos.x", "m", lb_wheel_x),
+        ("LB.wheelPos.y", "m", lb_wheel_y),
+        ("LB.wheelPos.z", "m", lb_wheel_z),
+        ("RB.wheelPos.x", "m", rb_wheel_x),
+        ("RB.wheelPos.y", "m", rb_wheel_y),
+        ("RB.wheelPos.z", "m", rb_wheel_z),
         ("LF.tyreTemperature", "C", lf_tyre_temp_c),
         ("RF.tyreTemperature", "C", rf_tyre_temp_c),
         ("LB.tyreTemperature", "C", lb_tyre_temp_c),
@@ -142,8 +184,10 @@ pub fn write_ld_with_graphics(
         if !graphics_records.is_empty() {
             let gx = resample_graphics_to_len(graphics_records, records.len(), |g| g.car_coordinates_x);
             let gy = resample_graphics_to_len(graphics_records, records.len(), |g| g.car_coordinates_y);
+            let gz = resample_graphics_to_len(graphics_records, records.len(), |g| g.car_coordinates_z);
             channels.push(("position.x", "m", gx));
             channels.push(("position.y", "m", gy));
+            channels.push(("position.z", "m", gz));
         }
     }
 
@@ -321,6 +365,22 @@ fn write_ld_chan(
     pad(f, 40)?;
 
     Ok(())
+}
+
+fn vec3_from_records(
+    records: &[PhysicsRecord],
+    getter: impl Fn(&PhysicsRecord) -> (f32, f32, f32),
+) -> (Vec<f32>, Vec<f32>, Vec<f32>) {
+    let mut x = Vec::with_capacity(records.len());
+    let mut y = Vec::with_capacity(records.len());
+    let mut z = Vec::with_capacity(records.len());
+    for r in records {
+        let (vx, vy, vz) = getter(r);
+        x.push(vx);
+        y.push(vy);
+        z.push(vz);
+    }
+    (x, y, z)
 }
 
 fn resample_graphics_to_len(
