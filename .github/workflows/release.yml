@@ -30,27 +30,27 @@ jobs:
           restore-keys: ${{ runner.os }}-cargo-
 
       - name: Build release binaries
-        run: cargo build --release --features acr_timing_bin
+        run: >
+          cargo build --release --features acr_timing_bin
+          --bin acr_recorder --bin acr_export --bin acr_motec
+          --bin acr_telemetry_bridge --bin acr_analysis_export
+          --bin acr_track_match --bin acr_timing --bin acr_rtss_osd
 
-      - name: Package artifacts
+      - name: Install Inno Setup
+        run: choco install innosetup -y
+
+      - name: Package install bundle (zip + setup.exe)
         shell: pwsh
         run: |
-          $bins = @(
-            "acr_recorder",
-            "acr_export",
-            "acr_telemetry_bridge",
-            "acr_analysis_export",
-            "acr_track_match",
-            "acr_rtss_osd"
-          )
-          New-Item -ItemType Directory -Force -Path dist
-          foreach ($b in $bins) {
-            Copy-Item "target\release\$b.exe" "dist\"
-          }
-          Compress-Archive -Path dist\* -DestinationPath acr-${{ github.ref_name }}-windows-x86_64.zip
+          $ErrorActionPreference = 'Stop'
+          $version = (Select-String -Path Cargo.toml -Pattern '^\s*version\s*=\s*"(.+)"\s*$' | Select-Object -First 1).Matches.Groups[1].Value
+          powershell -NoProfile -ExecutionPolicy Bypass -File install/build.ps1 -SkipCargoBuild
+          Copy-Item "target/install/ACR_Recorder_${version}_windows-x64_portable.zip" "acr-${{ github.ref_name }}-windows-x86_64.zip"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: acr-${{ github.ref_name }}-windows-x86_64.zip
+          files: |
+            acr-${{ github.ref_name }}-windows-x86_64.zip
+            target/install/ACR_Recorder_*_setup.exe
           generate_release_notes: true

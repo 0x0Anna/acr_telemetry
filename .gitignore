@@ -1,6 +1,7 @@
 # Build
 /target
 **/target
+install/staging/
 
 /acr_telemetry_bridge_0.1-bin/
 # User config (paths)

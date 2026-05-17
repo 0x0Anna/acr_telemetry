@@ -1,0 +1,17 @@
+# ACR Recorder – defaults for the Windows installer (paths relative to install dir)
+
+[recorder]
+raw_output_dir = "telemetry_raw"
+# notes_dir omitted → %APPDATA%\acr_telemetry (matches batch\*.bat)
+record_graphics = true
+ring_mode = false
+ring_slots = 8
+ring_prefix = "acc_ring"
+rotate_on_distance_reset = true
+distance_reset_min_prev_m = 200.0
+distance_reset_max_curr_m = 30.0
+distance_reset_cooldown_secs = 8
+
+[export]
+default_method = "sqlite"
+sqlite_db_path = "telemetry.db"
