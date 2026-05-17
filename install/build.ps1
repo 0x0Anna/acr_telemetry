@@ -3,6 +3,7 @@
 # CI (after cargo build):  powershell -File install/build.ps1 -SkipCargoBuild
 
 param(
+    [string]$Version,
     [switch]$SkipCargoBuild,
     [switch]$SkipInnoSetup
 )
@@ -18,7 +19,9 @@ function Get-CargoVersion {
     return $line.Matches.Groups[1].Value
 }
 
-$Version = Get-CargoVersion
+if (-not $Version) {
+    $Version = Get-CargoVersion
+}
 
 $Bins = @(
     'acr_recorder',

@@ -140,5 +140,5 @@ Notes/stop files still use `%APPDATA%\acr_telemetry` unless you set `notes_dir` 
 
 
 
-Bump `version` in root `Cargo.toml`; `build.ps1` passes it to Inno as `/DMyAppVersion=…`.
+Bump `version` in root `Cargo.toml` (e.g. `0.0.5`). CI derives the installer version from the git tag (`v0.0.5_…` → `0.0.5`). Local override: `install/build.ps1 -Version 0.0.5`.
 

@@ -44,8 +44,12 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $tag = '${{ github.ref_name }}'
-          $version = (Select-String -Path Cargo.toml -Pattern '^\s*version\s*=\s*"(.+)"\s*$' | Select-Object -First 1).Matches.Groups[1].Value
-          powershell -NoProfile -ExecutionPolicy Bypass -File install/build.ps1 -SkipCargoBuild
+          if ($tag -match '^v(\d+\.\d+\.\d+)') {
+            $version = $Matches[1]
+          } else {
+            throw "Tag $tag has no semver prefix (expected v0.0.5_...)"
+          }
+          powershell -NoProfile -ExecutionPolicy Bypass -File install/build.ps1 -SkipCargoBuild -Version $version
           Copy-Item "target/install/ACR_Recorder_${version}_windows-x64_portable.zip" "acr-$tag-windows-x86_64.zip"
           Compress-Archive -Path config-examples\*.toml -DestinationPath "acr-$tag-config-examples.zip"
           Compress-Archive -Path docs\*.md -DestinationPath "acr-$tag-docs.zip"
