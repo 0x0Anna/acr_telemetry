@@ -1,0 +1,877 @@
+{
+  "type": "FeatureCollection",
+  "name": "cumulative_sectors:hafren_north",
+  "properties": {
+    "reference_track": "hafren_north",
+    "coordinate_space": "acc_world_zx",
+    "timing_mode": "cumulative",
+    "source": "synced from hafren_north_linestrings.geojson (gate = LineString vertex 0)",
+    "marker_count": 41,
+    "geometry_type": "Point",
+    "gate_line_note": "Primitive gate lines: 2 points, P2 = P1 + (5.0 m z, 5.0 m x). Edit in QGIS; center_* / game_* = original gate anchor.",
+    "source_points": "hafren_north.geojson"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1087.0,
+          657.7
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_timing_start",
+        "marker_role": "timing_start",
+        "marker_order": 0,
+        "seg_id": 0,
+        "marker_label": "Start",
+        "game_x": 657.7,
+        "game_z": -1087.0,
+        "distance_traveled_m": 154.0,
+        "description": "grid / stage zero (from cwmbiga_afon_biga)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -902.2,
+          756.1
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 1,
+        "seg_id": 1,
+        "marker_label": "CP 1",
+        "game_x": 756.1,
+        "game_z": -902.2,
+        "distance_traveled_m": 370.4,
+        "description": "cumulative gate Start→S1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -820.8,
+          792.8
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 2,
+        "seg_id": 2,
+        "marker_label": "CP 2",
+        "game_x": 792.8,
+        "game_z": -820.8,
+        "distance_traveled_m": 461.3,
+        "description": "cumulative gate Start→S1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -804.8,
+          698.5
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 3,
+        "seg_id": 3,
+        "marker_label": "CP 3",
+        "game_x": 698.5,
+        "game_z": -804.8,
+        "distance_traveled_m": 695.2,
+        "description": "cumulative gate Start→S1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -616.4,
+          93.1
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 4,
+        "seg_id": 4,
+        "marker_label": "CP 4",
+        "game_x": 93.1,
+        "game_z": -616.4,
+        "distance_traveled_m": 1463.7,
+        "description": "cumulative gate Start→S1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -284.5,
+          -350.2
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 5,
+        "seg_id": 5,
+        "marker_label": "CP 5",
+        "game_x": -350.2,
+        "game_z": -284.5,
+        "distance_traveled_m": 2060.3,
+        "description": "cumulative gate Start→S1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -63.9,
+          -728.3
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 6,
+        "seg_id": 6,
+        "marker_label": "CP 6",
+        "game_x": -728.3,
+        "game_z": -63.9,
+        "distance_traveled_m": 2512.3,
+        "description": "cumulative gate Start→S1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          196.1,
+          -957.7
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 7,
+        "seg_id": 7,
+        "marker_label": "CP 7",
+        "game_x": -957.7,
+        "game_z": 196.1,
+        "distance_traveled_m": 2870.2,
+        "description": "cumulative gate Start→S1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          311.8,
+          -993.5
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 8,
+        "seg_id": 8,
+        "marker_label": "Sector 1",
+        "game_x": -993.5,
+        "game_z": 311.8,
+        "distance_traveled_m": 2997.0,
+        "description": "end sector 1 (from cwmbiga_afon_biga)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          874.0,
+          -1016.8
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 9,
+        "seg_id": 34,
+        "marker_label": "CP S1S2-1",
+        "game_x": -1016.8,
+        "game_z": 874.0,
+        "distance_traveled_m": 3579.8,
+        "description": "cumulative gate S1→S2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          506.6,
+          -874.5
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 10,
+        "seg_id": 35,
+        "marker_label": "CP S1S2-2",
+        "game_x": -874.5,
+        "game_z": 506.6,
+        "distance_traveled_m": 4091.7,
+        "description": "cumulative gate S1→S2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          339.7,
+          -664.2
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 11,
+        "seg_id": 36,
+        "marker_label": "CP S1S2-3",
+        "game_x": -664.2,
+        "game_z": 339.7,
+        "distance_traveled_m": 4386.6,
+        "description": "cumulative gate S1→S2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          740.0,
+          -239.2
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 12,
+        "seg_id": 37,
+        "marker_label": "CP S1S2-4",
+        "game_x": -239.2,
+        "game_z": 740.0,
+        "distance_traveled_m": 5137.0,
+        "description": "cumulative gate S1→S2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          741.9,
+          -12.9
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 13,
+        "seg_id": 38,
+        "marker_label": "CP S1S2-5",
+        "game_x": -12.9,
+        "game_z": 741.9,
+        "distance_traveled_m": 5431.7,
+        "description": "cumulative gate S1→S2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          354.5,
+          -181.7
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 14,
+        "seg_id": 39,
+        "marker_label": "CP S1S2-6",
+        "game_x": -181.7,
+        "game_z": 354.5,
+        "distance_traveled_m": 5879.4,
+        "description": "cumulative gate S1→S2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.4,
+          6.7
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 15,
+        "seg_id": 40,
+        "marker_label": "CP S1S2-7",
+        "game_x": 6.7,
+        "game_z": 127.4,
+        "distance_traveled_m": 6275.5,
+        "description": "cumulative gate S1→S2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.9,
+          53.3
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 16,
+        "seg_id": 10,
+        "marker_label": "CP S2-1",
+        "game_x": 53.3,
+        "game_z": 100.9,
+        "distance_traveled_m": 6329.5,
+        "description": "cumulative gate S2→S3"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          91.9,
+          67.3
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 17,
+        "seg_id": 11,
+        "marker_label": "CP S2-2",
+        "game_x": 67.3,
+        "game_z": 91.9,
+        "distance_traveled_m": 6346.2,
+        "description": "cumulative gate S2→S3"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.8,
+          74.9
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 18,
+        "seg_id": 12,
+        "marker_label": "CP S2-3",
+        "game_x": 74.9,
+        "game_z": 86.8,
+        "distance_traveled_m": 6355.4,
+        "description": "cumulative gate S2→S3"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.5,
+          78.4
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 19,
+        "seg_id": 13,
+        "marker_label": "CP S2-4",
+        "game_x": 78.4,
+        "game_z": 84.5,
+        "distance_traveled_m": 6359.6,
+        "description": "cumulative gate S2→S3"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          74.2,
+          92.9
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 20,
+        "seg_id": 14,
+        "marker_label": "CP S2-5",
+        "game_x": 92.9,
+        "game_z": 74.2,
+        "distance_traveled_m": 6377.5,
+        "description": "cumulative gate S2→S3"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.2,
+          99.9
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 21,
+        "seg_id": 15,
+        "marker_label": "CP S2-6",
+        "game_x": 99.9,
+        "game_z": 68.2,
+        "distance_traveled_m": 6386.8,
+        "description": "cumulative gate S2→S3"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          59.2,
+          108.4
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 22,
+        "seg_id": 16,
+        "marker_label": "CP S2-7",
+        "game_x": 108.4,
+        "game_z": 59.2,
+        "distance_traveled_m": 6399.3,
+        "description": "cumulative gate S2→S3"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          48.9,
+          115.6
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 23,
+        "seg_id": 9,
+        "marker_label": "Sector 2",
+        "game_x": 115.6,
+        "game_z": 48.9,
+        "distance_traveled_m": 6412.0,
+        "description": "end sector 2 (from cwmbiga_afon_biga)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.3,
+          126.4
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 24,
+        "seg_id": 17,
+        "marker_label": "CP S2-8",
+        "game_x": 126.4,
+        "game_z": 31.3,
+        "distance_traveled_m": 6432.8,
+        "description": "cumulative gate S2→S3"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          126.4,
+          490.7
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 25,
+        "seg_id": 18,
+        "marker_label": "CP S3-1",
+        "game_x": 490.7,
+        "game_z": 126.4,
+        "distance_traveled_m": 6830.0,
+        "description": "cumulative gate S2→S3 (Sektor 3)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.3,
+          626.7
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 26,
+        "seg_id": 19,
+        "marker_label": "CP S3-2",
+        "game_x": 626.7,
+        "game_z": -0.3,
+        "distance_traveled_m": 7080.9,
+        "description": "cumulative gate S2→S3 (Sektor 3)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.2,
+          762.3
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 27,
+        "seg_id": 20,
+        "marker_label": "CP S3-3",
+        "game_x": 762.3,
+        "game_z": 123.2,
+        "distance_traveled_m": 7333.1,
+        "description": "cumulative gate S2→S3 (Sektor 3)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          220.2,
+          918.0
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 28,
+        "seg_id": 21,
+        "marker_label": "CP S3-4",
+        "game_x": 918.0,
+        "game_z": 220.2,
+        "distance_traveled_m": 7562.9,
+        "description": "cumulative gate S2→S3 (Sektor 3)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -334.4,
+          935.4
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 29,
+        "seg_id": 22,
+        "marker_label": "CP S3-5",
+        "game_x": 935.4,
+        "game_z": -334.4,
+        "distance_traveled_m": 8176.5,
+        "description": "cumulative gate S2→S3 (Sektor 3)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -677.3,
+          801.3
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 30,
+        "seg_id": 23,
+        "marker_label": "CP S3-6",
+        "game_x": 801.3,
+        "game_z": -677.3,
+        "distance_traveled_m": 8580.6,
+        "description": "cumulative gate S2→S3 (Sektor 3)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -563.7,
+          1513.8
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 31,
+        "seg_id": 24,
+        "marker_label": "CP S3-7",
+        "game_x": 1513.8,
+        "game_z": -563.7,
+        "distance_traveled_m": 9496.9,
+        "description": "cumulative gate S2→S3 (Sektor 3)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -576.5,
+          1601.6
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 32,
+        "seg_id": 25,
+        "marker_label": "Sector 3",
+        "game_x": 1601.6,
+        "game_z": -576.5,
+        "distance_traveled_m": 9587.0,
+        "description": "end sector 3 (from cwmbiga_afon_biga)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -473.1,
+          1688.0
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 33,
+        "seg_id": 26,
+        "marker_label": "CP S4-1",
+        "game_x": 1688.0,
+        "game_z": -473.1,
+        "distance_traveled_m": 9737.4,
+        "description": "cumulative gate S3→Finish (Sektor 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -213.3,
+          1739.6
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 34,
+        "seg_id": 27,
+        "marker_label": "CP S4-2",
+        "game_x": 1739.6,
+        "game_z": -213.3,
+        "distance_traveled_m": 10007.6,
+        "description": "cumulative gate S3→Finish (Sektor 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.5,
+          1602.9
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 35,
+        "seg_id": 28,
+        "marker_label": "CP S4-3",
+        "game_x": 1602.9,
+        "game_z": 116.5,
+        "distance_traveled_m": 10376.2,
+        "description": "cumulative gate S3→Finish (Sektor 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          325.4,
+          1675.5
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 36,
+        "seg_id": 29,
+        "marker_label": "CP S4-4",
+        "game_x": 1675.5,
+        "game_z": 325.4,
+        "distance_traveled_m": 10650.1,
+        "description": "cumulative gate S3→Finish (Sektor 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          486.5,
+          1615.0
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 37,
+        "seg_id": 30,
+        "marker_label": "CP S4-5",
+        "game_x": 1615.0,
+        "game_z": 486.5,
+        "distance_traveled_m": 10853.8,
+        "description": "cumulative gate S3→Finish (Sektor 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          613.3,
+          1501.9
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 38,
+        "seg_id": 31,
+        "marker_label": "CP S4-6",
+        "game_x": 1501.9,
+        "game_z": 613.3,
+        "distance_traveled_m": 11041.1,
+        "description": "cumulative gate S3→Finish (Sektor 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          945.4,
+          1374.6
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 39,
+        "seg_id": 32,
+        "marker_label": "CP S4-7",
+        "game_x": 1374.6,
+        "game_z": 945.4,
+        "distance_traveled_m": 11404.6,
+        "description": "cumulative gate S3→Finish (Sektor 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1126.8,
+          1133.6
+        ]
+      },
+      "properties": {
+        "kind": "timing_sector_finish",
+        "marker_role": "finish",
+        "marker_order": 40,
+        "seg_id": 33,
+        "marker_label": "Finish",
+        "game_x": 1133.6,
+        "game_z": 1126.8,
+        "distance_traveled_m": 11764.0,
+        "description": "finish (from cwmbiga_afon_biga)"
+      }
+    }
+  ]
+}

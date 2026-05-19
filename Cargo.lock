@@ -31,6 +31,10 @@ dependencies = [
  "acr_pacenote",
  "acr_telemetry",
  "acr_timing",
+ "acr_timing_engine",
+ "acr_timing_presenter",
+ "acr_timing_protocol",
+ "acr_timing_store",
  "chrono",
  "ctrlc",
  "dirs",
@@ -69,6 +73,40 @@ dependencies = [
  "shapefile",
  "toml",
  "winapi",
+]
+
+[[package]]
+name = "acr_timing_engine"
+version = "0.1.0"
+dependencies = [
+ "acr_timing_protocol",
+ "acr_timing_store",
+]
+
+[[package]]
+name = "acr_timing_presenter"
+version = "0.1.0"
+dependencies = [
+ "acr_timing",
+ "acr_timing_protocol",
+]
+
+[[package]]
+name = "acr_timing_protocol"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "acr_timing_store"
+version = "0.1.0"
+dependencies = [
+ "acr_timing_protocol",
+ "chrono",
+ "rusqlite",
+ "serde",
 ]
 
 [[package]]

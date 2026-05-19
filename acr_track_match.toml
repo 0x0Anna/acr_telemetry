@@ -18,6 +18,5 @@ track_switch_min_gain = 0.8
 # history_points = 200
 # rate = 5
 # min_ref_spacing = 2.0
-# overlay_file = "..."
 # rtss_clear_all = false
 # debug_physics_1hz = false

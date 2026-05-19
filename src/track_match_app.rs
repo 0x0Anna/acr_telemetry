@@ -22,8 +22,13 @@ use acr_pacenote::pacenote_course::{
 };
 use acr_pacenote::pacenote_voice::{PacenoteConfig, PacenoteVoicePlayer};
 use acr_pacenote::win_picker_input::{PacenotePickerKeyTracker, PacenotePickerNav};
+use acr_timing::cumulative_sector_timing::CumulativeTrackSectors;
 use acr_timing::sector_leg_stats::{SectorLegStatsAccumulator, SectorLegStatsSnapshot};
 use acr_timing::split_beep::SplitBeepConfig;
+use acr_timing_engine::{RunCoordinator, SectorSessionConfig, sector_boundaries_from_labels};
+use acr_timing_presenter::PresenterState;
+use acr_timing_protocol::{EventReceiver, EventSender, TimingEventBody};
+use acr_timing_store::ReferenceStore;
 use acr_timing::subtiming::{SectorPassEvent, SectorPassTracker, SectorTravelDirection};
 use acc_shared_memory_rs::datatypes::Wheels;
 use acc_shared_memory_rs::maps::PhysicsMap;
@@ -51,6 +56,8 @@ const TELEPORT_UNLOCK_STILL_SEC: f64 = 3.0;
 const TELEPORT_PENDING_CLEAR_DRIVE_SEC: f64 = 2.0;
 /// Ignore sector line crossings for a single physics step longer than this (stale `last_pt` / menu teleport).
 const MAX_SECTOR_CROSS_SEGMENT_M: f64 = 120.0;
+/// RTSS flash after a cumulative (silent) gate: leg Δ vs PB.
+const CUMULATIVE_RTSS_FLASH_SEC: u64 = 4;
 /// Defaults when `timing/start_points.geojson` (or configured path) has anchors: track lock from
 /// start-point + `track_spline_length` (see `timing/track_spline_lengths.toml`). Lock persists until
 /// jump (`START_LAYOUT_TELEPORT_RESET_M`) + stillstand at start grid, or car model change.
@@ -175,7 +182,6 @@ struct SectorSet {
     ring_ids: Vec<i32>,
 }
 
-#[derive(Debug)]
 struct LiveTimingState {
     tracker: SectorPassTracker,
     ring_ids: Vec<i32>,
@@ -194,12 +200,184 @@ struct LiveTimingState {
     /// Pacenote-derived start/finish for Gesamtzeit (`timing/overall_markers/<slug>.geojson`).
     overall_markers: Option<acr_timing::stage_overall_markers::StageOverallMarkers>,
     overall_finish_recorded: bool,
-    /// Calibrated stage sectors (`[timing.ref_stage_sectors]` → GeoJSON). Independent of pacenotes.
-    stage_sector_session: Option<acr_timing::stage_sector_timing::StageSectorSession>,
+    /// Parallel calibrated stage timers (same ref track / spline; up to 3 slugs).
+    stage_sector_sessions: Vec<acr_timing::stage_sector_timing::StageSectorSession>,
     /// Physics aggregates for the current subsection leg (anchor → next cross).
     leg_stats: SectorLegStatsAccumulator,
     /// Speed (km/h) at subsection leg entry (set with anchor).
     leg_entry_speed_kmh: Option<f32>,
+    /// Stall wall excess since current subsection anchor (SHP sector splits).
+    subsection_leg_excess_wall_sec: f64,
+    /// Large position jump during current subsection leg.
+    subsection_timing_position_reset: bool,
+    /// Legs recorded this run (from, to, dt) for cumulative pace on silent splits.
+    subsection_run_legs: Vec<(i32, i32, f64)>,
+    subsection_cumulative_sec: f64,
+    subsection_html_path: Option<PathBuf>,
+    subsection_html_run_index: usize,
+    /// GeoJSON cumulative gates (replaces SHP subsection timing for this track).
+    cumulative: Option<acr_timing::cumulative_sector_timing::CumulativeLegState>,
+    /// Event-driven sector/sub timing (reference store + presenter OSD).
+    #[allow(dead_code)]
+    modular: Option<ModularTimingState>,
+}
+
+struct ModularTimingState {
+    coordinator: RunCoordinator,
+    event_rx: EventReceiver,
+    presenter: PresenterState,
+}
+
+fn cumulative_ordered_labels(cum: &CumulativeTrackSectors) -> Vec<(i32, String)> {
+    cum.sectors
+        .markers
+        .iter()
+        .enumerate()
+        .map(|(i, m)| {
+            let id = cum.seg_ids.get(i).copied().unwrap_or(m.order);
+            (id, m.label.clone())
+        })
+        .collect()
+}
+
+fn ensure_modular_timing(
+    state: &mut LiveTimingState,
+    bus: &EventSender,
+    store_path: &Path,
+    cum: &CumulativeTrackSectors,
+    reference_track: &str,
+    car: &str,
+) {
+    if state.modular.is_some() {
+        return;
+    }
+    let Ok(store) = ReferenceStore::open(store_path) else {
+        eprintln!(
+            "timing_reference_store: could not open {}",
+            store_path.display()
+        );
+        return;
+    };
+    let cfg = SectorSessionConfig {
+        reference_track: reference_track.to_string(),
+        car: car.to_string(),
+        stage_slug: cum.slug.clone(),
+    };
+    let mut coordinator = RunCoordinator::new(bus.clone(), store, cfg);
+    let labels = cumulative_ordered_labels(cum);
+    coordinator.set_route(&labels);
+    let n_sectors = sector_boundaries_from_labels(&labels).len();
+    eprintln!(
+        "modular timing: {} / {} ({} main-sector blocks)",
+        reference_track, cum.slug, n_sectors
+    );
+    state.modular = Some(ModularTimingState {
+        coordinator,
+        event_rx: bus.subscribe(),
+        presenter: PresenterState::default(),
+    });
+}
+
+/// Fresh modular run (clears stale demo / prior-sector OSD) and publishes `TimingStarted`.
+fn arm_modular_timing_run(
+    state: &mut LiveTimingState,
+    cfg: &CliConfig,
+    car: &str,
+) {
+    let Some(m) = state.modular.as_mut() else {
+        return;
+    };
+    m.presenter = PresenterState::default();
+    m.coordinator.reset_run();
+    m.coordinator.set_car(car);
+    m.coordinator.timing_started();
+    drain_modular_timing_events(state, cfg);
+}
+
+fn log_sector_tot_vs_stage(
+    timing_state: &LiveTimingState,
+    sector_index: u32,
+    modular_tot_sec: f64,
+) {
+    let ix = sector_index as usize;
+    for sess in &timing_state.stage_sector_sessions {
+        if sess.markers.stage_slug != "cwmbiga_afon_biga" {
+            continue;
+        }
+        if let Some(stage_t) = sess.run.sector_secs.get(ix).copied().flatten() {
+            let delta = modular_tot_sec - stage_t;
+            eprintln!(
+                "S{} tot check: modular_osd={modular_tot_sec:.3}s stage_timer={stage_t:.3}s Δ={delta:+.3}s \
+                 (stage_timer ≈ in-game sector; |Δ|>0.5s → anchor/clock issue)",
+                sector_index + 1,
+            );
+        }
+        return;
+    }
+}
+
+fn drain_modular_timing_events(
+    timing_state: &mut LiveTimingState,
+    cfg: &CliConfig,
+) {
+    let Some(modular) = timing_state.modular.as_mut() else {
+        return;
+    };
+    let events = modular.event_rx.drain();
+    for event in events {
+        if cfg.beep_on_cumulative_split {
+            if let TimingEventBody::SubSplit(ref s) = event.body {
+                acr_timing::split_beep::play_split_feedback(s.cum_delta_sec, &cfg.cumulative_beep);
+            }
+        }
+        if let TimingEventBody::SectorCompleted(ref s) = event.body {
+            log_sector_tot_vs_stage(timing_state, s.sector_index, s.tot_sec);
+        }
+        if let Some(m) = timing_state.modular.as_mut() {
+            m.presenter.apply(&event);
+        }
+    }
+}
+
+fn modular_presenter_detail(state: &mut LiveTimingState) -> String {
+    let Some(m) = state.modular.as_mut() else {
+        return String::new();
+    };
+    let lines = m.presenter.osd_lines();
+    if lines.is_empty() {
+        return String::new();
+    }
+    lines.join("\n")
+}
+
+fn cumulative_osd_detail(state: &mut LiveTimingState, _now: Instant) -> String {
+    modular_presenter_detail(state)
+}
+
+/// Modular two-line OSD; optional cumulative CP flash as extra line (does not replace presenter).
+fn cumulative_osd_detail_with_flash(
+    state: &mut LiveTimingState,
+    sector_status_line: &Option<(String, Instant)>,
+    now: Instant,
+) -> String {
+    let modular = cumulative_osd_detail(state, now);
+    if let Some((flash, sts)) = sector_status_line {
+        if sts.elapsed() <= osd_detail_ttl_for_state(state) {
+            if modular.is_empty() {
+                return flash.clone();
+            }
+            return format!("{modular}\n{flash}");
+        }
+    }
+    modular
+}
+
+fn osd_detail_ttl_for_state(state: &LiveTimingState) -> Duration {
+    if state.cumulative.is_some() {
+        Duration::from_secs(CUMULATIVE_RTSS_FLASH_SEC)
+    } else {
+        Duration::from_secs(8)
+    }
 }
 
 fn set_leg_entry_speed(state: &mut LiveTimingState, speed_kmh: f32) {
@@ -243,21 +421,7 @@ fn attach_stage_overall_markers(
     state.overall_finish_recorded = false;
 }
 
-fn attach_stage_timing_sectors(
-    state: &mut LiveTimingState,
-    stage_slug: &str,
-    sectors_dir: &Path,
-    cache: &mut acr_timing::timing_sectors::SectorCache,
-) {
-    state.stage_sector_session = acr_timing::timing_sectors::load_for_stage_slug(
-        stage_slug,
-        sectors_dir,
-        cache,
-    )
-    .map(|m| acr_timing::stage_sector_timing::StageSectorSession::new(m.clone()));
-}
-
-/// Attach calibrated stage sectors when `[timing.ref_stage_sectors]` maps the locked reference track.
+/// Attach all calibrated stage sector sets for the locked reference track (parallel timers).
 fn ensure_stage_timing_sectors(
     state: &mut LiveTimingState,
     reference_track: &str,
@@ -265,50 +429,91 @@ fn ensure_stage_timing_sectors(
     cache: &mut acr_timing::timing_sectors::SectorCache,
     active_stage_slug: &mut Option<String>,
     pos: Option<(f64, f64)>,
+    heading_rad: Option<f32>,
 ) {
-    if state.stage_sector_session.is_some() {
+    // Cumulative GeoJSON is calibrated for one stage variant; ignore parallel alternates.
+    let catalog = if state.cumulative.is_some() {
+        stage_timing
+            .stage_slug_for_reference(reference_track)
+            .into_iter()
+            .collect::<Vec<_>>()
+    } else {
+        stage_timing.stage_slugs_for_reference(reference_track)
+    };
+    if catalog.is_empty() {
         return;
     }
-    let Some(slug) = stage_timing.stage_slug_for_reference(reference_track) else {
-        return;
-    };
-    attach_stage_timing_sectors(state, &slug, &stage_timing.sectors_dir(), cache);
-    if let Some(sess) = state.stage_sector_session.as_ref() {
+    let allowed: HashSet<String> = catalog.iter().cloned().collect();
+    state
+        .stage_sector_sessions
+        .retain(|s| allowed.contains(&s.markers.stage_slug));
+    let sectors_dir = stage_timing.sectors_dir();
+    let start_radius = stage_timing.stage_sector_radius_m();
+    let to_attach = acr_timing::timing_sectors::resolve_active_stage_slugs(
+        &catalog,
+        &sectors_dir,
+        cache,
+        pos,
+        heading_rad,
+        start_radius,
+    );
+    for (slug, shadow_companion) in to_attach {
+        if state
+            .stage_sector_sessions
+            .iter()
+            .any(|s| s.markers.stage_slug == slug)
+        {
+            continue;
+        }
+        let Some(markers) =
+            acr_timing::timing_sectors::load_for_stage_slug(&slug, &sectors_dir, cache)
+        else {
+            eprintln!(
+                "stage timing: no GeoJSON for slug '{}' (expected {}/{}.geojson)",
+                slug,
+                sectors_dir.display(),
+                slug
+            );
+            continue;
+        };
+        let sess = acr_timing::stage_sector_timing::StageSectorSession::new_with_attach(
+            markers.clone(),
+            shadow_companion,
+        );
+        let mode = if shadow_companion {
+            "companion (also_run)"
+        } else {
+            "primary"
+        };
         eprintln!(
-            "stage timing sectors: {} ({} markers, {} timed legs) [timing config, ref {}]",
+            "stage timing [{mode}]: {} → {} [{}] ({} markers, {} legs)",
             sess.markers.stage_slug,
+            sess.markers.ziel,
+            sess.markers.rtss_label(),
             sess.markers.markers.len(),
             sess.markers.sector_leg_count,
-            reference_track
         );
-        if let Some(start) = sess.markers.markers.first() {
-            eprintln!(
-                "  timing start @ ({:.0}, {:.0}) — drive through calibrated markers in order (radius {:.0} m)",
-                start.x,
-                start.z,
-                stage_timing.stage_sector_radius_m()
-            );
-            if let Some((x, z)) = pos {
-                let d = acr_timing::timing_sectors::dist_xz(x, z, start.x, start.z);
-                eprintln!(
-                    "  you are {:.0}m from timing start (stage splits are not the ring SHP sectors)",
-                    d
-                );
-            }
-        }
-        *active_stage_slug = Some(slug);
+        state.stage_sector_sessions.push(sess);
+    }
+    if state.stage_sector_sessions.is_empty() {
+        return;
+    }
+    if active_stage_slug.is_none() {
+        eprintln!(
+            "parallel stage timers: {} active (max {})",
+            state.stage_sector_sessions.len(),
+            acr_timing::stage_timing_config::MAX_PARALLEL_STAGE_TIMINGS
+        );
+        *active_stage_slug = Some(state.stage_sector_sessions[0].markers.stage_slug.clone());
     }
 }
 
-fn flush_stage_sector_run(
-    state: &mut LiveTimingState,
+fn flush_one_stage_sector_session(
+    session: &mut acr_timing::stage_sector_timing::StageSectorSession,
     cfg: &CliConfig,
     car_model: &str,
     run_counter: &mut usize,
 ) {
-    let Some(session) = state.stage_sector_session.as_mut() else {
-        return;
-    };
     if !session.run.any_sector() {
         session.run.reset_run();
         return;
@@ -325,7 +530,66 @@ fn flush_stage_sector_run(
     }
 }
 
+fn flush_all_stage_sector_sessions(
+    state: &mut LiveTimingState,
+    cfg: &CliConfig,
+    car_model: &str,
+    run_counter: &mut usize,
+) {
+    for session in &mut state.stage_sector_sessions {
+        flush_one_stage_sector_session(session, cfg, car_model, run_counter);
+    }
+}
+
+fn note_stage_timing_position_reset(state: &mut LiveTimingState) {
+    for session in &mut state.stage_sector_sessions {
+        if !session.run.armed || session.run.completed {
+            continue;
+        }
+        if session.run.timing_position_reset {
+            continue;
+        }
+        session.run.note_timing_position_reset();
+        eprintln!(
+            "[{}] {}",
+            session.markers.rtss_label(),
+            acr_timing::stage_sector_timing::TIMING_POSITION_RESET_WARNING
+        );
+    }
+}
+
 impl LiveTimingState {
+    /// New SHP ring tracker; keep cumulative/modular/presenter when re-locking the same track mid-run.
+    fn new_preserving_cumulative(
+        ring_ids: Vec<i32>,
+        prev: Option<Self>,
+        track_name: &str,
+    ) -> Self {
+        let mut s = Self::new(ring_ids);
+        let Some(old) = prev else {
+            return s;
+        };
+        let same_track = old.cumulative.as_ref().is_some_and(|c| {
+            acr_timing::stage_timing_config::normalize_track_slug(&c.track.reference_track)
+                == acr_timing::stage_timing_config::normalize_track_slug(track_name)
+        });
+        if !same_track {
+            return s;
+        }
+        s.cumulative = old.cumulative;
+        s.modular = old.modular;
+        s.last_anchor_instant = old.last_anchor_instant;
+        s.last_anchor_drive_m = old.last_anchor_drive_m;
+        s.last_anchor_t_sec = old.last_anchor_t_sec;
+        s.subsection_run_legs = old.subsection_run_legs;
+        s.subsection_cumulative_sec = old.subsection_cumulative_sec;
+        s.stage_sector_sessions = old.stage_sector_sessions;
+        eprintln!(
+            "timing: preserved cumulative/modular OSD state across track lock ({track_name})"
+        );
+        s
+    }
+
     fn new(ring_ids: Vec<i32>) -> Self {
         Self {
             tracker: SectorPassTracker::new(ring_ids.len().max(1)),
@@ -344,12 +608,262 @@ impl LiveTimingState {
             cooldown_until: HashMap::new(),
             overall_markers: None,
             overall_finish_recorded: false,
-            stage_sector_session: None,
+            stage_sector_sessions: Vec::new(),
             leg_stats: SectorLegStatsAccumulator::default(),
             leg_entry_speed_kmh: None,
+            subsection_leg_excess_wall_sec: 0.0,
+            subsection_timing_position_reset: false,
+            subsection_run_legs: Vec::new(),
+            subsection_cumulative_sec: 0.0,
+            subsection_html_path: None,
+            subsection_html_run_index: 1,
+            cumulative: None,
+            modular: None,
         }
     }
 
+}
+
+fn reset_subsection_run(state: &mut LiveTimingState) {
+    if !state.subsection_run_legs.is_empty() {
+        state.subsection_html_run_index += 1;
+    }
+    state.subsection_run_legs.clear();
+    state.subsection_cumulative_sec = 0.0;
+}
+
+fn subsection_timing_active(state: &LiveTimingState) -> bool {
+    state.cumulative.is_some() || state.last_anchor_instant.is_some() || state.start_armed
+}
+
+fn reset_subsection_leg_timing_accumulators(state: &mut LiveTimingState) {
+    state.subsection_leg_excess_wall_sec = 0.0;
+    state.subsection_timing_position_reset = false;
+}
+
+fn note_subsection_timing_position_reset(state: &mut LiveTimingState) {
+    if !subsection_timing_active(state) || state.subsection_timing_position_reset {
+        return;
+    }
+    state.subsection_timing_position_reset = true;
+    eprintln!(
+        "subsection: {}",
+        acr_timing::stage_sector_timing::TIMING_POSITION_RESET_WARNING
+    );
+}
+
+/// Apply optional stall-excess correction; reset per-leg accumulators after a committed split.
+fn finalize_subsection_split_dt(
+    state: &mut LiveTimingState,
+    dt_raw: f64,
+    cfg: &acr_timing::timing_frame_quality::TimingQualityConfig,
+) -> f64 {
+    let excess = state.subsection_leg_excess_wall_sec;
+    let had_reset = state.subsection_timing_position_reset;
+    let (dt, _) = if cfg.apply_leg_excess_correction {
+        acr_timing::timing_frame_quality::TimingFrameMonitor::corrected_stage_leg_sec(
+            dt_raw, excess,
+        )
+    } else {
+        (dt_raw, 0.0)
+    };
+    if excess > 0.001 || had_reset {
+        eprintln!(
+            "subsection: raw={dt_raw:.3}s corrected={dt:.3}s stall_excess≈{excess:.3}s{}",
+            if had_reset {
+                format!(
+                    " — {}",
+                    acr_timing::stage_sector_timing::TIMING_POSITION_RESET_WARNING
+                )
+            } else {
+                String::new()
+            }
+        );
+    }
+    state.subsection_leg_excess_wall_sec = 0.0;
+    state.subsection_timing_position_reset = false;
+    dt
+}
+
+fn format_subsection_split_line(
+    from_id: i32,
+    to_id: i32,
+    dt: f64,
+    dt_raw: f64,
+    excess: f64,
+    pending: bool,
+    cfg: &acr_timing::timing_frame_quality::TimingQualityConfig,
+) -> String {
+    let pending_s = if pending { " (pending)" } else { "" };
+    if cfg.apply_leg_excess_correction && (excess > 0.001 || (dt_raw - dt).abs() > 0.001) {
+        format!(
+            "sector [{from_id}]-[{to_id}]: {:.3}s (raw {:.3}s −{:.3}s ex){pending_s}",
+            dt, dt_raw, excess.max(0.0),
+        )
+    } else {
+        format!("sector [{from_id}]-[{to_id}]: {dt:.3}s{pending_s}")
+    }
+}
+
+struct SubsectionSplitOutcome {
+    line: String,
+    leg_delta: f64,
+    /// Δ vs PB for this leg only (before PB update); drives cumulative beep + RTSS flash.
+    leg_pb_delta: Option<f64>,
+    persisted: bool,
+}
+
+fn ensure_subsection_html_path(
+    state: &mut LiveTimingState,
+    cfg: &CliConfig,
+    track_name: &str,
+    car_model: &str,
+) {
+    if !cfg.subsection_html.enabled || state.subsection_html_path.is_some() {
+        return;
+    }
+    let _ = std::fs::create_dir_all(&cfg.subsection_html_dir);
+    let track_slug = acr_timing::subsection_split_html::track_slug(track_name);
+    let car_slug = acr_timing::stage_sector_timing::sanitize_car_slug(car_model);
+    state.subsection_html_path = Some(acr_timing::subsection_split_html::new_html_path(
+        &cfg.subsection_html_dir,
+        &track_slug,
+        &car_slug,
+    ));
+}
+
+fn commit_subsection_split(
+    state: &mut LiveTimingState,
+    conn: &rusqlite::Connection,
+    pb: &mut acr_timing::timing_pb::TimingPbStore,
+    cfg: &CliConfig,
+    track_name: &str,
+    car_model: &str,
+    direction: &str,
+    from_sector: i32,
+    to_sector: i32,
+    duration_sec: f64,
+    duration_raw: f64,
+    distance_m: f64,
+    stats: Option<acr_timing::sector_leg_stats::SectorLegStatsSnapshot>,
+    locked_track: Option<&str>,
+    blame_ctx: Option<&TimingBlameCtx<'_>>,
+    cumulative_pace: bool,
+) -> SubsectionSplitOutcome {
+    ensure_subsection_html_path(state, cfg, track_name, car_model);
+
+    let leg_pb_delta = pb.leg_delta_for_feedback(
+        track_name,
+        car_model,
+        direction,
+        from_sector,
+        to_sector,
+        duration_sec,
+    );
+
+    state.subsection_run_legs.push((from_sector, to_sector, duration_sec));
+    state.subsection_cumulative_sec += duration_sec;
+
+    let split = acr_timing::timing_db::SplitRecord {
+        track_name,
+        car_model,
+        direction,
+        from_sector,
+        to_sector,
+        duration_sec,
+        distance_m,
+        stats,
+    };
+
+    let legs_for_pb: Vec<(i32, i32)> = state
+        .subsection_run_legs
+        .iter()
+        .map(|(a, b, _)| (*a, *b))
+        .collect();
+    let cum_pb = pb.cumulative_best_time(track_name, car_model, direction, &legs_for_pb);
+    let cum_delta = cum_pb.map(|pb| state.subsection_cumulative_sec - pb);
+
+    let (line, leg_delta, persisted) = if let Some(locked) = locked_track {
+        if locked == track_name {
+            let (l, d) = persist_split_and_line(conn, pb, &split, blame_ctx);
+            (l, d, true)
+        } else {
+            let _ = acr_timing::timing_db::insert_pending_split(conn, &split);
+            (
+                format_subsection_split_line(
+                    from_sector,
+                    to_sector,
+                    duration_sec,
+                    duration_raw,
+                    duration_raw - duration_sec,
+                    true,
+                    &cfg.timing_quality,
+                ),
+                0.0,
+                false,
+            )
+        }
+    } else {
+        let _ = acr_timing::timing_db::insert_pending_split(conn, &split);
+        (
+            format_subsection_split_line(
+                from_sector,
+                to_sector,
+                duration_sec,
+                duration_raw,
+                duration_raw - duration_sec,
+                true,
+                &cfg.timing_quality,
+            ),
+            0.0,
+            false,
+        )
+    };
+
+    if cfg.subsection_html.enabled {
+        if let Some(path) = state.subsection_html_path.as_ref() {
+            let leg_d = if cumulative_pace {
+                None
+            } else if persisted {
+                Some(leg_delta)
+            } else {
+                None
+            };
+            if let Err(e) = acr_timing::subsection_split_html::append_split_row(
+                path,
+                track_name,
+                car_model,
+                state.subsection_html_run_index,
+                from_sector,
+                to_sector,
+                duration_sec,
+                leg_d,
+                state.subsection_cumulative_sec,
+                cum_delta,
+                cumulative_pace,
+                !persisted,
+            ) {
+                eprintln!("subsection HTML: {e}");
+            }
+        }
+    }
+
+    if cumulative_pace {
+        eprintln!(
+            "cumulative [{from_sector}]-[{to_sector}]: {duration_sec:.3}s Σ={:.3}s ΔΣ={}",
+            state.subsection_cumulative_sec,
+            cum_delta
+                .map(|d| format!("{:+.3}s", d))
+                .unwrap_or_else(|| "—".to_string()),
+        );
+    }
+
+    SubsectionSplitOutcome {
+        line,
+        leg_delta,
+        leg_pb_delta,
+        persisted,
+    }
 }
 
 pub fn run() -> Result<(), Box<dyn std::error::Error>> {
@@ -397,7 +911,6 @@ struct CliConfig {
     live_rate_hz: u64,
     min_ref_spacing_m: f64,
     labels_path: Option<PathBuf>,
-    overlay_file: PathBuf,
     rtss: bool,
     rtss_owner: String,
     rtss_slot: u32,
@@ -407,6 +920,8 @@ struct CliConfig {
     sector_track_field: String,
     sector_id_field: String,
     timing_db_path: PathBuf,
+    timing_pb_path: PathBuf,
+    timing_reference_store_path: PathBuf,
     sector_cross_cooldown_ms: u64,
     sector_search_radius_m: f64,
     track_keep_max_dist_m: f64,
@@ -429,11 +944,244 @@ struct CliConfig {
     grid_start_list_radius_wide_m: f64,
     beep_on_split: bool,
     split_beep: SplitBeepConfig,
+    beep_on_cumulative_split: bool,
+    cumulative_beep: SplitBeepConfig,
+    cumulative_timing: acr_timing::cumulative_timing_config::CumulativeTimingConfig,
+    subsection_html: acr_timing::timing_config_file::SubsectionHtmlConfig,
+    subsection_html_dir: PathBuf,
     pacenotes: Option<PacenoteConfig>,
     /// Calibrated stage-sector timing (independent of pacenotes).
     stage_timing: acr_timing::stage_timing_config::StageTimingConfig,
+    /// Pearson correlations → timing_factors (see `[correlation]` in acr_timing.toml).
+    correlation: acr_timing::timing_correlation::CorrelationConfig,
+    timing_blame: acr_timing::timing_blame::BlameConfig,
+    timing_voice: acr_timing::timing_voice::TimingVoiceConfig,
+    timing_quality: acr_timing::timing_frame_quality::TimingQualityConfig,
     /// Live: print `{:#?}` of the last received physics map at most once per second.
     debug_physics_1hz: bool,
+}
+
+struct TimingBlameCtx<'a> {
+    voice: Option<&'a acr_timing::timing_voice::TimingVoicePlayer>,
+    cfg: &'a acr_timing::timing_blame::BlameConfig,
+}
+
+#[allow(clippy::too_many_arguments)]
+fn process_stage_sector_sessions_on_step(
+    state: &mut LiveTimingState,
+    lp: Point2,
+    p: Point2,
+    cfg: &CliConfig,
+    timing_conn: &rusqlite::Connection,
+    timing_pb: &mut acr_timing::timing_pb::TimingPbStore,
+    physics: &PhysicsMap,
+    graphics_clock: f64,
+    graphics_distance_traveled: f32,
+    car_model: &str,
+    _locked_track: Option<&str>,
+    blame_ctx: &TimingBlameCtx<'_>,
+    frame_monitor: &mut acr_timing::timing_frame_quality::TimingFrameMonitor,
+    stage_sector_html_run_counter: &mut usize,
+    speed_kmh_now: f64,
+) {
+    if state.stage_sector_sessions.is_empty() {
+        return;
+    }
+    let now_inst = Instant::now();
+    let stage_radius = cfg.stage_timing.stage_sector_radius_m();
+    let session_count = state.stage_sector_sessions.len();
+    for si in 0..session_count {
+        let outcome = {
+            let session = &mut state.stage_sector_sessions[si];
+            acr_timing::stage_sector_timing::observe_stage_crossing(
+                session,
+                (lp.x, lp.z),
+                (p.x, p.z),
+                stage_radius,
+                graphics_clock,
+                now_inst,
+            )
+        };
+        let Some(outcome) = outcome else {
+            continue;
+        };
+        let leg_recorded = outcome.leg_duration_sec;
+        let session_excess = state.stage_sector_sessions[si].run.leg_excess_wall_sec;
+        let (leg_dt, leg_excess) = leg_recorded
+            .map(|raw| {
+                if cfg.timing_quality.apply_leg_excess_correction {
+                    acr_timing::timing_frame_quality::TimingFrameMonitor::corrected_stage_leg_sec(
+                        raw,
+                        session_excess,
+                    )
+                } else {
+                    (raw, 0.0)
+                }
+            })
+            .unwrap_or((0.0, 0.0));
+        let slug = state.stage_sector_sessions[si].markers.stage_slug.clone();
+        let label = state.stage_sector_sessions[si].markers.rtss_label().to_string();
+        if let Some(crossed) = state.stage_sector_sessions[si]
+            .markers
+            .markers
+            .iter()
+            .find(|m| m.order == outcome.to_order)
+        {
+            let via = outcome
+                .pass_method
+                .map(|m| match m {
+                    acr_timing::timing_sectors::GatePassMethod::GateLine => "gate_line",
+                    acr_timing::timing_sectors::GatePassMethod::RadiusDisc => "radius_disc",
+                })
+                .unwrap_or("?");
+            acr_timing::physics_wheel::log_sector_crossing(
+                &crossed.label,
+                crossed.role.as_str(),
+                via,
+                physics,
+                p.x,
+                p.z,
+                speed_kmh_now,
+                leg_recorded.map(|_| leg_dt),
+                graphics_distance_traveled,
+                crossed.x,
+                crossed.z,
+            );
+        }
+        let run_completed = outcome.run_completed;
+        if leg_recorded.is_some() {
+            let dt_raw = leg_recorded.unwrap();
+            if let Some(leg_ix) = outcome.leg_index {
+                let session = &mut state.stage_sector_sessions[si];
+                if leg_ix < session.run.sector_secs.len() {
+                    session.run.sector_secs[leg_ix] = Some(leg_dt);
+                }
+            }
+            if let Some(summary) = frame_monitor.leg_close_summary(
+                &format!("[{label}]"),
+                dt_raw,
+                if cfg.timing_quality.apply_leg_excess_correction {
+                    Some(leg_dt)
+                } else {
+                    None
+                },
+                session_excess,
+            ) {
+                eprintln!("{summary}");
+            }
+            frame_monitor.reset_leg_accumulator();
+            state.stage_sector_sessions[si].run.leg_excess_wall_sec = 0.0;
+            let exit_speed = physics.speed_kmh;
+            let leg_stats = take_leg_stats(state, exit_speed);
+            match acr_timing::stage_sector_timing::persist_stage_leg(
+                &timing_conn,
+                timing_pb,
+                &slug,
+                car_model,
+                outcome.from_order,
+                outcome.to_order,
+                leg_dt,
+                leg_stats,
+            ) {
+                Ok((delta, pb)) => {
+                    let detail = if leg_excess > 0.001 {
+                        outcome.leg_index.map(|leg_ix| {
+                            let via = outcome
+                                .pass_method
+                                .map(|m| match m {
+                                    acr_timing::timing_sectors::GatePassMethod::GateLine => {
+                                        "gate_line"
+                                    }
+                                    acr_timing::timing_sectors::GatePassMethod::RadiusDisc => {
+                                        "radius_disc"
+                                    }
+                                })
+                                .unwrap_or("?");
+                            format!(
+                                "stage S{}: {} ({via}) [raw {} −{:.3}s ex]",
+                                leg_ix + 1,
+                                acr_timing::stage_sector_timing::format_duration(leg_dt),
+                                acr_timing::stage_sector_timing::format_duration(dt_raw),
+                                leg_excess,
+                            )
+                        })
+                    } else {
+                        outcome.overlay_detail.clone()
+                    };
+                    if let Some(detail) = detail {
+                        let line = format!("[{label}] {detail}");
+                        eprintln!("{line}");
+                    }
+                    let main_sector_leg = state.stage_sector_sessions[si]
+                        .markers
+                        .markers
+                        .iter()
+                        .find(|m| m.order == outcome.to_order)
+                        .is_some_and(acr_timing::stage_sector_timing::stage_marker_is_main_sector);
+                    if cfg.beep_on_split && !main_sector_leg {
+                        acr_timing::split_beep::play_split_feedback(delta, &cfg.split_beep);
+                    }
+                    if let Some(pb_sec) = pb {
+                        let split = acr_timing::timing_db::SplitRecord {
+                            track_name: &slug,
+                            car_model,
+                            direction: acr_timing::stage_sector_timing::STAGE_TIMING_DIRECTION,
+                            from_sector: outcome.from_order,
+                            to_sector: outcome.to_order,
+                            duration_sec: leg_dt,
+                            distance_m: 0.0,
+                            stats: leg_stats,
+                        };
+                        maybe_timing_blame(
+                            timing_conn,
+                            &split,
+                            pb_sec,
+                            delta,
+                            Some(blame_ctx),
+                        );
+                    }
+                }
+                Err(e) => eprintln!("stage sector DB: {}", e),
+            }
+        } else if let Some(detail) = outcome.overlay_detail.clone() {
+            let line = format!("[{label}] {detail}");
+            eprintln!("{line}");
+            if detail.contains("armed") {
+                state.stage_sector_sessions[si].run.leg_excess_wall_sec = 0.0;
+                frame_monitor.reset_leg_accumulator();
+            }
+        }
+        if run_completed {
+            let session = &mut state.stage_sector_sessions[si];
+            flush_one_stage_sector_session(session, cfg, car_model, stage_sector_html_run_counter);
+        }
+    }
+}
+
+fn maybe_timing_blame(
+    conn: &rusqlite::Connection,
+    split: &acr_timing::timing_db::SplitRecord<'_>,
+    pb_duration_sec: f64,
+    delta_sec: f64,
+    ctx: Option<&TimingBlameCtx<'_>>,
+) {
+    let Some(ctx) = ctx else { return };
+    match acr_timing::timing_blame::analyze_slower_split(
+        conn,
+        split,
+        pb_duration_sec,
+        delta_sec,
+        ctx.cfg,
+    ) {
+        Ok(Some(result)) => {
+            eprintln!("timing blame: {}", result.summary_line());
+            if let Some(v) = ctx.voice {
+                v.enqueue(result.voice_tokens(ctx.cfg.max_factors));
+            }
+        }
+        Ok(None) => {}
+        Err(e) => eprintln!("timing blame: {e}"),
+    }
 }
 
 fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>> {
@@ -492,7 +1240,6 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
     let mut live_rate_hz = tm.rate.unwrap_or(5u64);
     let mut min_ref_spacing_m = tm.min_ref_spacing.unwrap_or(2.0f64);
     let mut labels_path: Option<PathBuf> = tm.labels.as_ref().map(PathBuf::from);
-    let mut overlay_file: Option<PathBuf> = tm.overlay_file.as_ref().map(PathBuf::from);
     let mut rtss = tm.rtss.unwrap_or(false);
     let mut rtss_owner = tm
         .rtss_owner
@@ -516,6 +1263,7 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
         .transpose()?
         .unwrap_or(SectorsCoordSpace::File);
     let mut timing_db_path: Option<PathBuf> = timing.timing_db.as_ref().map(PathBuf::from);
+    let timing_pb_path: Option<PathBuf> = timing.timing_pb.as_ref().map(PathBuf::from);
     let mut sector_cross_cooldown_ms = timing.sector_cooldown_ms.unwrap_or(500u64);
     let mut sector_search_radius_m = timing.sector_radius.unwrap_or(25.0f64);
     let mut track_keep_max_dist_m = tm.track_keep_max_dist.unwrap_or(15.0f64);
@@ -546,12 +1294,44 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
         .unwrap_or(DEFAULT_GRID_START_LIST_RADIUS_WIDE_M);
     let mut beep_on_split = timing.beep_on_split.unwrap_or(false);
     let split_beep = timing.beep.clone().unwrap_or_default();
+    let beep_on_cumulative_split = timing
+        .beep_on_cumulative_split
+        .or(timing.beep_on_silent_split)
+        .unwrap_or(true);
+    let cumulative_beep = timing
+        .cumulative_beep
+        .clone()
+        .or(timing.silent_beep.clone())
+        .unwrap_or_else(|| SplitBeepConfig {
+            mode: "sine".into(),
+            faster_freq_hz: 660.0,
+            faster_duration_ms: 50,
+            slower_freq_hz: 330.0,
+            slower_duration_ms: 160,
+            gap_ms: 220,
+            volume: split_beep.volume,
+            faster_wav: None,
+            slower_wav: None,
+        });
+    let cumulative_timing = timing.cumulative_timing.clone();
+    let subsection_html = timing.subsection_html.clone();
     #[cfg(feature = "acr_timing_bin")]
     let pacenotes = None;
     #[cfg(not(feature = "acr_timing_bin"))]
     let pacenotes = loaded.pacenotes.clone();
     let mut debug_physics_1hz = tm.debug_physics_1hz.unwrap_or(false);
     let stage_timing = timing.stage_timing.clone();
+    let subsection_html_dir = PathBuf::from(
+        subsection_html
+            .dir
+            .as_deref()
+            .or(stage_timing.timing_sectors_html_dir.as_deref())
+            .unwrap_or("timing/runs"),
+    );
+    let correlation = timing.correlation.to_runtime();
+    let timing_blame = timing.timing_blame.to_runtime(&correlation);
+    let timing_voice = timing.timing_voice.clone();
+    let timing_quality = timing.timing_quality.to_runtime();
 
     let mut i = 1;
     while i < args.len() {
@@ -626,12 +1406,6 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
             "--labels" => {
                 labels_path = Some(PathBuf::from(
                     args.get(i + 1).ok_or("--labels needs a TOML path")?,
-                ));
-                i += 1;
-            }
-            "--overlay-file" => {
-                overlay_file = Some(PathBuf::from(
-                    args.get(i + 1).ok_or("--overlay-file needs a path")?,
                 ));
                 i += 1;
             }
@@ -767,14 +1541,20 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
         return Err("--required-ratio must be between 0 and 1".into());
     }
 
-    let overlay_file = overlay_file.unwrap_or_else(|| {
-        let cfg = config::load_config();
-        config::resolve_notes_dir(&cfg.recorder).join("acr_detected_track.txt")
-    });
     let timing_db_path = timing_db_path.unwrap_or_else(|| {
         let cfg = config::load_config();
         config::resolve_notes_dir(&cfg.recorder).join("timing.db")
     });
+    let timing_pb_path = timing_pb_path.unwrap_or_else(|| {
+        timing_db_path
+            .parent()
+            .map(|d| d.join("timing_pb.toml"))
+            .unwrap_or_else(|| PathBuf::from("timing/timing_pb.toml"))
+    });
+    let timing_reference_store_path = timing_pb_path
+        .parent()
+        .map(|d| d.join("reference_runs.sqlite"))
+        .unwrap_or_else(|| PathBuf::from("timing/reference_runs.sqlite"));
 
     Ok(CliConfig {
         refs,
@@ -787,7 +1567,6 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
         live_rate_hz,
         min_ref_spacing_m,
         labels_path,
-        overlay_file,
         rtss,
         rtss_owner,
         rtss_slot,
@@ -797,6 +1576,8 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
         sector_track_field,
         sector_id_field,
         timing_db_path,
+        timing_pb_path,
+        timing_reference_store_path,
         sector_cross_cooldown_ms,
         sector_search_radius_m,
         track_keep_max_dist_m,
@@ -813,8 +1594,17 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
         grid_start_list_radius_wide_m,
         beep_on_split,
         split_beep,
+        beep_on_cumulative_split,
+        cumulative_beep,
+        cumulative_timing,
+        subsection_html,
+        subsection_html_dir,
         pacenotes,
         stage_timing,
+        correlation,
+        timing_blame,
+        timing_voice,
+        timing_quality,
         debug_physics_1hz,
     })
 }
@@ -835,8 +1625,7 @@ fn print_usage() {
     eprintln!("       --rate HZ            Live evaluation rate (default: 5)");
     eprintln!("       --min-ref-spacing M  Minimum spacing for loaded reference points (default: 2.0m)");
     eprintln!("       --labels FILE.toml   Optional labels mapping for reference files");
-    eprintln!("       --overlay-file PATH  Write live detection message to file");
-    eprintln!("       --rtss                 Also push message to RTSS OSD (Windows)");
+    eprintln!("       --rtss                 Push message to RTSS OSD (Windows)");
     eprintln!("       --rtss-owner NAME      RTSS OSD owner id (default: acr_track_match)");
     eprintln!("       --rtss-slot N          Force RTSS slot N (0 = auto, default: 0)");
     eprintln!("       --rtss-clear-all       Clear all RTSS slots once at startup (careful: clears other OSD sources)");
@@ -1110,7 +1899,11 @@ fn activate_standstill_track_lock(
             format!("detected track {}", track_name),
             Instant::now(),
         ));
-        Some(LiveTimingState::new(s.ring_ids.clone()))
+        Some(LiveTimingState::new_preserving_cumulative(
+            s.ring_ids.clone(),
+            timing_state.take(),
+            track_name,
+        ))
     } else {
         let line = "no sector set for detected track".to_string();
         eprintln!("{} ({})", line, track_name);
@@ -1132,6 +1925,7 @@ fn activate_standstill_track_lock(
             timing_sector_cache,
             active_timing_stage_slug,
             Some((p.x, p.z)),
+            None,
         );
     }
     eprintln!("{}", log_line);
@@ -1144,7 +1938,54 @@ fn activate_standstill_track_lock(
 
 fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std::error::Error>> {
     let mut acc = ACCSharedMemory::new()?;
+    acr_timing::timing_db::set_correlation_config(cfg.correlation.clone());
     let timing_conn = acr_timing::timing_db::open_or_create(&cfg.timing_db_path)?;
+    let mut timing_pb = acr_timing::timing_pb::TimingPbStore::load(&cfg.timing_pb_path)?;
+    if timing_pb.is_empty() {
+        match timing_pb.import_from_db(&timing_conn) {
+            Ok(n) if n > 0 => eprintln!(
+                "timing_pb: seeded {} leg PB(s) from {} → {}",
+                n,
+                cfg.timing_db_path.display(),
+                timing_pb.path().display()
+            ),
+            Ok(_) => {}
+            Err(e) => eprintln!("timing_pb import from db: {e}"),
+        }
+    } else {
+        eprintln!(
+            "timing_pb: {} leg PB(s) from {}",
+            timing_pb.len(),
+            timing_pb.path().display()
+        );
+    }
+    let timing_voice = cfg
+        .timing_voice
+        .voice_dir
+        .as_ref()
+        .filter(|_| cfg.timing_voice.enabled)
+        .map(|dir| {
+            acr_timing::timing_voice::TimingVoicePlayer::spawn(
+                dir.clone(),
+                cfg.timing_voice.volume,
+            )
+        });
+    let blame_ctx = TimingBlameCtx {
+        voice: timing_voice.as_ref(),
+        cfg: &cfg.timing_blame,
+    };
+    if cfg.timing_blame.enabled || cfg.timing_voice.copilot_crash_voice {
+        if let Some(dir) = cfg.timing_voice.voice_dir.as_ref() {
+            eprintln!(
+                "timing voice: {} (enabled={}, copilot_crash={})",
+                dir.display(),
+                cfg.timing_voice.enabled,
+                cfg.timing_voice.copilot_crash_voice
+            );
+        } else if cfg.timing_voice.enabled {
+            eprintln!("timing voice enabled but voice_dir missing in [timing_voice]");
+        }
+    }
     let spline_catalog = acr_timing::track_spline_ref::load_catalog(Path::new(
         "timing/track_spline_lengths.toml",
     ))?;
@@ -1171,6 +2012,24 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
     } else {
         HashMap::new()
     };
+    let cumulative_tracks = if !cfg.cumulative_timing.ref_track_sectors.is_empty() {
+        acr_timing::cumulative_sector_timing::load_all(&cfg.cumulative_timing)?
+    } else {
+        HashMap::new()
+    };
+    let timing_event_bus = acr_timing_protocol::EventSender::new();
+    eprintln!(
+        "timing_reference_store: {}",
+        cfg.timing_reference_store_path.display()
+    );
+    let mut sector_sets = sector_sets;
+    for key in cumulative_tracks.keys() {
+        if sector_sets.remove(key).is_some() {
+            eprintln!(
+                "subsection SHP: disabled for '{key}' (cumulative GeoJSON active)"
+            );
+        }
+    }
     let pacenote_cfg = cfg
         .pacenotes
         .clone()
@@ -1249,23 +2108,22 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
     let mut stage_sector_html_run_counter: usize = 0;
     let mut active_timing_stage_slug: Option<String> = None;
     let mut stillstand_log_state = acr_timing::physics_wheel::StillstandLogState::default();
+    let mut frame_monitor =
+        acr_timing::timing_frame_quality::TimingFrameMonitor::new(cfg.timing_quality.clone());
+    let mut copilot_crash_voice = acr_timing::timing_voice::CopilotCrashVoiceState::default();
     let _ = std::fs::create_dir_all(&cfg.stage_timing.html_dir());
     // After Ctrl+Enter on the first-anchor picker, suppress reopening the menu while the same
     // anchors stay within radius (otherwise the overlay immediately reappears and Enter retriggers).
     let mut pacenote_manual_anchor_slug: Option<String> = None;
-    let mut last_overlay_msg: String = compose_two_line_osd("detecting track...", "");
-    let mut last_overlay_push = Instant::now();
-    let overlay_dir = cfg
-        .overlay_file
-        .parent()
-        .map(Path::to_path_buf)
-        .unwrap_or_else(|| PathBuf::from("."));
-    let _ = std::fs::create_dir_all(&overlay_dir);
+    let mut last_rtss_msg = String::new();
+    let mut last_rtss_push = Instant::now();
     #[cfg(windows)]
     {
         if cfg.rtss {
             // Always release our own owner on startup to avoid stale slot artifacts from prior runs.
             let _ = acr_timing::rtss_osd::release(&cfg.rtss_owner);
+            // Demo binary uses a separate owner but often the same slot (0).
+            let _ = acr_timing::rtss_osd::release("acr_timing_demo");
             if cfg.rtss_clear_all {
                 match acr_timing::rtss_osd::clear_all() {
                     Ok(()) => eprintln!("RTSS cleanup: cleared all OSD slots."),
@@ -1274,7 +2132,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
             }
         }
     }
-    push_live_overlay(cfg, &last_overlay_msg, 2)?;
+    push_rtss_osd(cfg, "")?;
     eprintln!("live mode started; waiting for ACC shared memory...");
 
     while RUNNING.load(Ordering::Relaxed) {
@@ -1294,17 +2152,74 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                     data.physics.packet_id, data.physics
                 );
             }
-            let car_model_now = data.statics.car_model.trim().to_string();
+            let tick_stall_excess = frame_monitor.tick_timing_excess(&data.physics);
+            if tick_stall_excess > 0.0 {
+                if let Some(state) = timing_state.as_mut() {
+                    for session in &mut state.stage_sector_sessions {
+                        if session.run.armed && !session.run.completed {
+                            session.run.leg_excess_wall_sec += tick_stall_excess;
+                        }
+                    }
+                    if subsection_timing_active(state) {
+                        state.subsection_leg_excess_wall_sec += tick_stall_excess;
+                    }
+                }
+            }
+            if frame_monitor.tick_position_reset_suspect(&data.physics) {
+                if let Some(state) = timing_state.as_mut() {
+                    note_stage_timing_position_reset(state);
+                    note_subsection_timing_position_reset(state);
+                }
+            }
+            let stage_copilot_active = timing_state.as_ref().is_some_and(|s| {
+                s.stage_sector_sessions
+                    .iter()
+                    .any(|sess| sess.run.armed && !sess.run.completed)
+            });
             let speed_kmh_now = data.physics.speed_kmh as f64;
-            if let Some(lock_car) = &locked_car_model {
-                if !car_model_now.is_empty() && car_model_now != *lock_car {
+            if stage_copilot_active {
+                copilot_crash_voice.observe_high_g(&data.physics.g_force, &cfg.timing_voice);
+                copilot_crash_voice.observe_speed_for_pending_copilot(
+                    speed_kmh_now,
+                    timing_voice.as_ref(),
+                    &cfg.timing_voice,
+                );
+            } else {
+                copilot_crash_voice.clear_copilot_pending();
+            }
+            if let Some(line) = frame_monitor.observe_physics(&data.physics) {
+                eprintln!("{line}");
+            }
+            let car_model_now = data.statics.car_model.trim().to_string();
+            if let Some(lock_car) = locked_car_model.clone() {
+                if !car_model_now.is_empty() && car_model_now != lock_car {
                     eprintln!(
                         "unlocking track lock due to car change: '{}' -> '{}'",
                         lock_car, car_model_now
                     );
+                    if let Some(state) = timing_state.as_mut() {
+                        flush_all_stage_sector_sessions(
+                            state,
+                            &cfg,
+                            &lock_car,
+                            &mut stage_sector_html_run_counter,
+                        );
+                    }
                     locked_track = None;
                     locked_car_model = None;
                     stable_selected = None;
+                    active_track_name = None;
+                    timing_state = None;
+                    active_timing_stage_slug = None;
+                    latest_timing_line = None;
+                    sector_status_line = Some((
+                        format!("reset after car change ('{lock_car}' -> '{car_model_now}')"),
+                        Instant::now(),
+                    ));
+                    detected_track_line = None;
+                    history.clear();
+                    last_pt = None;
+                    total_drive_m = 0.0;
                     pacenote_ambiguous_pick = None;
                     start_track_ambiguous_pick = None;
                     grid_standstill_since = None;
@@ -1322,6 +2237,9 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                         &mut pacenote_loaded_src_mtime,
                         true,
                     );
+                    let _ = push_rtss_osd(cfg, "");
+                    last_rtss_msg.clear();
+                    last_rtss_push = Instant::now();
                 }
             }
             let observed_spline_m = data.statics.track_spline_length;
@@ -1340,7 +2258,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
             };
             let (stage_armed, stage_leg_elapsed, stage_next_label) = timing_state
                 .as_ref()
-                .and_then(|ts| ts.stage_sector_session.as_ref())
+                .and_then(|ts| ts.stage_sector_sessions.first())
                 .map(|sess| {
                     let now = Instant::now();
                     let next = sess
@@ -1374,6 +2292,16 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                 if let Some(lp) = last_pt {
                     let jump_m = dist(lp, p);
                     if jump_m > START_LAYOUT_TELEPORT_RESET_M {
+                        if let Some(state) = timing_state.as_mut() {
+                            if state
+                                .stage_sector_sessions
+                                .iter()
+                                .any(|s| s.run.armed && !s.run.completed)
+                            {
+                                note_stage_timing_position_reset(state);
+                                note_subsection_timing_position_reset(state);
+                            }
+                        }
                         let record = teleport_unlock_pending_jump_m
                             .map_or(true, |prev| jump_m > prev);
                         if record {
@@ -1414,11 +2342,10 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                             );
                             teleport_unlock_pending_jump_m = None;
                             teleport_unlock_stillstand_since = None;
-                            let prev_locked = locked_track.clone();
                             if let Some(state) = timing_state.as_mut() {
                                 let car_model =
                                     locked_car_model.as_deref().unwrap_or("unknown_car");
-                                flush_stage_sector_run(
+                                flush_all_stage_sector_sessions(
                                     state,
                                     &cfg,
                                     car_model,
@@ -1457,16 +2384,9 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                 &mut pacenote_loaded_src_mtime,
                                 true,
                             );
-                            let status = if let Some(name) = prev_locked.as_deref() {
-                                format!("track reset {}", name)
-                            } else {
-                                "track reset".to_string()
-                            };
-                            let detail = format!("grid reset after jump {:.0} m", jump_m);
-                            let msg = compose_two_line_osd(&status, &detail);
-                            let _ = push_live_overlay(cfg, &msg, 2);
-                            last_overlay_msg = msg;
-                            last_overlay_push = Instant::now();
+                            let _ = push_rtss_osd(cfg, "");
+                            last_rtss_msg.clear();
+                            last_rtss_push = Instant::now();
                         }
                     } else {
                         teleport_unlock_stillstand_since = None;
@@ -2021,7 +2941,196 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                     history.pop_front();
                 }
                 if let Some(track_name) = &active_track_name {
-                    if let Some(set) = sector_sets.get(track_name) {
+                    let track_key = normalize_track_key(track_name);
+                    if let Some(cum_def) = cumulative_tracks.get(&track_key) {
+                        if timing_state.is_none() {
+                            timing_state = Some(LiveTimingState::new(vec![]));
+                        }
+                        if let Some(state) = timing_state.as_mut() {
+                            let car_model_live = {
+                                let c = data.statics.car_model.trim();
+                                if c.is_empty() {
+                                    "unknown_car"
+                                } else {
+                                    c
+                                }
+                            };
+                            if state.cumulative.is_none() {
+                                state.cumulative = Some(
+                                    acr_timing::cumulative_sector_timing::CumulativeLegState::new(
+                                        cum_def.clone(),
+                                    ),
+                                );
+                                ensure_modular_timing(
+                                    state,
+                                    &timing_event_bus,
+                                    &cfg.timing_reference_store_path,
+                                    cum_def,
+                                    track_name,
+                                    car_model_live,
+                                );
+                            }
+                            ensure_stage_timing_sectors(
+                                state,
+                                track_name,
+                                &cfg.stage_timing,
+                                &mut timing_sector_cache,
+                                &mut active_timing_stage_slug,
+                                Some((p.x, p.z)),
+                                Some(data.physics.heading),
+                            );
+                            if let Some(lp) = last_pt {
+                                let now_inst = Instant::now();
+                                let leg_cross = state
+                                    .cumulative
+                                    .as_mut()
+                                    .and_then(|cum| {
+                                        cum.observe_segment(
+                                            (lp.x, lp.z),
+                                            (p.x, p.z),
+                                            total_drive_m,
+                                            cfg.cumulative_timing.gate_radius_m(),
+                                            Duration::from_millis(cfg.sector_cross_cooldown_ms),
+                                            now_inst,
+                                        )
+                                    });
+                                if let Some(leg) = leg_cross {
+                                    let silent_cp = state
+                                        .cumulative
+                                        .as_ref()
+                                        .is_some_and(|c| c.destination_is_silent_cp(leg.to_gate_ix));
+                                    let dt_raw = state
+                                        .last_anchor_instant
+                                        .map(|t| now_inst.duration_since(t).as_secs_f64())
+                                        .unwrap_or(0.0);
+                                    if dt_raw > 0.05 {
+                                        let dt = finalize_subsection_split_dt(
+                                            state,
+                                            dt_raw,
+                                            &cfg.timing_quality,
+                                        );
+                                        let prev_m =
+                                            state.last_anchor_drive_m.unwrap_or(0.0);
+                                        let car_model =
+                                            data.statics.car_model.trim();
+                                        let car_model = if car_model.is_empty() {
+                                            "unknown_car"
+                                        } else {
+                                            car_model
+                                        };
+                                        let exit_speed = data.physics.speed_kmh;
+                                        let leg_stats =
+                                            take_leg_stats(state, exit_speed);
+                                        let outcome = commit_subsection_split(
+                                            state,
+                                            &timing_conn,
+                                            &mut timing_pb,
+                                            &cfg,
+                                            track_name,
+                                            car_model,
+                                            "inc",
+                                            leg.from_seg,
+                                            leg.to_seg,
+                                            dt,
+                                            dt_raw,
+                                            (total_drive_m - prev_m).max(0.0),
+                                            leg_stats,
+                                            locked_track.as_deref(),
+                                            Some(&blame_ctx),
+                                            true,
+                                        );
+                                        if let Some(m) = state.modular.as_mut() {
+                                            m.coordinator.set_car(car_model);
+                                            if silent_cp {
+                                                m.coordinator.on_sub_cross(leg.to_seg, dt);
+                                            } else if let Some(label) = state
+                                                .cumulative
+                                                .as_ref()
+                                                .and_then(|c| {
+                                                    c.track
+                                                        .sectors
+                                                        .markers
+                                                        .get(leg.to_gate_ix)
+                                                        .map(|m| m.label.as_str())
+                                                })
+                                            {
+                                                if label.starts_with("Sector ") || label == "Finish"
+                                                {
+                                                    m.coordinator.on_sub_cross(leg.to_seg, dt);
+                                                    m.coordinator
+                                                        .on_main_sector_end(label, now_inst);
+                                                }
+                                            }
+                                            drain_modular_timing_events(state, cfg);
+                                        } else if silent_cp {
+                                            if cfg.beep_on_cumulative_split {
+                                                if let Some(d) = outcome.leg_pb_delta {
+                                                    acr_timing::split_beep::play_split_feedback(
+                                                        d,
+                                                        &cfg.cumulative_beep,
+                                                    );
+                                                }
+                                            }
+                                            if let Some(d) = outcome.leg_pb_delta {
+                                                sector_status_line = Some((
+                                                    format!(
+                                                        "CP [{from}]->[{to}] d{d:+.2}s",
+                                                        from = leg.from_seg,
+                                                        to = leg.to_seg,
+                                                    ),
+                                                    now_inst,
+                                                ));
+                                            }
+                                        }
+                                        state.last_anchor_instant = Some(now_inst);
+                                        state.last_anchor_drive_m = Some(total_drive_m);
+                                        reset_subsection_leg_timing_accumulators(state);
+                                        state.leg_stats.reset();
+                                        set_leg_entry_speed(state, exit_speed);
+                                    }
+                                } else if state.last_anchor_instant.is_none() {
+                                    if state
+                                        .cumulative
+                                        .as_ref()
+                                        .is_some_and(|c| c.last_gate_is_timing_start())
+                                    {
+                                        state.last_anchor_instant = Some(now_inst);
+                                        state.last_anchor_drive_m = Some(total_drive_m);
+                                        eprintln!("cumulative: timer anchored at Start");
+                                        arm_modular_timing_run(state, cfg, car_model_live);
+                                    }
+                                }
+                            }
+                            if let Some(lp) = last_pt {
+                                let step_m = dist(lp, p);
+                                if step_m <= MAX_SECTOR_CROSS_SEGMENT_M {
+                                    let car_model = data.statics.car_model.trim();
+                                    let car_model = if car_model.is_empty() {
+                                        "unknown_car"
+                                    } else {
+                                        car_model
+                                    };
+                                    process_stage_sector_sessions_on_step(
+                                        state,
+                                        lp,
+                                        p,
+                                        &cfg,
+                                        &timing_conn,
+                                        &mut timing_pb,
+                                        &data.physics,
+                                        data.graphics.clock as f64,
+                                        data.graphics.distance_traveled,
+                                        car_model,
+                                        locked_track.as_deref(),
+                                        &blame_ctx,
+                                        &mut frame_monitor,
+                                        &mut stage_sector_html_run_counter,
+                                        speed_kmh_now,
+                                    );
+                                }
+                            }
+                        }
+                    } else if let Some(set) = sector_sets.get(track_name) {
                         if timing_state.is_none() {
                             timing_state = Some(LiveTimingState::new(set.ring_ids.clone()));
                             if let Some(state) = timing_state.as_mut() {
@@ -2029,6 +3138,8 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                             }
                         }
                         if let Some(state) = timing_state.as_mut() {
+                            let calibrated_stage_active =
+                                !state.stage_sector_sessions.is_empty();
                             if state.overall_markers.is_none() {
                                 if let Some(path) = active_pacenote_stage_path.as_deref() {
                                     attach_stage_overall_markers(
@@ -2051,6 +3162,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                 &mut timing_sector_cache,
                                 &mut active_timing_stage_slug,
                                 Some((p.x, p.z)),
+                                Some(data.physics.heading),
                             );
                             let now_inst = Instant::now();
                             observe_active_leg_stats(state, &data.physics);
@@ -2081,6 +3193,14 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 .unwrap_or(false)
                                             {
                                                 state.start_armed = true;
+                                                let car_for_modular = if car_model_now.is_empty() {
+                                                    "unknown_car"
+                                                } else {
+                                                    car_model_now.as_str()
+                                                };
+                                                arm_modular_timing_run(state, cfg, car_for_modular);
+                                                reset_subsection_run(state);
+                                                reset_subsection_leg_timing_accumulators(state);
                                                 state.leg_stats.reset();
                                                 set_leg_entry_speed(state, data.physics.speed_kmh);
                                                 state.start_anchor_t_sec = Some(data.graphics.clock as f64);
@@ -2156,8 +3276,13 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 if dt < 0.0 {
                                                     dt += 24.0 * 3600.0;
                                                 }
-                                                let dt = si.elapsed().as_secs_f64().max(dt);
-                                                if dt > 0.05 {
+                                                let dt_raw = si.elapsed().as_secs_f64().max(dt);
+                                                if dt_raw > 0.05 {
+                                                    let dt = finalize_subsection_split_dt(
+                                                        state,
+                                                        dt_raw,
+                                                        &cfg.timing_quality,
+                                                    );
                                                     let car_model = data.statics.car_model.trim();
                                                     let car_model = if car_model.is_empty() {
                                                         "unknown_car"
@@ -2197,7 +3322,9 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                             if locked == track_name {
                                                                 persist_split_and_line(
                                                                     &timing_conn,
+                                                                    &mut timing_pb,
                                                                     &split,
+                                                                    Some(&blame_ctx),
                                                                 )
                                                             } else {
                                                                 let _ = acr_timing::timing_db::insert_pending_split(
@@ -2244,102 +3371,29 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                             if let Some(lp) = last_pt.as_ref().copied() {
                                 let step_m = dist(lp, p);
                                 if step_m <= MAX_SECTOR_CROSS_SEGMENT_M {
-                                    if let Some(session) = state.stage_sector_session.as_mut() {
-                                        let now_inst = Instant::now();
-                                        let clock_sec = data.graphics.clock as f64;
-                                        let car_model = data.statics.car_model.trim();
-                                        let car_model = if car_model.is_empty() {
-                                            "unknown_car"
-                                        } else {
-                                            car_model
-                                        };
-                                        let stage_radius =
-                                            cfg.stage_timing.stage_sector_radius_m();
-                                        if let Some(outcome) =
-                                            acr_timing::stage_sector_timing::observe_stage_crossing(
-                                                session,
-                                                (lp.x, lp.z),
-                                                (p.x, p.z),
-                                                stage_radius,
-                                                clock_sec,
-                                                now_inst,
-                                            )
-                                        {
-                                            if let Some(crossed) = session
-                                                .markers
-                                                .markers
-                                                .iter()
-                                                .find(|m| m.order == outcome.to_order)
-                                            {
-                                                let via = outcome
-                                                    .pass_method
-                                                    .map(|m| match m {
-                                                        acr_timing::timing_sectors::GatePassMethod::GateLine => "gate_line",
-                                                        acr_timing::timing_sectors::GatePassMethod::RadiusDisc => "radius_disc",
-                                                    })
-                                                    .unwrap_or("?");
-                                                acr_timing::physics_wheel::log_sector_crossing(
-                                                    &crossed.label,
-                                                    crossed.role.as_str(),
-                                                    via,
-                                                    &data.physics,
-                                                    p.x,
-                                                    p.z,
-                                                    speed_kmh_now,
-                                                    outcome.leg_duration_sec,
-                                                    data.graphics.distance_traveled,
-                                                    crossed.x,
-                                                    crossed.z,
-                                                );
-                                            }
-                                            if let Some(dt) = outcome.leg_duration_sec {
-                                                match acr_timing::stage_sector_timing::persist_stage_leg(
-                                                    &timing_conn,
-                                                    &session.markers.stage_slug,
-                                                    car_model,
-                                                    outcome.from_order,
-                                                    outcome.to_order,
-                                                    dt,
-                                                ) {
-                                                    Ok(delta) => {
-                                                        if let Some(detail) =
-                                                            outcome.overlay_detail.clone()
-                                                        {
-                                                            eprintln!("{detail}");
-                                                            latest_timing_line =
-                                                                Some((detail.clone(), now_inst));
-                                                            last_overlay_push = Instant::now()
-                                                                - Duration::from_secs(5);
-                                                        }
-                                                        if cfg.beep_on_split {
-                                                            acr_timing::split_beep::play_split_feedback(
-                                                                delta, &cfg.split_beep,
-                                                            );
-                                                        }
-                                                    }
-                                                    Err(e) => {
-                                                        eprintln!("stage sector DB: {}", e)
-                                                    }
-                                                }
-                                            } else if let Some(detail) =
-                                                outcome.overlay_detail.clone()
-                                            {
-                                                eprintln!("{detail}");
-                                                sector_status_line =
-                                                    Some((detail, now_inst));
-                                                last_overlay_push = Instant::now()
-                                                    - Duration::from_secs(5);
-                                            }
-                                            if outcome.run_completed {
-                                                flush_stage_sector_run(
-                                                    state,
-                                                    &cfg,
-                                                    car_model,
-                                                    &mut stage_sector_html_run_counter,
-                                                );
-                                            }
-                                        }
-                                    }
+                                    let car_model = data.statics.car_model.trim();
+                                    let car_model = if car_model.is_empty() {
+                                        "unknown_car"
+                                    } else {
+                                        car_model
+                                    };
+                                    process_stage_sector_sessions_on_step(
+                                        state,
+                                        lp,
+                                        p,
+                                        &cfg,
+                                        &timing_conn,
+                                        &mut timing_pb,
+                                        &data.physics,
+                                        data.graphics.clock as f64,
+                                        data.graphics.distance_traveled,
+                                        car_model,
+                                        locked_track.as_deref(),
+                                        &blame_ctx,
+                                        &mut frame_monitor,
+                                        &mut stage_sector_html_run_counter,
+                                        speed_kmh_now,
+                                    );
                                 }
                             }
                             seed_sector_tracker_at_position(state, set, p);
@@ -2384,8 +3438,13 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                         if dt < 0.0 {
                                                             dt += 24.0 * 3600.0;
                                                         }
-                                                        let dt = si.elapsed().as_secs_f64().max(dt);
-                                                        if dt > 0.05 {
+                                                        let dt_raw = si.elapsed().as_secs_f64().max(dt);
+                                                        if dt_raw > 0.05 {
+                                                            let dt = finalize_subsection_split_dt(
+                                                                state,
+                                                                dt_raw,
+                                                                &cfg.timing_quality,
+                                                            );
                                                             let to_sector_id = state.ring_ids[sector];
                                                             let direction_s = state
                                                                 .tracker
@@ -2404,56 +3463,34 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                             };
                                                             let exit_speed = data.physics.speed_kmh;
                                                             let leg_stats = take_leg_stats(state, exit_speed);
-                                                            let split = acr_timing::timing_db::SplitRecord {
+                                                            let outcome = commit_subsection_split(
+                                                                state,
+                                                                &timing_conn,
+                                                                &mut timing_pb,
+                                                                &cfg,
                                                                 track_name,
                                                                 car_model,
-                                                                direction: direction_s,
-                                                                from_sector: START_SECTOR_ID,
-                                                                to_sector: to_sector_id,
-                                                                duration_sec: dt,
-                                                                distance_m: (total_drive_m - sm).max(0.0),
-                                                                stats: leg_stats,
-                                                            };
-                                                            let (line, delta) = if let Some(locked) =
-                                                                locked_track.as_deref()
-                                                            {
-                                                                if locked == track_name {
-                                                                    persist_split_and_line(
-                                                                        &timing_conn,
-                                                                        &split,
-                                                                    )
-                                                                } else {
-                                                                    let _ =
-                                                                        acr_timing::timing_db::insert_pending_split(
-                                                                            &timing_conn,
-                                                                            &split,
-                                                                        );
-                                                                    (
-                                                                        format!(
-                                                                            "sector [Start]-[{}]: {:.3}s (pending)",
-                                                                            to_sector_id, dt
-                                                                        ),
-                                                                        0.0,
-                                                                    )
-                                                                }
-                                                            } else {
-                                                                let _ = acr_timing::timing_db::insert_pending_split(
-                                                                    &timing_conn,
-                                                                    &split,
-                                                                );
-                                                                (
-                                                                    format!(
-                                                                        "sector [Start]-[{}]: {:.3}s (pending)",
-                                                                        to_sector_id, dt
-                                                                    ),
-                                                                    0.0,
-                                                                )
-                                                            };
-                                                            eprintln!("{line}");
-                                                            latest_timing_line = Some((line, Instant::now()));
-                                                            if cfg.beep_on_split {
+                                                                direction_s,
+                                                                START_SECTOR_ID,
+                                                                to_sector_id,
+                                                                dt,
+                                                                dt_raw,
+                                                                (total_drive_m - sm).max(0.0),
+                                                                leg_stats,
+                                                                locked_track.as_deref(),
+                                                                Some(&blame_ctx),
+                                                                false,
+                                                            );
+                                                            eprintln!("{}", outcome.line);
+                                                            if !calibrated_stage_active {
+                                                                latest_timing_line = Some((
+                                                                    outcome.line.clone(),
+                                                                    Instant::now(),
+                                                                ));
+                                                            }
+                                                            if cfg.beep_on_split && outcome.persisted {
                                                                 acr_timing::split_beep::play_split_feedback(
-                                                                    delta,
+                                                                    outcome.leg_delta,
                                                                     &cfg.split_beep,
                                                                 );
                                                             }
@@ -2467,16 +3504,22 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                     state.start_stage_since = None;
                                                     state.start_stage_last_report_sec = -1;
                                                 }
+                                                reset_subsection_leg_timing_accumulators(state);
                                                 state.last_anchor_t_sec = Some(data.graphics.clock as f64);
                                                 state.last_anchor_instant = Some(Instant::now());
                                                 state.last_anchor_drive_m = Some(total_drive_m);
                                                 state.last_sector_idx = Some(sector);
                                                 state.leg_stats.reset();
                                                 set_leg_entry_speed(state, data.physics.speed_kmh);
-                                                let anchor_line =
-                                                    format!("sector [{}]...", state.ring_ids[sector]);
+                                                let anchor_line = format!(
+                                                    "sector [{}]...",
+                                                    state.ring_ids[sector]
+                                                );
                                                 eprintln!("{}", anchor_line);
-                                                sector_status_line = Some((anchor_line, Instant::now()));
+                                                if !calibrated_stage_active {
+                                                    sector_status_line =
+                                                        Some((anchor_line, Instant::now()));
+                                                }
                                             }
                                             SectorPassEvent::Step { from, to, direction } => {
                                                 let now_t = data.graphics.clock as f64;
@@ -2484,7 +3527,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 if let (Some(prev_t), Some(prev_m)) =
                                                     (state.last_anchor_t_sec, state.last_anchor_drive_m)
                                                 {
-                                                    let dt = state
+                                                    let dt_raw = state
                                                         .last_anchor_instant
                                                         .map(|t| now_inst.duration_since(t).as_secs_f64())
                                                         .unwrap_or_else(|| {
@@ -2495,7 +3538,12 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                             x
                                                         });
                                                     let dist_m = (total_drive_m - prev_m).max(0.0);
-                                                    if dt > 0.05 {
+                                                    if dt_raw > 0.05 {
+                                                        let dt = finalize_subsection_split_dt(
+                                                            state,
+                                                            dt_raw,
+                                                            &cfg.timing_quality,
+                                                        );
                                                         let from_sector_id = state.ring_ids[from];
                                                         let to_sector_id = state.ring_ids[to];
                                                         let direction_s = match direction {
@@ -2509,67 +3557,54 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                         } else {
                                                             car_model
                                                         };
-
                                                         let exit_speed = data.physics.speed_kmh;
                                                         let leg_stats = take_leg_stats(state, exit_speed);
-                                                        let split = acr_timing::timing_db::SplitRecord {
+                                                        let outcome = commit_subsection_split(
+                                                            state,
+                                                            &timing_conn,
+                                                            &mut timing_pb,
+                                                            &cfg,
                                                             track_name,
                                                             car_model,
-                                                            direction: direction_s,
-                                                            from_sector: from_sector_id,
-                                                            to_sector: to_sector_id,
-                                                            duration_sec: dt,
-                                                            distance_m: dist_m,
-                                                            stats: leg_stats,
-                                                        };
-                                                        let (line, delta) = if let Some(locked) =
-                                                            locked_track.as_deref()
-                                                        {
-                                                            if locked == track_name {
-                                                                persist_split_and_line(
-                                                                    &timing_conn,
-                                                                    &split,
-                                                                )
-                                                            } else {
-                                                                let _ = acr_timing::timing_db::insert_pending_split(
-                                                                    &timing_conn,
-                                                                    &split,
-                                                                );
-                                                                (
-                                                                    format!(
-                                                                        "sector [{}]-[{}]: {:.3}s (pending)",
-                                                                        from_sector_id, to_sector_id, dt
-                                                                    ),
-                                                                    0.0,
-                                                                )
-                                                            }
-                                                        } else {
-                                                            let _ = acr_timing::timing_db::insert_pending_split(
-                                                                &timing_conn,
-                                                                &split,
-                                                            );
-                                                            (
-                                                                format!(
-                                                                    "sector [{}]-[{}]: {:.3}s (pending)",
-                                                                    from_sector_id, to_sector_id, dt
-                                                                ),
-                                                                0.0,
-                                                            )
-                                                        };
-                                                        eprintln!("{line}");
-                                                        latest_timing_line = Some((line.clone(), Instant::now()));
-                                                        if cfg.beep_on_split {
+                                                            direction_s,
+                                                            from_sector_id,
+                                                            to_sector_id,
+                                                            dt,
+                                                            dt_raw,
+                                                            dist_m,
+                                                            leg_stats,
+                                                            locked_track.as_deref(),
+                                                            Some(&blame_ctx),
+                                                            false,
+                                                        );
+                                                        eprintln!("{}", outcome.line);
+                                                        if !calibrated_stage_active {
+                                                            latest_timing_line = Some((
+                                                                outcome.line.clone(),
+                                                                Instant::now(),
+                                                            ));
+                                                        }
+                                                        if cfg.beep_on_split && outcome.persisted {
                                                             acr_timing::split_beep::play_split_feedback(
-                                                                delta,
+                                                                outcome.leg_delta,
                                                                 &cfg.split_beep,
                                                             );
                                                         }
                                                     }
                                                 }
-                                                eprintln!("sector passed [{}]", state.ring_ids[to]);
-                                                if active_track_name.is_some() {
-                                                    let passed_line = format!("sector passed [{}]", state.ring_ids[to]);
-                                                    sector_status_line = Some((passed_line.clone(), Instant::now()));
+                                                eprintln!(
+                                                    "sector passed [{}]",
+                                                    state.ring_ids[to]
+                                                );
+                                                if active_track_name.is_some()
+                                                    && !calibrated_stage_active
+                                                {
+                                                    let passed_line = format!(
+                                                        "sector passed [{}]",
+                                                        state.ring_ids[to]
+                                                    );
+                                                    sector_status_line =
+                                                        Some((passed_line.clone(), Instant::now()));
                                                 }
                                                 state.last_anchor_t_sec = Some(now_t);
                                                 state.last_anchor_instant = Some(now_inst);
@@ -2588,6 +3623,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                     .map(|t| now_inst2.duration_since(t).as_secs_f64() >= SAME_SECTOR_REANCHOR_SEC)
                                                     .unwrap_or(true);
                                                 if should_reanchor {
+                                                    reset_subsection_leg_timing_accumulators(state);
                                                     state.last_anchor_t_sec = Some(now_t2);
                                                     state.last_anchor_instant = Some(now_inst2);
                                                     state.last_anchor_drive_m = Some(total_drive_m);
@@ -2596,7 +3632,10 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                     if let Some(si) = state.last_sector_idx {
                                                         let line = format!("sector [{}]...", state.ring_ids[si]);
                                                         eprintln!("re-anchored at same sector: {}", line);
-                                                        sector_status_line = Some((line, Instant::now()));
+                                                        if !calibrated_stage_active {
+                                                            sector_status_line =
+                                                                Some((line, Instant::now()));
+                                                        }
                                                     }
                                                 }
                                             }
@@ -2834,6 +3873,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                     &mut timing_sector_cache,
                                     &mut active_timing_stage_slug,
                                     Some((p.x, p.z)),
+                                    Some(data.physics.heading),
                                 );
                             }
                         }
@@ -2845,6 +3885,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                             &mut timing_sector_cache,
                             &mut active_timing_stage_slug,
                             Some((p.x, p.z)),
+                            Some(data.physics.heading),
                         );
                     }
                     if last_sector_wait_log.elapsed() >= Duration::from_secs(5) {
@@ -2852,70 +3893,45 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                         last_sector_wait_log = Instant::now();
                     }
                     let now_osd = Instant::now();
-                    let (msg, osd_lines) =
-                        if let Some(sess) = timing_state
-                            .as_ref()
-                            .and_then(|s| s.stage_sector_session.as_ref())
-                        {
-                            let mut detail = acr_timing::stage_sector_timing::stage_timing_osd_detail(
-                                sess, p.x, p.z,
-                            );
-                            if let Some((line, ts)) = &latest_timing_line {
-                                if ts.elapsed() <= Duration::from_secs(6) {
-                                    detail = format!("{detail} | {line}");
-                                }
-                            } else if let Some((sline, sts)) = &sector_status_line {
-                                if sts.elapsed() <= Duration::from_secs(6) {
-                                    detail = format!("{detail} | {sline}");
-                                }
-                            }
-                            let strip = acr_timing::stage_sector_timing::format_sector_strip(
-                                &sess.run.sector_secs,
-                                cfg.rtss,
-                                sess.run.highlight_leg_index(),
-                                sess.run.live_leg_elapsed_sec(now_osd),
-                            );
-                            (
-                                acr_timing::stage_sector_timing::compose_stage_timing_osd(
-                                    &format!("track locked {}", locked_name),
-                                    &strip,
-                                    &detail,
-                                ),
-                                3,
-                            )
+                    let msg = if let Some(ts) = timing_state.as_mut() {
+                        let cum_detail = if ts.cumulative.is_some() {
+                            cumulative_osd_detail_with_flash(ts, &sector_status_line, now_osd)
                         } else {
-                            let detail = if let Some((line, _ts)) = &latest_timing_line {
-                                line.to_string()
-                            } else if let Some((sline, sts)) = &sector_status_line {
-                                if sts.elapsed() <= Duration::from_secs(8) {
-                                    sline.to_string()
-                                } else {
-                                    String::new()
-                                }
-                            } else {
-                                String::new()
-                            };
-                            (
-                                compose_two_line_osd(
-                                    &format!("track locked {}", locked_name),
-                                    &detail,
-                                ),
-                                2,
-                            )
+                            String::new()
                         };
-                    let osd_push_interval = if timing_state
-                        .as_ref()
-                        .and_then(|s| s.stage_sector_session.as_ref())
-                        .is_some()
-                    {
+                        if !ts.stage_sector_sessions.is_empty() {
+                            let session_refs: Vec<_> =
+                                ts.stage_sector_sessions.iter().collect();
+                            let strip =
+                                acr_timing::stage_sector_timing::format_multi_stage_sector_line(
+                                    &session_refs,
+                                    cfg.rtss,
+                                    now_osd,
+                                );
+                            acr_timing::stage_sector_timing::compose_timing_osd(
+                                &strip, &cum_detail,
+                            )
+                        } else if ts.cumulative.is_some() {
+                            cum_detail
+                        } else {
+                            String::new()
+                        }
+                    } else {
+                        String::new()
+                    };
+                    let osd_push_interval = if timing_state.as_ref().is_some_and(|s| {
+                        !s.stage_sector_sessions.is_empty() || s.cumulative.is_some()
+                    }) {
                         Duration::from_millis(400)
                     } else {
                         Duration::from_secs(2)
                     };
-                    if msg != last_overlay_msg || last_overlay_push.elapsed() >= osd_push_interval {
-                        push_live_overlay(cfg, &msg, osd_lines)?;
-                        last_overlay_msg = msg;
-                        last_overlay_push = Instant::now();
+                    if !msg.is_empty()
+                        && (msg != last_rtss_msg || last_rtss_push.elapsed() >= osd_push_interval)
+                    {
+                        push_rtss_osd(cfg, &msg)?;
+                        last_rtss_msg = msg;
+                        last_rtss_push = Instant::now();
                     }
                     last_eval = Instant::now();
                     continue;
@@ -3082,7 +4098,11 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                             timing_state = if let Some(s) = sector_sets.get(&selected.name) {
                                 detected_track_line =
                                     Some((format!("detected track {}", selected.name), Instant::now()));
-                                let mut ts = LiveTimingState::new(s.ring_ids.clone());
+                                let mut ts = LiveTimingState::new_preserving_cumulative(
+                                    s.ring_ids.clone(),
+                                    timing_state.take(),
+                                    &selected.name,
+                                );
                                 seed_sector_tracker_at_position(&mut ts, s, p);
                                 let seg = ts
                                     .last_sector_idx
@@ -3109,54 +4129,11 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                         sector_status_line = None;
                         detected_track_line = None;
                     }
-                    let status_line = if best.coarse_pass {
-                        if let Some(active) = active_track_name.as_deref() {
-                            if locked_track.as_deref() == Some(active) {
-                                format!("track locked {}", active)
-                            } else {
-                                format!("track found {} (unlocked)", active)
-                            }
-                        } else {
-                            "track found".to_string()
-                        }
-                    } else {
-                        "detecting track...".to_string()
-                    };
                     if best.coarse_pass && timing_state.is_some() && latest_timing_line.is_none() {
                         if last_sector_wait_log.elapsed() >= Duration::from_secs(3) {
                             eprintln!("waiting for sector passing...");
                             last_sector_wait_log = Instant::now();
                         }
-                    }
-                    let detail = if let Some((line, _ts)) = &latest_timing_line {
-                        // Keep latest split sticky until replaced by newer split.
-                        line.to_string()
-                    } else if let Some((sline, sts)) = &sector_status_line {
-                        if sts.elapsed() <= Duration::from_secs(8) {
-                            sline.to_string()
-                        } else if let Some((dline, dts)) = &detected_track_line {
-                            if dts.elapsed() <= Duration::from_secs(5) {
-                                format!("status: {}", dline)
-                            } else {
-                                String::new()
-                            }
-                        } else {
-                            String::new()
-                        }
-                    } else if let Some((dline, dts)) = &detected_track_line {
-                        if dts.elapsed() <= Duration::from_secs(5) {
-                            format!("status: {}", dline)
-                        } else {
-                            String::new()
-                        }
-                    } else {
-                        String::new()
-                    };
-                    let msg = compose_two_line_osd(&status_line, &detail);
-                    if msg != last_overlay_msg || last_overlay_push.elapsed() >= Duration::from_secs(2) {
-                        push_live_overlay(cfg, &msg, 2)?;
-                        last_overlay_msg = msg;
-                        last_overlay_push = Instant::now();
                     }
                     eprintln!(
                         "best={} sel={} score={:.2} dist={:.2}m coarse={:.0}%",
@@ -3213,14 +4190,14 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
             }
             if let Some(ref st_amb) = start_track_ambiguous_pick {
                 let msg = pacenote_amb_overlay::build_track_start_pick_overlay_text(st_amb);
-                push_live_overlay(cfg, &msg, pacenote_amb_overlay::OVERLAY_MAX_LINES)?;
-                last_overlay_msg = msg;
-                last_overlay_push = Instant::now();
+                push_rtss_osd(cfg, &msg)?;
+                last_rtss_msg = msg;
+                last_rtss_push = Instant::now();
             } else if let Some(ref amb) = pacenote_ambiguous_pick {
                 let msg = pacenote_amb_overlay::build_overlay_text(amb);
-                push_live_overlay(cfg, &msg, pacenote_amb_overlay::OVERLAY_MAX_LINES)?;
-                last_overlay_msg = msg;
-                last_overlay_push = Instant::now();
+                push_rtss_osd(cfg, &msg)?;
+                last_rtss_msg = msg;
+                last_rtss_push = Instant::now();
             }
         } else {
             if no_data_since.is_none() {
@@ -3329,24 +4306,21 @@ fn tracks_within_start_points(
 
 fn persist_split_and_line(
     conn: &rusqlite::Connection,
+    pb: &mut acr_timing::timing_pb::TimingPbStore,
     split: &acr_timing::timing_db::SplitRecord<'_>,
+    blame_ctx: Option<&TimingBlameCtx<'_>>,
 ) -> (String, f64) {
-    // Compare against the best time that existed *before* inserting this split.
-    // Otherwise, any new PB would always show delta 0.000 by definition.
-    let best_before = acr_timing::timing_db::best_time(
-        conn,
-        split.track_name,
-        split.car_model,
-        split.direction,
-        split.from_sector,
-        split.to_sector,
-    )
-    .ok()
-    .flatten();
+    // Compare against PB *before* insert (timing_pb.toml); archive every run in timing.db.
+    let best_before = pb.best_before_and_maybe_update(split).ok().flatten();
     let _ = acr_timing::timing_db::insert_split(conn, split);
     let delta = best_before
         .map(|b| split.duration_sec - b)
         .unwrap_or(0.0);
+    if let Some(pb) = best_before {
+        if delta > blame_ctx.map(|c| c.cfg.min_delta_sec).unwrap_or(0.05) {
+            maybe_timing_blame(conn, split, pb, delta, blame_ctx);
+        }
+    }
     let sign = if delta >= 0.0 { "+" } else { "-" };
     let from_label = if split.from_sector == START_SECTOR_ID {
         "Start".to_string()
@@ -3741,48 +4715,22 @@ fn apply_pacenote_first_anchor_resolution(
     );
 }
 
-/// Write overlay text atomically: temp file in same directory, then replace target.
-/// Avoids readers (e.g. RTSS) seeing a half-written file on Windows.
-fn write_overlay_atomic(path: &Path, contents: &str) -> std::io::Result<()> {
-    let dir = path.parent().unwrap_or_else(|| Path::new("."));
-    let name = path
-        .file_name()
-        .and_then(|n| n.to_str())
-        .unwrap_or("acr_detected_track.txt");
-    let tmp = dir.join(format!("{}.tmp", name));
-    std::fs::write(&tmp, contents)?;
-    // On Windows, rename does not replace an existing destination.
-    let _ = std::fs::remove_file(path);
-    std::fs::rename(&tmp, path)?;
-    Ok(())
-}
-
-fn push_live_overlay(
-    cfg: &CliConfig,
-    msg: &str,
-    rtss_max_lines: usize,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let _ = write_overlay_atomic(&cfg.overlay_file, msg);
+fn push_rtss_osd(cfg: &CliConfig, msg: &str) -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(windows)]
     {
         if cfg.rtss {
-            let safe = acr_timing::rtss_osd::sanitize_multiline_osd_text(msg, rtss_max_lines);
+            let safe = acr_timing::rtss_osd::sanitize_multiline_osd_text(
+                msg,
+                acr_timing::rtss_osd::DEFAULT_MAX_OSD_LINES,
+            );
             if let Err(e) = acr_timing::rtss_osd::update(&cfg.rtss_owner, &safe, cfg.rtss_slot) {
                 eprintln!("RTSS update failed: {}", e);
             }
         }
     }
+    #[cfg(not(windows))]
+    let _ = (cfg, msg);
     Ok(())
-}
-
-fn compose_two_line_osd(status: &str, detail: &str) -> String {
-    let status = status.trim();
-    let detail = detail.trim();
-    if detail.is_empty() {
-        format!("{}\n", status)
-    } else {
-        format!("{}\n{}", status, detail)
-    }
 }
 
 fn append_start_point_geojson(

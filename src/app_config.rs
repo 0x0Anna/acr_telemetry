@@ -21,7 +21,6 @@ pub struct TrackMatchConfigFile {
     pub rate: Option<u64>,
     pub min_ref_spacing: Option<f64>,
     pub labels: Option<String>,
-    pub overlay_file: Option<String>,
     pub rtss: Option<bool>,
     pub rtss_owner: Option<String>,
     pub rtss_slot: Option<u32>,

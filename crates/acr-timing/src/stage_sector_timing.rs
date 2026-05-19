@@ -11,6 +11,10 @@ use crate::timing_sectors::{self, StageTimingSectors, TimingSectorRole};
 
 pub const STAGE_TIMING_DIRECTION: &str = "stage";
 
+/// Shown in HTML run log when a large position jump occurred during the run.
+pub const TIMING_POSITION_RESET_WARNING: &str =
+    "Car position was reset, timing inaccurate";
+
 #[derive(Debug, Clone)]
 pub struct StageSectorRun {
     /// Timed legs: timing_start→S1, S1→S2, … (length = `sector_leg_count`).
@@ -21,6 +25,10 @@ pub struct StageSectorRun {
     pub anchor_clock_sec: Option<f64>,
     pub anchor_instant: Option<Instant>,
     pub completed: bool,
+    /// Σ stall excess (pause / wall without physics steps) for current leg only.
+    pub leg_excess_wall_sec: f64,
+    /// Large teleport / respawn detected while this run was active.
+    pub timing_position_reset: bool,
 }
 
 impl StageSectorRun {
@@ -32,7 +40,13 @@ impl StageSectorRun {
             anchor_clock_sec: None,
             anchor_instant: None,
             completed: false,
+            leg_excess_wall_sec: 0.0,
+            timing_position_reset: false,
         }
+    }
+
+    pub fn note_timing_position_reset(&mut self) {
+        self.timing_position_reset = true;
     }
 
     pub fn any_sector(&self) -> bool {
@@ -92,15 +106,28 @@ pub struct StageSectorSession {
     pub markers: StageTimingSectors,
     pub run: StageSectorRun,
     pub html_path: Option<PathBuf>,
+    /// `also_run` companion: timed immediately without crossing this stage's timing_start.
+    pub shadow_companion: bool,
 }
 
 impl StageSectorSession {
     pub fn new(markers: StageTimingSectors) -> Self {
+        Self::new_with_attach(markers, false)
+    }
+
+    pub fn new_with_attach(markers: StageTimingSectors, shadow_companion: bool) -> Self {
         let leg_count = markers.sector_leg_count;
+        let mut run = StageSectorRun::new(leg_count);
+        if shadow_companion && !markers.markers.is_empty() {
+            run.armed = true;
+            run.next_marker_idx = 1.min(markers.markers.len().saturating_sub(1));
+            run.anchor_instant = Some(Instant::now());
+        }
         Self {
             markers,
-            run: StageSectorRun::new(leg_count),
+            run,
             html_path: None,
+            shadow_companion,
         }
     }
 }
@@ -166,7 +193,7 @@ pub fn stage_timing_osd_detail(
     pos_z: f64,
 ) -> String {
     if session.run.completed {
-        return "stage: run complete".to_string();
+        return String::new();
     }
     let next_idx = session.run.next_marker_idx.min(session.markers.markers.len().saturating_sub(1));
     let marker = &session.markers.markers[next_idx];
@@ -180,13 +207,63 @@ pub fn stage_timing_osd_detail(
     format!("stage: next {} ({:.0}m)", marker.label, d)
 }
 
-pub fn compose_stage_timing_osd(status: &str, sector_strip: &str, detail: &str) -> String {
+/// Up to three sector strips on one line (`Ziel-Kurztitel: S1 · S2` …).
+pub fn format_multi_stage_sector_line(
+    sessions: &[&StageSectorSession],
+    rtss_safe: bool,
+    now: Instant,
+) -> String {
+    let sep_outer = if rtss_safe { " || " } else { "  ‖  " };
+    sessions
+        .iter()
+        .take(crate::stage_timing_config::MAX_PARALLEL_STAGE_TIMINGS)
+        .map(|sess| {
+            let strip = format_sector_strip(
+                &sess.run.sector_secs,
+                rtss_safe,
+                sess.run.highlight_leg_index(),
+                sess.run.live_leg_elapsed_sec(now),
+            );
+            format!("{}: {strip}", sess.markers.rtss_label())
+        })
+        .collect::<Vec<_>>()
+        .join(sep_outer)
+}
+
+pub fn multi_stage_osd_detail(sessions: &[&StageSectorSession], pos_x: f64, pos_z: f64) -> String {
+    sessions
+        .iter()
+        .take(crate::stage_timing_config::MAX_PARALLEL_STAGE_TIMINGS)
+        .filter_map(|sess| {
+            let d = stage_timing_osd_detail(sess, pos_x, pos_z);
+            if d.is_empty() {
+                None
+            } else {
+                Some(d)
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(" | ")
+}
+
+/// RTSS body: stage sector strip + optional cumulative/modular lines (no status header).
+pub fn compose_timing_osd(sector_strip: &str, detail: &str) -> String {
+    let strip = sector_strip.trim();
     let detail = detail.trim();
-    if detail.is_empty() {
-        format!("{status}\n{sector_strip}")
-    } else {
-        format!("{status}\n{sector_strip}\n{detail}")
+    match (strip.is_empty(), detail.is_empty()) {
+        (true, true) => String::new(),
+        (true, false) => detail.to_string(),
+        (false, true) => strip.to_string(),
+        (false, false) => format!("{strip}\n{detail}"),
     }
+}
+
+/// Timed stage legs ending at S1/S2/S3/Finish — no `[beep]` (use cumulative CP beeps only).
+pub fn stage_marker_is_main_sector(marker: &crate::timing_sectors::TimingSectorMarker) -> bool {
+    matches!(
+        marker.label.as_str(),
+        "Sector 1" | "Sector 2" | "Sector 3" | "Finish"
+    )
 }
 
 pub fn sanitize_car_slug(car_model: &str) -> String {
@@ -228,6 +305,7 @@ pub fn write_or_append_text_row(
     sector_secs: &[Option<f64>],
     run_total: Option<f64>,
     run_index: usize,
+    timing_warning: Option<&str>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let now = chrono::Local::now().format("%Y-%m-%d %H:%M:%S");
     let sector_cols: Vec<String> = sector_secs
@@ -237,8 +315,9 @@ pub fn write_or_append_text_row(
     let total_s = run_total
         .map(format_duration)
         .unwrap_or_else(|| "—".to_string());
+    let warn = timing_warning.unwrap_or("");
     let line = format!(
-        "{run_index}\t{now}\t{sectors}\t{total}\n",
+        "{run_index}\t{now}\t{sectors}\t{total}\t{warn}\n",
         sectors = sector_cols.join("\t"),
         total = total_s,
     );
@@ -249,7 +328,7 @@ pub fn write_or_append_text_row(
             .collect::<Vec<_>>()
             .join("\t");
         let header = format!(
-            "# stage: {stage_slug}\n# car: {car_model}\n#\n# run\tlocal_time\t{sector_headers}\ttotal\n",
+            "# stage: {stage_slug}\n# car: {car_model}\n#\n# run\tlocal_time\t{sector_headers}\ttotal\tnotes\n",
         );
         std::fs::write(path, format!("{header}{line}"))?;
         return Ok(());
@@ -265,6 +344,14 @@ fn html_escape(s: &str) -> String {
         .replace('>', "&gt;")
 }
 
+fn timing_warning_html_row(sector_count: usize, msg: &str) -> String {
+    let colspan = sector_count + 2;
+    format!(
+        "<tr class=\"timing-warn\"><td colspan=\"{colspan}\">{msg}</td></tr>\n",
+        msg = html_escape(msg),
+    )
+}
+
 pub fn write_or_append_html_row(
     path: &Path,
     stage_slug: &str,
@@ -272,6 +359,7 @@ pub fn write_or_append_html_row(
     sector_secs: &[Option<f64>],
     run_total: Option<f64>,
     run_index: usize,
+    timing_warning: Option<&str>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let row_cells: Vec<String> = sector_secs
         .iter()
@@ -283,7 +371,7 @@ pub fn write_or_append_html_row(
     let total_s = run_total
         .map(format_duration)
         .unwrap_or_else(|| "—".to_string());
-    let row = format!(
+    let mut row = format!(
         "<tr><td>{}</td>{cells}<td>{total}</td></tr>\n",
         run_index,
         cells = row_cells
@@ -292,6 +380,9 @@ pub fn write_or_append_html_row(
             .collect::<String>(),
         total = html_escape(&total_s),
     );
+    if let Some(msg) = timing_warning {
+        row.push_str(&timing_warning_html_row(sector_secs.len(), msg));
+    }
 
     if !path.exists() {
         let header_cols = (0..sector_secs.len())
@@ -308,6 +399,7 @@ body {{ font-family: system-ui, sans-serif; margin: 1.5rem; }}
 table {{ border-collapse: collapse; }}
 th, td {{ border: 1px solid #ccc; padding: 0.35rem 0.6rem; text-align: right; }}
 th:first-child, td:first-child {{ text-align: center; }}
+tr.timing-warn td {{ text-align: left; color: #a33; font-weight: 600; background: #fff3f0; }}
 </style>
 </head>
 <body>
@@ -472,12 +564,14 @@ pub fn observe_stage_crossing(
 
 pub fn persist_stage_leg(
     conn: &Connection,
+    pb: &mut crate::timing_pb::TimingPbStore,
     stage_slug: &str,
     car_model: &str,
     from_order: i32,
     to_order: i32,
     duration_sec: f64,
-) -> Result<f64, Box<dyn std::error::Error>> {
+    stats: Option<crate::sector_leg_stats::SectorLegStatsSnapshot>,
+) -> Result<(f64, Option<f64>), Box<dyn std::error::Error>> {
     let split = SplitRecord {
         track_name: stage_slug,
         car_model,
@@ -486,21 +580,14 @@ pub fn persist_stage_leg(
         to_sector: to_order,
         duration_sec,
         distance_m: 0.0,
-        stats: None,
+        stats,
     };
-    let best_before = timing_db::best_time(
-        conn,
-        stage_slug,
-        car_model,
-        STAGE_TIMING_DIRECTION,
-        from_order,
-        to_order,
-    )?;
+    let best_before = pb.best_before_and_maybe_update(&split)?;
     timing_db::insert_split(conn, &split)?;
     let delta = best_before
         .map(|b| duration_sec - b)
         .unwrap_or(0.0);
-    Ok(delta)
+    Ok((delta, best_before))
 }
 
 pub fn flush_run_to_html(
@@ -517,6 +604,10 @@ pub fn flush_run_to_html(
     let path = session.html_path.clone().unwrap_or_else(|| {
         new_html_path(html_dir, &session.markers.stage_slug, &car_slug)
     });
+    let timing_warning = session
+        .run
+        .timing_position_reset
+        .then_some(TIMING_POSITION_RESET_WARNING);
     write_or_append_html_row(
         &path,
         &session.markers.stage_slug,
@@ -524,6 +615,7 @@ pub fn flush_run_to_html(
         &session.run.sector_secs,
         session.run.run_total_sec(),
         *run_counter,
+        timing_warning,
     )?;
     let text_path = runs_text_path(html_dir, &session.markers.stage_slug, &car_slug);
     write_or_append_text_row(
@@ -533,9 +625,10 @@ pub fn flush_run_to_html(
         &session.run.sector_secs,
         session.run.run_total_sec(),
         *run_counter,
+        timing_warning,
     )?;
     session.html_path = Some(path.clone());
-    session.run.reset_run();
+    // Keep sector_secs on OSD after finish; other parallel timers may still be running.
     eprintln!(
         "stage sector times appended: {} | text log: {}",
         path.display(),

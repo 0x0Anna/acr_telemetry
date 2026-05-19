@@ -1,0 +1,674 @@
+{
+  "type": "FeatureCollection",
+  "name": "cumulative_sectors:hafren_north_linestrings",
+  "properties": {
+    "reference_track": "hafren_north",
+    "coordinate_space": "acc_world_zx",
+    "timing_mode": "cumulative",
+    "geometry_type": "LineString",
+    "marker_count": 30,
+    "source": "runtime export from hafren_north_linestrings3.geojson (geometry-only gates)"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1081.3,
+            634.3
+          ],
+          [
+            -1091.0,
+            674.2
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "timing_start",
+        "marker_order": 0,
+        "seg_id": 0,
+        "marker_label": "Start"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -896.6,
+            742.5
+          ],
+          [
+            -913.3,
+            772.6
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 1,
+        "seg_id": 1,
+        "marker_label": "CP 1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -843.7,
+            749.8
+          ],
+          [
+            -827.8,
+            731.9
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 2,
+        "seg_id": 2,
+        "marker_label": "CP 2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -675.7,
+            638.8
+          ],
+          [
+            -661.9,
+            670.5
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 3,
+        "seg_id": 3,
+        "marker_label": "CP 3"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -672.5,
+            71.8
+          ],
+          [
+            -579.8,
+            107.9
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 4,
+        "seg_id": 4,
+        "marker_label": "CP 4"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -312.6,
+            -358.9
+          ],
+          [
+            -261.6,
+            -343.0
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 5,
+        "seg_id": 5,
+        "marker_label": "CP 5"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -97.4,
+            -749.9
+          ],
+          [
+            -46.2,
+            -717.0
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 6,
+        "seg_id": 6,
+        "marker_label": "CP 6"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            301.9,
+            -1019.3
+          ],
+          [
+            319.5,
+            -972.9
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 8,
+        "seg_id": 8,
+        "marker_label": "Sector 1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            888.6,
+            -1039.5
+          ],
+          [
+            861.0,
+            -996.6
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 9,
+        "seg_id": 34,
+        "marker_label": "CP S1S2-1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            496.8,
+            -893.8
+          ],
+          [
+            516.2,
+            -855.6
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 10,
+        "seg_id": 35,
+        "marker_label": "CP S1S2-2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            322.0,
+            -661.0
+          ],
+          [
+            356.4,
+            -667.1
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 11,
+        "seg_id": 36,
+        "marker_label": "CP S1S2-3"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            719.0,
+            -226.7
+          ],
+          [
+            760.2,
+            -251.2
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 12,
+        "seg_id": 37,
+        "marker_label": "CP S1S2-4"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            640.4,
+            -41.7
+          ],
+          [
+            641.9,
+            17.2
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 13,
+        "seg_id": 38,
+        "marker_label": "CP S1S2-5"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            363.5,
+            -198.1
+          ],
+          [
+            346.4,
+            -167.2
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 14,
+        "seg_id": 39,
+        "marker_label": "CP S1S2-6"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            98.4,
+            -7.1
+          ],
+          [
+            156.9,
+            21.6
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 15,
+        "seg_id": 40,
+        "marker_label": "CP S1S2-7"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            37.4,
+            101.8
+          ],
+          [
+            53.9,
+            120.6
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 23,
+        "seg_id": 9,
+        "marker_label": "Sector 2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            109.3,
+            502.5
+          ],
+          [
+            146.6,
+            477.2
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 25,
+        "seg_id": 18,
+        "marker_label": "CP S3-1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -7.2,
+            614.5
+          ],
+          [
+            6.9,
+            639.5
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 26,
+        "seg_id": 19,
+        "marker_label": "CP S3-2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            132.1,
+            735.6
+          ],
+          [
+            115.4,
+            785.5
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 27,
+        "seg_id": 20,
+        "marker_label": "CP S3-3"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            149.6,
+            935.1
+          ],
+          [
+            158.7,
+            968.2
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 28,
+        "seg_id": 21,
+        "marker_label": "CP S3-4"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -360.0,
+            955.9
+          ],
+          [
+            -308.7,
+            914.2
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 29,
+        "seg_id": 22,
+        "marker_label": "CP S3-5"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -683.2,
+            766.9
+          ],
+          [
+            -672.1,
+            829.8
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 30,
+        "seg_id": 23,
+        "marker_label": "CP S3-6"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -594.6,
+            1584.6
+          ],
+          [
+            -561.1,
+            1591.3
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 32,
+        "seg_id": 25,
+        "marker_label": "Sector 3"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -462.4,
+            1673.8
+          ],
+          [
+            -484.5,
+            1702.9
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 33,
+        "seg_id": 26,
+        "marker_label": "CP S4-1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -227.3,
+            1725.7
+          ],
+          [
+            -226.9,
+            1752.2
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 34,
+        "seg_id": 27,
+        "marker_label": "CP S4-2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            108.5,
+            1587.5
+          ],
+          [
+            125.5,
+            1619.9
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 35,
+        "seg_id": 28,
+        "marker_label": "CP S4-3"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            325.4,
+            1675.5
+          ],
+          [
+            330.4,
+            1680.5
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 36,
+        "seg_id": 29,
+        "marker_label": "CP S4-4"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            466.1,
+            1607.9
+          ],
+          [
+            501.5,
+            1620.0
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 37,
+        "seg_id": 30,
+        "marker_label": "CP S4-5"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            944.4,
+            1357.8
+          ],
+          [
+            946.2,
+            1391.9
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "sector_boundary",
+        "marker_order": 39,
+        "seg_id": 32,
+        "marker_label": "CP S4-7"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1127.6,
+            1122.6
+          ],
+          [
+            1126.1,
+            1142.9
+          ]
+        ]
+      },
+      "properties": {
+        "marker_role": "finish",
+        "marker_order": 40,
+        "seg_id": 33,
+        "marker_label": "Finish"
+      }
+    }
+  ]
+}

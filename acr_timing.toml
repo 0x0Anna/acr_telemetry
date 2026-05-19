@@ -6,6 +6,8 @@ sectors_coord_space = "game"
 sector_track_field = "src_layer"
 sector_id_field = "seg_id"
 timing_db = "timing/timing.db"
+# Personal bests only (TOML) — reference for Δ; full history stays in timing.db
+timing_pb = "timing/timing_pb.toml"
 
 start_points_geojson = "timing/start_points.geojson"
 start_prefilter_radius = 20.0
@@ -17,6 +19,8 @@ grid_start_wide_after_sec = 10.0
 grid_start_list_radius_wide_m = 100.0
 
 beep_on_split = true
+# Cumulative GeoJSON gates (uses [cumulative_beep], not [beep]).
+beep_on_cumulative_split = true
 sector_cooldown_ms = 500
 sector_radius = 25.0
 
@@ -29,6 +33,28 @@ slower_duration_ms = 140
 gap_ms = 200
 volume = 0.4
 
+# Lower tones than [beep] — cumulative GeoJSON subsection pace (Δ Σ PB).
+[cumulative_beep]
+mode = "sine"
+faster_freq_hz = 660.0
+faster_duration_ms = 50
+slower_freq_hz = 330.0
+slower_duration_ms = 160
+gap_ms = 220
+volume = 0.4
+
+# Cumulative subsection timing from GeoJSON (replaces sectors_filtered.shp for listed tracks).
+[cumulative_timing]
+sectors_dir = "timing/cumulative_sectors"
+gate_radius_m = 40.0
+
+[cumulative_timing.ref_track_sectors]
+hafren_north = "hafren_north"
+
+[subsection_html]
+enabled = true
+# dir defaults to [stage_timing].timing_sectors_html_dir
+
 [stage_timing]
 timing_sectors_html_dir = "timing/runs"
 sectors_dir = "timing/timing_sectors"
@@ -39,5 +65,43 @@ stillstand_position_log = true
 stillstand_max_speed_kmh = 2.0
 stillstand_log_interval_sec = 2.0
 
+# Physics tick plausibility (wall Δt vs local_velocity vs wheel displacement). No game clock.
+[timing_quality]
+enabled = true
+# Per-tick [timing-suspect] stderr (very noisy).
+log_suspect_ticks = false
+# Stage + SHP subsection splits: subtract pause/stall wall time only (not routine packet_skip). Off until verified.
+apply_leg_excess_correction = false
+physics_hz = 333
+max_wall_dt_ms = 80
+pos_vel_slop_m = 1.5
+pos_vel_rel_slop = 0.45
+log_cooldown_ms = 250
+
+# Stage timer for Hafren start grid (Fedw/Banc variants disabled until needed).
 [stage_timing.ref_stage_sectors]
 hafren_north = "cwmbiga_afon_biga"
+
+# Auto-update timing_factors correlations when splits are committed to timing.db
+[correlation]
+auto_refresh = true
+slow_pct = 10.0
+min_samples = 4
+
+[timing_blame]
+enabled = true
+min_delta_sec = 0.05
+sigma_k = 2.0
+max_factors = 2
+
+[timing_voice]
+enabled = true
+voice_dir = "voices/timing_en"
+volume = 0.75
+# Copilot: |g| >= threshold for delay, then play on crawl (min..max km/h); not on position reset
+copilot_crash_voice = true
+copilot_g_threshold = 4.0
+copilot_g_delay_sec = 3.0
+copilot_voice_cooldown_sec = 45.0
+copilot_crawl_min_speed_kmh = 1.0
+copilot_crawl_max_speed_kmh = 10.0

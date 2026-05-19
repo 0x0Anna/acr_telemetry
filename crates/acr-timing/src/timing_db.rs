@@ -1,8 +1,10 @@
 use std::path::Path;
+use std::sync::OnceLock;
 
 use rusqlite::{Connection, params};
 
 use crate::sector_leg_stats::SectorLegStatsSnapshot;
+use crate::timing_correlation::CorrelationConfig;
 
 #[derive(Debug, Clone)]
 pub struct SplitRecord<'a> {
@@ -14,6 +16,17 @@ pub struct SplitRecord<'a> {
     pub duration_sec: f64,
     pub distance_m: f64,
     pub stats: Option<SectorLegStatsSnapshot>,
+}
+
+static CORRELATION_CFG: OnceLock<CorrelationConfig> = OnceLock::new();
+
+/// Called once at program start (from loaded `acr_timing.toml` `[correlation]`).
+pub fn set_correlation_config(cfg: CorrelationConfig) {
+    let _ = CORRELATION_CFG.set(cfg);
+}
+
+fn correlation_cfg() -> &'static CorrelationConfig {
+    CORRELATION_CFG.get_or_init(CorrelationConfig::default)
 }
 
 fn migrate_split_stats_columns(conn: &Connection) -> Result<(), rusqlite::Error> {
@@ -87,6 +100,7 @@ ON pending_splits(track_name, created_at_utc);
 "#,
     )?;
     migrate_split_stats_columns(&conn)?;
+    crate::timing_correlation::ensure_schema(&conn)?;
     Ok(conn)
 }
 
@@ -94,6 +108,19 @@ const SPLIT_INSERT_COLS: &str = r#"
     track_name, car_model, direction, from_sector, to_sector, duration_sec, distance_m,
     throttle_open_pct, max_slip_angle, max_slip_ratio, min_slip_ratio, entry_speed_kmh, exit_speed_kmh
 "#;
+
+fn refresh_correlation_after_split(conn: &Connection, rec: &SplitRecord<'_>) {
+    match crate::timing_correlation::refresh_leg(conn, rec, correlation_cfg()) {
+        Ok(n) if n > 0 => {
+            eprintln!(
+                "timing_factors: updated {} row(s) for [{}]→[{}] {}",
+                n, rec.from_sector, rec.to_sector, rec.track_name
+            );
+        }
+        Ok(_) => {}
+        Err(e) => eprintln!("timing correlation: {e}"),
+    }
+}
 
 pub fn insert_split(conn: &Connection, rec: &SplitRecord<'_>) -> Result<(), Box<dyn std::error::Error>> {
     let p = stats_params(rec.stats);
@@ -115,7 +142,29 @@ pub fn insert_split(conn: &Connection, rec: &SplitRecord<'_>) -> Result<(), Box<
             p.5,
         ],
     )?;
+    refresh_correlation_after_split(conn, rec);
     Ok(())
+}
+
+/// Sum of per-leg PB times for `legs` in order. Returns `None` if any leg has no PB yet.
+pub fn cumulative_best_time(
+    conn: &Connection,
+    track_name: &str,
+    car_model: &str,
+    direction: &str,
+    legs: &[(i32, i32)],
+) -> Result<Option<f64>, Box<dyn std::error::Error>> {
+    if legs.is_empty() {
+        return Ok(None);
+    }
+    let mut sum = 0.0f64;
+    for &(from, to) in legs {
+        let Some(t) = best_time(conn, track_name, car_model, direction, from, to)? else {
+            return Ok(None);
+        };
+        sum += t;
+    }
+    Ok(Some(sum))
 }
 
 pub fn best_time(
@@ -180,6 +229,15 @@ pub fn promote_pending_for_track(conn: &Connection, track_name: &str) -> Result<
         params![track_name],
     )?;
     tx.commit()?;
+    if deleted > 0 {
+        match crate::timing_correlation::refresh_track(conn, track_name, correlation_cfg()) {
+            Ok(n) if n > 0 => eprintln!(
+                "timing_factors: refreshed {n} row(s) after promoting {deleted} pending split(s) for {track_name}"
+            ),
+            Ok(_) => {}
+            Err(e) => eprintln!("timing correlation (promote): {e}"),
+        }
+    }
     Ok(deleted)
 }
 
@@ -194,6 +252,17 @@ pub fn promote_all_pending(conn: &Connection) -> Result<usize, Box<dyn std::erro
     )?;
     let deleted = tx.execute("DELETE FROM pending_splits", [])?;
     tx.commit()?;
+    if deleted > 0 {
+        let tracks: Vec<String> = conn
+            .prepare("SELECT DISTINCT track_name FROM sector_splits")?
+            .query_map([], |r| r.get(0))?
+            .collect::<Result<_, _>>()?;
+        for track in tracks {
+            if let Err(e) = crate::timing_correlation::refresh_track(conn, &track, correlation_cfg()) {
+                eprintln!("timing correlation (promote all, {track}): {e}");
+            }
+        }
+    }
     Ok(deleted)
 }
 

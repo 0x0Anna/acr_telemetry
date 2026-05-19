@@ -5,6 +5,7 @@ sectors_coord_space = "game"
 sector_track_field = "src_layer"
 sector_id_field = "seg_id"
 timing_db = "timing/timing.db"
+timing_pb = "timing/timing_pb.toml"
 
 start_points_geojson = "timing/start_points.geojson"
 start_prefilter_radius = 20.0

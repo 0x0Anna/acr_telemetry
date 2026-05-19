@@ -387,6 +387,9 @@ pub fn sleep_ms(ms: u32) {
     std::thread::sleep(std::time::Duration::from_millis(ms as u64));
 }
 
+/// Default line budget for timing / pacenote RTSS overlays (app may pass a higher value).
+pub const DEFAULT_MAX_OSD_LINES: usize = 8;
+
 /// Prepare arbitrary multi-line text for RTSS OSD: strip characters RTSS may treat as layout
 /// separators, normalize whitespace per line, pad to at least two lines, then truncate to
 /// `max_lines` (clamped to 2..32).
