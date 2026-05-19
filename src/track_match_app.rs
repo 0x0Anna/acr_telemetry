@@ -1403,15 +1403,13 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
         .clone()
         .or(timing.silent_beep.clone())
         .unwrap_or_else(|| SplitBeepConfig {
-            mode: "sine".into(),
             faster_freq_hz: 660.0,
             faster_duration_ms: 50,
             slower_freq_hz: 330.0,
             slower_duration_ms: 160,
             gap_ms: 220,
             volume: split_beep.volume,
-            faster_wav: None,
-            slower_wav: None,
+            ..Default::default()
         });
     let cumulative_timing = timing.cumulative_timing.clone();
     let subsection_html = timing.subsection_html.clone();
@@ -1787,7 +1785,7 @@ fn print_usage() {
     eprintln!("       --start-points-geojson FILE Save detected start anchors as GeoJSON points");
     eprintln!("       --start-prefilter-radius M Legacy when no start_points file: prefer unique track within M (default: 20)");
     eprintln!("Grid (when start_points.geojson has anchors): standstill ≤ grid_standstill_max_speed_kmh, within grid_start_trigger_radius_m of a start → pick list; after grid_start_wide_after_sec stillstand list expands to grid_start_list_radius_wide_m (see TOML keys).");
-    eprintln!("       --beep-on-split        Play split sound via default audio (see [beep] in TOML)");
+    eprintln!("       --beep-on-split        Play split feedback (sine/WAV — [beep] in acr_timing.toml)");
     eprintln!("       --debug-physics-1hz    Live: stderr dump of last PhysicsMap (~1/s, Rust pretty-Debug)");
     eprintln!("       --config FILE.toml          Track-match config (default: acr_track_match.toml)");
     eprintln!("       --timing-config FILE.toml   Timing config (default: acr_timing.toml, same dir as --config)");

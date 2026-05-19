@@ -17,13 +17,15 @@ grid_start_list_radius_wide_m = 100.0
 beep_on_split = true
 
 [beep]
-mode = "sine"
+mode = "sine"   # sine | wav | both
 faster_freq_hz = 1700.0
 faster_duration_ms = 45
 slower_freq_hz = 950.0
 slower_duration_ms = 140
 gap_ms = 200
 volume = 0.5
+# faster_wav = "assets/split_sounds/fast.wav"
+# slower_wav = "assets/split_sounds/slow.wav"
 
 [stage_timing]
 timing_sectors_html_dir = "timing/runs"
