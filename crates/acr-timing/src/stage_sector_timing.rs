@@ -22,7 +22,7 @@ pub struct StageSectorRun {
     pub armed: bool,
     /// Index into `markers` for the next expected crossing.
     pub next_marker_idx: usize,
-    pub anchor_clock_sec: Option<f64>,
+    pub anchor_packet_id: Option<i32>,
     pub anchor_instant: Option<Instant>,
     pub completed: bool,
     /// Σ stall excess (pause / wall without physics steps) for current leg only.
@@ -37,7 +37,7 @@ impl StageSectorRun {
             sector_secs: vec![None; leg_count],
             armed: false,
             next_marker_idx: 0,
-            anchor_clock_sec: None,
+            anchor_packet_id: None,
             anchor_instant: None,
             completed: false,
             leg_excess_wall_sec: 0.0,
@@ -447,7 +447,8 @@ pub fn observe_stage_crossing(
     from: (f64, f64),
     to: (f64, f64),
     radius_m: f64,
-    clock_sec: f64,
+    packet_id: i32,
+    physics_hz: f64,
     now: Instant,
 ) -> Option<StageCrossOutcome> {
     if session.run.completed {
@@ -461,7 +462,7 @@ pub fn observe_stage_crossing(
                 && timing_sectors::dist_xz(to.0, to.1, start.x, start.z) <= radius_m
             {
                 session.run.armed = true;
-                session.run.anchor_clock_sec = Some(clock_sec);
+                session.run.anchor_packet_id = Some(packet_id);
                 session.run.anchor_instant = Some(now);
                 session.run.next_marker_idx = 1;
                 return Some(StageCrossOutcome {
@@ -498,7 +499,7 @@ pub fn observe_stage_crossing(
     match marker.role {
         TimingSectorRole::TimingStart => {
             session.run.armed = true;
-            session.run.anchor_clock_sec = Some(clock_sec);
+            session.run.anchor_packet_id = Some(packet_id);
             session.run.anchor_instant = Some(now);
             session.run.next_marker_idx = next_idx + 1;
             Some(StageCrossOutcome {
@@ -516,19 +517,18 @@ pub fn observe_stage_crossing(
                 return None;
             }
             let prev_order = session.markers.markers.get(next_idx.saturating_sub(1)).map(|m| m.order).unwrap_or(0);
-            let dt = session
-                .run
-                .anchor_instant
-                .map(|t| now.duration_since(t).as_secs_f64())
-                .or_else(|| {
-                    session.run.anchor_clock_sec.map(|st| {
-                        let mut x = clock_sec - st;
-                        if x < 0.0 {
-                            x += 24.0 * 3600.0;
-                        }
-                        x
-                    })
-                })?;
+            let hz = physics_hz.max(1.0);
+            let dt = session.run.anchor_packet_id.map(|from| {
+                if packet_id >= from {
+                    (packet_id - from) as f64 / hz
+                } else {
+                    session
+                        .run
+                        .anchor_instant
+                        .map(|t| now.duration_since(t).as_secs_f64())
+                        .unwrap_or(0.0)
+                }
+            })?;
             if dt <= 0.05 {
                 session.run.next_marker_idx = next_idx + 1;
                 return None;
@@ -539,7 +539,7 @@ pub fn observe_stage_crossing(
                 session.run.sector_secs[leg_index] = Some(dt);
             }
             let finished = marker.role == TimingSectorRole::Finish;
-            session.run.anchor_clock_sec = Some(clock_sec);
+            session.run.anchor_packet_id = Some(packet_id);
             session.run.anchor_instant = Some(now);
             session.run.next_marker_idx = next_idx + 1;
             if finished {

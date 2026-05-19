@@ -15,6 +15,7 @@ pub mod cumulative_timing_config;
 pub mod timing_config_file;
 pub mod timing_correlation;
 pub mod timing_db;
+pub mod run_timing_clock;
 pub mod timing_frame_quality;
 pub mod timing_pb;
 pub mod timing_voice;

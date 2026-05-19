@@ -185,17 +185,13 @@ struct SectorSet {
 struct LiveTimingState {
     tracker: SectorPassTracker,
     ring_ids: Vec<i32>,
-    last_anchor_t_sec: Option<f64>,
-    last_anchor_instant: Option<Instant>,
-    last_anchor_drive_m: Option<f64>,
+    /// Leg/run timing from physics `packet_id` (see `run_timing_clock`).
+    run_clock: acr_timing::run_timing_clock::RunTimingClock,
     last_sector_idx: Option<usize>,
     start_stage_pos: Option<Point2>,
     start_stage_since: Option<Instant>,
     start_stage_last_report_sec: i32,
     start_armed: bool,
-    start_anchor_t_sec: Option<f64>,
-    start_anchor_instant: Option<Instant>,
-    start_anchor_drive_m: Option<f64>,
     cooldown_until: HashMap<usize, Instant>,
     /// Pacenote-derived start/finish for Gesamtzeit (`timing/overall_markers/<slug>.geojson`).
     overall_markers: Option<acr_timing::stage_overall_markers::StageOverallMarkers>,
@@ -394,7 +390,7 @@ fn wheels4(w: &Wheels) -> [f32; 4] {
 }
 
 fn observe_active_leg_stats(state: &mut LiveTimingState, physics: &PhysicsMap) {
-    if state.last_anchor_instant.is_some() || state.start_armed {
+    if state.run_clock.leg_anchor().is_some() || state.start_armed {
         state.leg_stats.observe_sample(
             physics.gas,
             wheels4(&physics.slip_ratio),
@@ -578,9 +574,7 @@ impl LiveTimingState {
         }
         s.cumulative = old.cumulative;
         s.modular = old.modular;
-        s.last_anchor_instant = old.last_anchor_instant;
-        s.last_anchor_drive_m = old.last_anchor_drive_m;
-        s.last_anchor_t_sec = old.last_anchor_t_sec;
+        s.run_clock = old.run_clock.clone();
         s.subsection_run_legs = old.subsection_run_legs;
         s.subsection_cumulative_sec = old.subsection_cumulative_sec;
         s.stage_sector_sessions = old.stage_sector_sessions;
@@ -594,17 +588,12 @@ impl LiveTimingState {
         Self {
             tracker: SectorPassTracker::new(ring_ids.len().max(1)),
             ring_ids,
-            last_anchor_t_sec: None,
-            last_anchor_instant: None,
-            last_anchor_drive_m: None,
+            run_clock: acr_timing::run_timing_clock::RunTimingClock::new(333.0),
             last_sector_idx: None,
             start_stage_pos: None,
             start_stage_since: None,
             start_stage_last_report_sec: -1,
             start_armed: false,
-            start_anchor_t_sec: None,
-            start_anchor_instant: None,
-            start_anchor_drive_m: None,
             cooldown_until: HashMap::new(),
             overall_markers: None,
             overall_finish_recorded: false,
@@ -633,7 +622,35 @@ fn reset_subsection_run(state: &mut LiveTimingState) {
 }
 
 fn subsection_timing_active(state: &LiveTimingState) -> bool {
-    state.cumulative.is_some() || state.last_anchor_instant.is_some() || state.start_armed
+    state.cumulative.is_some() || state.run_clock.leg_anchor().is_some() || state.start_armed
+}
+
+fn timing_anchor_now(
+    packet_id: i32,
+    distance_traveled_m: f64,
+) -> acr_timing::run_timing_clock::TimingAnchor {
+    acr_timing::run_timing_clock::TimingAnchor::new(packet_id, Instant::now(), distance_traveled_m)
+}
+
+fn compute_subsection_leg_dt(
+    state: &mut LiveTimingState,
+    packet_id: i32,
+    now: Instant,
+    cfg: &acr_timing::timing_frame_quality::TimingQualityConfig,
+) -> Option<(f64, f64)> {
+    let (sim, _wall) = state.run_clock.leg_duration_sim_and_wall(packet_id, now)?;
+    if sim <= 0.05 {
+        return None;
+    }
+    let dt = finalize_subsection_split_dt(state, sim, cfg);
+    Some((dt, sim))
+}
+
+fn leg_distance_since_anchor(state: &LiveTimingState, distance_traveled_m: f64) -> f64 {
+    state
+        .run_clock
+        .leg_distance_m(distance_traveled_m)
+        .unwrap_or(0.0)
 }
 
 fn reset_subsection_leg_timing_accumulators(state: &mut LiveTimingState) {
@@ -975,7 +992,8 @@ fn process_stage_sector_sessions_on_step(
     timing_conn: &rusqlite::Connection,
     timing_pb: &mut acr_timing::timing_pb::TimingPbStore,
     physics: &PhysicsMap,
-    graphics_clock: f64,
+    packet_id: i32,
+    physics_hz: f64,
     graphics_distance_traveled: f32,
     car_model: &str,
     _locked_track: Option<&str>,
@@ -998,7 +1016,8 @@ fn process_stage_sector_sessions_on_step(
                 (lp.x, lp.z),
                 (p.x, p.z),
                 stage_radius,
-                graphics_clock,
+                packet_id,
+                physics_hz,
                 now_inst,
             )
         };
@@ -2281,7 +2300,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                 acr_timing::physics_wheel::StillstandLogContext {
                     graphics_x: p.x,
                     graphics_z: p.z,
-                    graphics_clock: data.graphics.clock as f64,
+                    graphics_clock: f64::NAN,
                     distance_traveled_m: data.graphics.distance_traveled as f64,
                     stage_armed,
                     stage_leg_elapsed_sec: stage_leg_elapsed,
@@ -2955,6 +2974,9 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                     c
                                 }
                             };
+                            state.run_clock = acr_timing::run_timing_clock::RunTimingClock::new(
+                                cfg.timing_quality.physics_hz,
+                            );
                             if state.cumulative.is_none() {
                                 state.cumulative = Some(
                                     acr_timing::cumulative_sector_timing::CumulativeLegState::new(
@@ -2999,18 +3021,14 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         .cumulative
                                         .as_ref()
                                         .is_some_and(|c| c.destination_is_silent_cp(leg.to_gate_ix));
-                                    let dt_raw = state
-                                        .last_anchor_instant
-                                        .map(|t| now_inst.duration_since(t).as_secs_f64())
-                                        .unwrap_or(0.0);
-                                    if dt_raw > 0.05 {
-                                        let dt = finalize_subsection_split_dt(
-                                            state,
-                                            dt_raw,
-                                            &cfg.timing_quality,
-                                        );
-                                        let prev_m =
-                                            state.last_anchor_drive_m.unwrap_or(0.0);
+                                    let pkt = data.physics.packet_id;
+                                    let odo_m = data.graphics.distance_traveled as f64;
+                                    if let Some((dt, dt_raw)) = compute_subsection_leg_dt(
+                                        state,
+                                        pkt,
+                                        now_inst,
+                                        &cfg.timing_quality,
+                                    ) {
                                         let car_model =
                                             data.statics.car_model.trim();
                                         let car_model = if car_model.is_empty() {
@@ -3033,7 +3051,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                             leg.to_seg,
                                             dt,
                                             dt_raw,
-                                            (total_drive_m - prev_m).max(0.0),
+                                            leg_distance_since_anchor(state, odo_m),
                                             leg_stats,
                                             locked_track.as_deref(),
                                             Some(&blame_ctx),
@@ -3082,21 +3100,23 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 ));
                                             }
                                         }
-                                        state.last_anchor_instant = Some(now_inst);
-                                        state.last_anchor_drive_m = Some(total_drive_m);
+                                        state.run_clock.commit_leg(timing_anchor_now(pkt, odo_m));
                                         reset_subsection_leg_timing_accumulators(state);
                                         state.leg_stats.reset();
                                         set_leg_entry_speed(state, exit_speed);
                                     }
-                                } else if state.last_anchor_instant.is_none() {
+                                } else if state.run_clock.leg_anchor().is_none() {
                                     if state
                                         .cumulative
                                         .as_ref()
                                         .is_some_and(|c| c.last_gate_is_timing_start())
                                     {
-                                        state.last_anchor_instant = Some(now_inst);
-                                        state.last_anchor_drive_m = Some(total_drive_m);
-                                        eprintln!("cumulative: timer anchored at Start");
+                                        let odo_m = data.graphics.distance_traveled as f64;
+                                        state.run_clock.arm_run(timing_anchor_now(
+                                            data.physics.packet_id,
+                                            odo_m,
+                                        ));
+                                        eprintln!("cumulative: timer anchored at Start (packet_id)");
                                         arm_modular_timing_run(state, cfg, car_model_live);
                                     }
                                 }
@@ -3118,7 +3138,8 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         &timing_conn,
                                         &mut timing_pb,
                                         &data.physics,
-                                        data.graphics.clock as f64,
+                                        data.physics.packet_id,
+                                        cfg.timing_quality.physics_hz,
                                         data.graphics.distance_traveled,
                                         car_model,
                                         locked_track.as_deref(),
@@ -3203,9 +3224,10 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 reset_subsection_leg_timing_accumulators(state);
                                                 state.leg_stats.reset();
                                                 set_leg_entry_speed(state, data.physics.speed_kmh);
-                                                state.start_anchor_t_sec = Some(data.graphics.clock as f64);
-                                                state.start_anchor_instant = Some(now_inst);
-                                                state.start_anchor_drive_m = Some(total_drive_m);
+                                                state.run_clock.arm_run(timing_anchor_now(
+                                                    data.physics.packet_id,
+                                                    data.graphics.distance_traveled as f64,
+                                                ));
                                                 let car_model = if car_model_now.is_empty() {
                                                     "unknown_car"
                                                 } else {
@@ -3250,10 +3272,11 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                 }
                             } else if speed_kmh_now >= START_TRIGGER_SPEED_KMH {
                                 // Keep start anchor armed until first real sector crossing consumes it.
-                                if state.start_anchor_instant.is_none() {
-                                    state.start_anchor_t_sec = Some(data.graphics.clock as f64);
-                                    state.start_anchor_instant = Some(now_inst);
-                                    state.start_anchor_drive_m = Some(total_drive_m);
+                                if state.run_clock.run_origin().is_none() {
+                                    state.run_clock.arm_run(timing_anchor_now(
+                                        data.physics.packet_id,
+                                        data.graphics.distance_traveled as f64,
+                                    ));
                                     set_leg_entry_speed(state, data.physics.speed_kmh);
                                 }
                             }
@@ -3267,22 +3290,19 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                             z: finish.z,
                                         };
                                         if dist(p, finish_p) <= OVERALL_MARKER_RADIUS_M {
-                                            if let (Some(st), Some(si), Some(sm)) = (
-                                                state.start_anchor_t_sec,
-                                                state.start_anchor_instant,
-                                                state.start_anchor_drive_m,
-                                            ) {
-                                                let mut dt = data.graphics.clock as f64 - st;
-                                                if dt < 0.0 {
-                                                    dt += 24.0 * 3600.0;
-                                                }
-                                                let dt_raw = si.elapsed().as_secs_f64().max(dt);
-                                                if dt_raw > 0.05 {
+                                            if let Some(origin) = state.run_clock.run_origin() {
+                                                let pkt = data.physics.packet_id;
+                                                let odo_m = data.graphics.distance_traveled as f64;
+                                                if let Some(dt_raw) =
+                                                    state.run_clock.run_sim_sec(pkt).filter(|t| *t > 0.05)
+                                                {
                                                     let dt = finalize_subsection_split_dt(
                                                         state,
                                                         dt_raw,
                                                         &cfg.timing_quality,
                                                     );
+                                                    let dist_m =
+                                                        (odo_m - origin.distance_traveled_m).max(0.0);
                                                     let car_model = data.statics.car_model.trim();
                                                     let car_model = if car_model.is_empty() {
                                                         "unknown_car"
@@ -3311,8 +3331,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                             from_sector: START_SECTOR_ID,
                                                             to_sector: FINISH_SECTOR_ID,
                                                             duration_sec: dt,
-                                                            distance_m: (total_drive_m - sm)
-                                                                .max(0.0),
+                                                            distance_m: dist_m,
                                                             stats: leg_stats,
                                                         };
                                                     let (line, delta) =
@@ -3385,7 +3404,8 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         &timing_conn,
                                         &mut timing_pb,
                                         &data.physics,
-                                        data.graphics.clock as f64,
+                                        data.physics.packet_id,
+                                        cfg.timing_quality.physics_hz,
                                         data.graphics.distance_traveled,
                                         car_model,
                                         locked_track.as_deref(),
@@ -3429,22 +3449,20 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                             SectorPassEvent::Anchored { sector } => {
                                                 // If a staged start exists, emit Start->first-sector split now.
                                                 if state.start_armed {
-                                                    if let (Some(st), Some(si), Some(sm)) = (
-                                                        state.start_anchor_t_sec,
-                                                        state.start_anchor_instant,
-                                                        state.start_anchor_drive_m,
-                                                    ) {
-                                                        let mut dt = data.graphics.clock as f64 - st;
-                                                        if dt < 0.0 {
-                                                            dt += 24.0 * 3600.0;
-                                                        }
-                                                        let dt_raw = si.elapsed().as_secs_f64().max(dt);
-                                                        if dt_raw > 0.05 {
-                                                            let dt = finalize_subsection_split_dt(
+                                                    if state.run_clock.run_origin().is_some() {
+                                                        let pkt = data.physics.packet_id;
+                                                        let now_inst = Instant::now();
+                                                        let odo_m =
+                                                            data.graphics.distance_traveled as f64;
+                                                        if let Some((dt, dt_raw)) =
+                                                            compute_subsection_leg_dt(
                                                                 state,
-                                                                dt_raw,
+                                                                pkt,
+                                                                now_inst,
                                                                 &cfg.timing_quality,
-                                                            );
+                                                            )
+                                                        {
+                                                            let _ = dt_raw;
                                                             let to_sector_id = state.ring_ids[sector];
                                                             let direction_s = state
                                                                 .tracker
@@ -3475,7 +3493,9 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                                 to_sector_id,
                                                                 dt,
                                                                 dt_raw,
-                                                                (total_drive_m - sm).max(0.0),
+                                                                leg_distance_since_anchor(
+                                                                    state, odo_m,
+                                                                ),
                                                                 leg_stats,
                                                                 locked_track.as_deref(),
                                                                 Some(&blame_ctx),
@@ -3497,17 +3517,15 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                         }
                                                     }
                                                     state.start_armed = false;
-                                                    state.start_anchor_t_sec = None;
-                                                    state.start_anchor_instant = None;
-                                                    state.start_anchor_drive_m = None;
                                                     state.start_stage_pos = None;
                                                     state.start_stage_since = None;
                                                     state.start_stage_last_report_sec = -1;
                                                 }
                                                 reset_subsection_leg_timing_accumulators(state);
-                                                state.last_anchor_t_sec = Some(data.graphics.clock as f64);
-                                                state.last_anchor_instant = Some(Instant::now());
-                                                state.last_anchor_drive_m = Some(total_drive_m);
+                                                state.run_clock.commit_leg(timing_anchor_now(
+                                                    data.physics.packet_id,
+                                                    data.graphics.distance_traveled as f64,
+                                                ));
                                                 state.last_sector_idx = Some(sector);
                                                 state.leg_stats.reset();
                                                 set_leg_entry_speed(state, data.physics.speed_kmh);
@@ -3522,28 +3540,22 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 }
                                             }
                                             SectorPassEvent::Step { from, to, direction } => {
-                                                let now_t = data.graphics.clock as f64;
                                                 let now_inst = Instant::now();
-                                                if let (Some(prev_t), Some(prev_m)) =
-                                                    (state.last_anchor_t_sec, state.last_anchor_drive_m)
-                                                {
-                                                    let dt_raw = state
-                                                        .last_anchor_instant
-                                                        .map(|t| now_inst.duration_since(t).as_secs_f64())
-                                                        .unwrap_or_else(|| {
-                                                            let mut x = now_t - prev_t;
-                                                            if x < 0.0 {
-                                                                x += 24.0 * 3600.0;
-                                                            }
-                                                            x
-                                                        });
-                                                    let dist_m = (total_drive_m - prev_m).max(0.0);
-                                                    if dt_raw > 0.05 {
-                                                        let dt = finalize_subsection_split_dt(
+                                                let pkt = data.physics.packet_id;
+                                                let odo_m =
+                                                    data.graphics.distance_traveled as f64;
+                                                if state.run_clock.leg_anchor().is_some() {
+                                                    if let Some((dt, dt_raw)) =
+                                                        compute_subsection_leg_dt(
                                                             state,
-                                                            dt_raw,
+                                                            pkt,
+                                                            now_inst,
                                                             &cfg.timing_quality,
-                                                        );
+                                                        )
+                                                    {
+                                                        let dist_m =
+                                                            leg_distance_since_anchor(state, odo_m);
+                                                        let _ = dt_raw;
                                                         let from_sector_id = state.ring_ids[from];
                                                         let to_sector_id = state.ring_ids[to];
                                                         let direction_s = match direction {
@@ -3606,9 +3618,9 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                     sector_status_line =
                                                         Some((passed_line.clone(), Instant::now()));
                                                 }
-                                                state.last_anchor_t_sec = Some(now_t);
-                                                state.last_anchor_instant = Some(now_inst);
-                                                state.last_anchor_drive_m = Some(total_drive_m);
+                                                state.run_clock.commit_leg(timing_anchor_now(
+                                                    pkt, odo_m,
+                                                ));
                                                 state.last_sector_idx = Some(to);
                                                 set_leg_entry_speed(state, data.physics.speed_kmh);
                                             }
@@ -3617,16 +3629,20 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 // Typical restart case: same sector crossed again after a pause.
                                                 // Re-anchor timing to avoid carrying over a stale start timestamp.
                                                 let now_inst2 = Instant::now();
-                                                let now_t2 = data.graphics.clock as f64;
                                                 let should_reanchor = state
-                                                    .last_anchor_instant
-                                                    .map(|t| now_inst2.duration_since(t).as_secs_f64() >= SAME_SECTOR_REANCHOR_SEC)
+                                                    .run_clock
+                                                    .leg_anchor()
+                                                    .map(|a| {
+                                                        now_inst2.duration_since(a.at).as_secs_f64()
+                                                            >= SAME_SECTOR_REANCHOR_SEC
+                                                    })
                                                     .unwrap_or(true);
                                                 if should_reanchor {
                                                     reset_subsection_leg_timing_accumulators(state);
-                                                    state.last_anchor_t_sec = Some(now_t2);
-                                                    state.last_anchor_instant = Some(now_inst2);
-                                                    state.last_anchor_drive_m = Some(total_drive_m);
+                                                    state.run_clock.commit_leg(timing_anchor_now(
+                                                        data.physics.packet_id,
+                                                        data.graphics.distance_traveled as f64,
+                                                    ));
                                                     state.leg_stats.reset();
                                                     set_leg_entry_speed(state, data.physics.speed_kmh);
                                                     if let Some(si) = state.last_sector_idx {

@@ -64,11 +64,10 @@ pub fn maybe_log_stillstand_position(
         .unwrap_or_else(|| "-".to_string());
     let next = ctx.stage_next_label.unwrap_or("-");
     eprintln!(
-        "[stillstand] spd={speed_kmh:.1} wheel=({wx:.1},{wy:.1},{wz:.1}) map(Z,X)=({map_z:.1},{map_x:.1}) | gfx=({:.1},{:.1}) dist={:.0}m clock={:.1} stage_armed={} leg_t={leg} next={next}",
+        "[stillstand] spd={speed_kmh:.1} wheel=({wx:.1},{wy:.1},{wz:.1}) map(Z,X)=({map_z:.1},{map_x:.1}) | gfx=({:.1},{:.1}) dist={:.0}m stage_armed={} leg_t={leg} next={next}",
         ctx.graphics_x,
         ctx.graphics_z,
         ctx.distance_traveled_m,
-        ctx.graphics_clock,
         ctx.stage_armed,
     );
 }
