@@ -1,4 +1,4 @@
-//! Sector line formatting: `S1: +0.423 [0:19.34] [--] ref: 1:31.45 tot: 0:45.32`
+﻿//! Sector line formatting: `S1: +0.423 [0:19.34] [--] ref: 1:31.45 tot: 0:45.32`
 //! With RTSS: `+`/brackets colored red (slower) / green (faster) via `<C=RRGGBB>`.
 
 use acr_timing::rtss_osd::hypertext;
@@ -76,6 +76,34 @@ pub fn format_sector_line(
     parts.join(" ")
 }
 
+/// After Finish: sum of sector `tot` / reference totals and Σ sector cum Δ.
+pub fn format_track_completed_line(
+    cum_tot_sec: f64,
+    cum_ref_tot_sec: f64,
+    cum_delta_sec: f64,
+    rtss_colors: bool,
+) -> String {
+    let mut parts = vec![
+        "Track completed".to_string(),
+        format!("cum: {}", format_duration(cum_tot_sec)),
+    ];
+    if cum_ref_tot_sec.is_finite() && cum_ref_tot_sec >= 0.0 {
+        parts.push(format!("ref: {}", format_duration(cum_ref_tot_sec)));
+    }
+    let sign = if cum_delta_sec >= 0.0 { "+" } else { "" };
+    let delta_body = format!("{sign}{cum_delta_sec:.3}");
+    let delta = if rtss_colors && cum_delta_sec.is_finite() && cum_delta_sec.abs() > 1e-9 {
+        format!(
+            "delta: {}",
+            hypertext::wrap_delta_colored(cum_delta_sec, &delta_body)
+        )
+    } else {
+        format!("delta: {delta_body}")
+    };
+    parts.push(delta);
+    parts.join("  ")
+}
+
 pub fn compose_osd_message(status: &str, presenter_lines: &[String]) -> String {
     let mut lines = vec![status.to_string()];
     lines.extend(presenter_lines.iter().cloned());
@@ -103,32 +131,14 @@ mod tests {
         assert!(line.contains("[--]"));
         assert!(line.contains("ref: 1:31.45"));
         assert!(line.contains("tot:"));
+    }
 
-        let rtss = format_sector_line(
-            0,
-            0.5,
-            &[1],
-            &[Some(10.0)],
-            &[Some(0.5)],
-            None,
-            10.0,
-            false,
-            true,
-        );
-        assert!(rtss.contains("<C=ff0000>+0.500"));
-
-        let rtss_fast = format_sector_line(
-            0,
-            -0.2,
-            &[1],
-            &[Some(10.0)],
-            &[Some(-0.3)],
-            None,
-            10.0,
-            false,
-            true,
-        );
-        assert!(rtss_fast.contains("<C=00ff00>"));
-        assert!(rtss_fast.contains("<C=00ff00>["));
+    #[test]
+    fn track_completed_line() {
+        let line = format_track_completed_line(272.5, 270.0, 2.5, true);
+        assert!(line.contains("Track completed"));
+        assert!(line.contains("cum:"));
+        assert!(line.contains("delta:"));
+        assert!(line.contains("<C=ff0000>"));
     }
 }

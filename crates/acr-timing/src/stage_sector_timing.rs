@@ -6,8 +6,10 @@ use std::time::Instant;
 
 use rusqlite::Connection;
 
+use crate::rtss_osd::hypertext;
 use crate::timing_db::{self, SplitRecord};
-use crate::timing_sectors::{self, StageTimingSectors, TimingSectorRole};
+use crate::timing_pb::TimingPbStore;
+use crate::timing_sectors::{self, StageTimingSectors, TimingSectorMarker, TimingSectorRole};
 
 pub const STAGE_TIMING_DIRECTION: &str = "stage";
 
@@ -150,6 +152,123 @@ pub fn format_duration(sec: f64) -> String {
     }
 }
 
+/// `(from_order, to_order)` per timed leg (PB key), aligned with `sector_secs` indices.
+pub fn stage_leg_pb_orders(markers: &[TimingSectorMarker]) -> Vec<(i32, i32)> {
+    let mut legs = Vec::new();
+    for i in 1..markers.len() {
+        if markers[i].role == TimingSectorRole::TimingStart {
+            continue;
+        }
+        legs.push((markers[i - 1].order, markers[i].order));
+    }
+    legs
+}
+
+/// Personal-best leg times from `timing_pb.toml` (one entry per stage sector leg).
+pub fn reference_sector_secs_from_pb(
+    pb: &TimingPbStore,
+    stage_slug: &str,
+    car_model: &str,
+    markers: &[TimingSectorMarker],
+) -> Vec<Option<f64>> {
+    stage_leg_pb_orders(markers)
+        .into_iter()
+        .map(|(from, to)| {
+            let t = pb.best_time(
+                stage_slug,
+                car_model,
+                STAGE_TIMING_DIRECTION,
+                from,
+                to,
+            )?;
+            (t.is_finite() && t >= 0.05).then_some(t)
+        })
+        .collect()
+}
+
+fn align_len(mut v: Vec<Option<f64>>, n: usize) -> Vec<Option<f64>> {
+    v.truncate(n);
+    while v.len() < n {
+        v.push(None);
+    }
+    v
+}
+
+fn effective_cur_sec(
+    leg_i: usize,
+    current_secs: &[Option<f64>],
+    highlight_leg: Option<usize>,
+    live_elapsed_sec: Option<f64>,
+) -> Option<f64> {
+    if highlight_leg == Some(leg_i) {
+        return live_elapsed_sec.or_else(|| current_secs.get(leg_i).copied().flatten());
+    }
+    current_secs.get(leg_i).copied().flatten()
+}
+
+fn format_delta_slot(delta_sec: Option<f64>, rtss_colors: bool) -> String {
+    let Some(d) = delta_sec.filter(|x| x.is_finite()) else {
+        return "...".to_string();
+    };
+    let sign = if d >= 0.0 { "+" } else { "-" };
+    let text = format!("{sign}{}", format_duration(d.abs()));
+    if rtss_colors && d.abs() > 1e-9 {
+        hypertext::wrap_delta_colored(d, &text)
+    } else {
+        text
+    }
+}
+
+/// Ziel OSD block: `Label: ref … | cur … | Δ …` (Δ colored when `rtss_colors`).
+pub fn format_stage_goal_line(
+    rtss_label: &str,
+    reference_secs: &[Option<f64>],
+    current_secs: &[Option<f64>],
+    highlight_leg: Option<usize>,
+    live_elapsed_sec: Option<f64>,
+    rtss_colors: bool,
+    rtss_safe: bool,
+) -> String {
+    let leg_sep = if rtss_safe { " | " } else { " · " };
+    let n = current_secs.len();
+    let reference_secs = align_len(reference_secs.to_vec(), n);
+
+    let ref_part = reference_secs
+        .iter()
+        .map(|t| match t {
+            Some(s) if s.is_finite() => format_duration(*s),
+            _ => "...".to_string(),
+        })
+        .collect::<Vec<_>>()
+        .join(leg_sep);
+
+    let cur_part = (0..n)
+        .map(|i| {
+            if let Some(sec) = effective_cur_sec(i, current_secs, highlight_leg, live_elapsed_sec) {
+                format!("[{}]", format_duration(sec))
+            } else {
+                "[...]".to_string()
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(leg_sep);
+
+    // Δ only after a leg is completed (stored in sector_secs), not while cur ticks live.
+    let delta_part = (0..n)
+        .map(|i| {
+            let completed = current_secs.get(i).copied().flatten();
+            let delta = match (reference_secs.get(i).copied().flatten(), completed) {
+                (Some(r), Some(c)) if c.is_finite() => Some(c - r),
+                _ => None,
+            };
+            format_delta_slot(delta, rtss_colors)
+        })
+        .collect::<Vec<_>>()
+        .join(leg_sep);
+
+    format!("{rtss_label}: ref {ref_part} | cur {cur_part} | delta {delta_part}")
+}
+
 /// Sector strip for OSD. Use `rtss_safe = true` for RTSS (`|` separator, `(…)` highlight).
 /// `live_elapsed_sec` fills the active leg while timing (otherwise `...`).
 pub fn format_sector_strip(
@@ -207,24 +326,39 @@ pub fn stage_timing_osd_detail(
     format!("stage: next {} ({:.0}m)", marker.label, d)
 }
 
-/// Up to three sector strips on one line (`Ziel-Kurztitel: S1 · S2` …).
+/// Up to three Ziel blocks on one line (`Ziel: ref … | cur … | Δ …`).
 pub fn format_multi_stage_sector_line(
     sessions: &[&StageSectorSession],
+    pb: &TimingPbStore,
+    car_model: &str,
     rtss_safe: bool,
     now: Instant,
 ) -> String {
+    let car_model = if car_model.trim().is_empty() {
+        "unknown_car"
+    } else {
+        car_model.trim()
+    };
     let sep_outer = if rtss_safe { " || " } else { "  ‖  " };
     sessions
         .iter()
         .take(crate::stage_timing_config::MAX_PARALLEL_STAGE_TIMINGS)
         .map(|sess| {
-            let strip = format_sector_strip(
+            let refs = reference_sector_secs_from_pb(
+                pb,
+                &sess.markers.stage_slug,
+                car_model,
+                &sess.markers.markers,
+            );
+            format_stage_goal_line(
+                &sess.markers.rtss_label(),
+                &refs,
                 &sess.run.sector_secs,
-                rtss_safe,
                 sess.run.highlight_leg_index(),
                 sess.run.live_leg_elapsed_sec(now),
-            );
-            format!("{}: {strip}", sess.markers.rtss_label())
+                rtss_safe,
+                rtss_safe,
+            )
         })
         .collect::<Vec<_>>()
         .join(sep_outer)
@@ -635,4 +769,119 @@ pub fn flush_run_to_html(
         text_path.display()
     );
     Ok(Some(path))
+}
+
+#[cfg(test)]
+mod goal_line_tests {
+    use super::*;
+    use crate::timing_pb::TimingPbStore;
+    use crate::timing_sectors::{TimingSectorMarker, TimingSectorRole};
+
+    fn sample_markers() -> Vec<TimingSectorMarker> {
+        vec![
+            TimingSectorMarker {
+                order: 0,
+                label: "Start".into(),
+                role: TimingSectorRole::TimingStart,
+                x: 0.0,
+                z: 0.0,
+            },
+            TimingSectorMarker {
+                order: 1,
+                label: "Sector 1".into(),
+                role: TimingSectorRole::SectorBoundary,
+                x: 1.0,
+                z: 0.0,
+            },
+            TimingSectorMarker {
+                order: 2,
+                label: "Sector 2".into(),
+                role: TimingSectorRole::SectorBoundary,
+                x: 2.0,
+                z: 0.0,
+            },
+        ]
+    }
+
+    #[test]
+    fn leg_orders_skip_timing_start_only_at_zero() {
+        let orders = stage_leg_pb_orders(&sample_markers());
+        assert_eq!(orders, vec![(0, 1), (1, 2)]);
+    }
+
+    #[test]
+    fn goal_line_three_groups() {
+        let line = format_stage_goal_line(
+            "Hafren",
+            &[Some(90.0), Some(100.0)],
+            &[Some(91.0), None],
+            Some(1),
+            Some(50.0),
+            false,
+            true,
+        );
+        assert!(line.contains("Hafren: ref "));
+        assert!(line.contains(" | cur "));
+        assert!(line.contains(" | delta "));
+        assert!(line.contains("[0:50.000]"));
+        assert!(line.contains("+0:01.000") || line.contains("+1.000"));
+    }
+
+    #[test]
+    fn delta_only_when_leg_completed() {
+        let line = format_stage_goal_line(
+            "Z",
+            &[Some(10.0)],
+            &[None],
+            Some(0),
+            Some(9.5),
+            false,
+            true,
+        );
+        assert!(line.contains("[0:09.500]"));
+        let after_delta = line.split(" | delta ").nth(1).unwrap_or("");
+        assert!(after_delta.starts_with("..."));
+    }
+
+    #[test]
+    fn delta_colored_when_rtss() {
+        let line = format_stage_goal_line(
+            "Z",
+            &[Some(10.0)],
+            &[Some(10.5)],
+            None,
+            None,
+            true,
+            true,
+        );
+        assert!(line.contains("<C=ff0000>"));
+    }
+
+    #[test]
+    fn reference_from_pb() {
+        let dir = std::env::temp_dir().join(format!("acr_pb_test_{}", std::process::id()));
+        let _ = std::fs::create_dir_all(&dir);
+        let path = dir.join("timing_pb.toml");
+        let raw = r#"
+[[legs]]
+track = "cwmbiga_afon_biga"
+car = "test_car"
+direction = "stage"
+from = 0
+to = 1
+duration_sec = 90.5
+"#;
+        std::fs::write(&path, raw).unwrap();
+        let pb = TimingPbStore::load(&path).unwrap();
+        let refs = reference_sector_secs_from_pb(
+            &pb,
+            "cwmbiga_afon_biga",
+            "test_car",
+            &sample_markers(),
+        );
+        assert_eq!(refs.len(), 2);
+        assert!((refs[0].unwrap() - 90.5).abs() < 0.01);
+        assert!(refs[1].is_none());
+        let _ = std::fs::remove_dir_all(dir);
+    }
 }

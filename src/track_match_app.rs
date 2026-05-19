@@ -4109,9 +4109,21 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                         if !ts.stage_sector_sessions.is_empty() {
                             let session_refs: Vec<_> =
                                 ts.stage_sector_sessions.iter().collect();
+                            let car_osd = locked_car_model
+                                .as_deref()
+                                .filter(|s| !s.is_empty())
+                                .unwrap_or_else(|| {
+                                    if car_model_now.is_empty() {
+                                        "unknown_car"
+                                    } else {
+                                        car_model_now.as_str()
+                                    }
+                                });
                             let strip =
                                 acr_timing::stage_sector_timing::format_multi_stage_sector_line(
                                     &session_refs,
+                                    &timing_pb,
+                                    car_osd,
                                     cfg.rtss,
                                     now_osd,
                                 );
