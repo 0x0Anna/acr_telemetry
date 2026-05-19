@@ -25,6 +25,18 @@ pub struct TrackMatchConfigFile {
     pub rtss_owner: Option<String>,
     pub rtss_slot: Option<u32>,
     pub rtss_clear_all: Option<bool>,
+    /// `default` | `middle_monitor` | `sticky_center` | `pixel` — see docs/RTSS_OVERLAY.md.
+    #[serde(default)]
+    pub rtss_osd_anchor: Option<String>,
+    #[serde(default)]
+    pub rtss_osd_offset_x: Option<i32>,
+    #[serde(default)]
+    pub rtss_osd_offset_y: Option<i32>,
+    /// Absolute virtual-desktop X/Y (`rtss_osd_anchor = "pixel"` or override).
+    #[serde(default)]
+    pub rtss_osd_x: Option<i32>,
+    #[serde(default)]
+    pub rtss_osd_y: Option<i32>,
     pub track_keep_max_dist: Option<f64>,
     pub track_switch_min_gain: Option<f64>,
     pub track_lock_after_sec: Option<f64>,

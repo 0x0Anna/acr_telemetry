@@ -1,4 +1,7 @@
-//! Sector line formatting: `S1: +0.423 [0:19.34] [--] … tot: 1:18.59`
+//! Sector line formatting: `S1: +0.423 [0:19.34] [--] ref: 1:31.45 tot: 0:45.32`
+//! With RTSS: `+`/brackets colored red (slower) / green (faster) via `<C=RRGGBB>`.
+
+use acr_timing::rtss_osd::hypertext;
 
 const MAX_SUB_SLOTS: usize = 8;
 
@@ -24,8 +27,11 @@ pub fn format_sector_line(
     cum_delta_sec: f64,
     sub_ids: &[i32],
     sub_times_sec: &[Option<f64>],
+    sub_delta_sec: &[Option<f64>],
+    reference_tot_sec: Option<f64>,
     tot_sec: f64,
     incomplete_mark: bool,
+    rtss_colors: bool,
 ) -> String {
     let prefix = if incomplete_mark {
         format!("S{}~:", sector_index + 1)
@@ -33,7 +39,13 @@ pub fn format_sector_line(
         format!("S{}:", sector_index + 1)
     };
     let sign = if cum_delta_sec >= 0.0 { "+" } else { "" };
-    let mut parts = vec![format!("{prefix} {sign}{cum_delta_sec:.3}")];
+    let cum_text = format!("{sign}{cum_delta_sec:.3}");
+    let cum_colored = if rtss_colors {
+        hypertext::wrap_delta_colored(cum_delta_sec, &cum_text)
+    } else {
+        cum_text
+    };
+    let mut parts = vec![format!("{prefix} {cum_colored}")];
 
     let n = sub_ids.len();
     let start = n.saturating_sub(MAX_SUB_SLOTS);
@@ -44,9 +56,22 @@ pub fn format_sector_line(
             .filter(|t| t.is_finite())
             .map(format_duration)
             .unwrap_or_else(|| "--".to_string());
-        parts.push(format!("[{slot}]"));
+        let bracket = format!("[{slot}]");
+        let delta = sub_delta_sec.get(i).copied().flatten();
+        let part = if rtss_colors {
+            delta
+                .filter(|d| d.is_finite())
+                .map(|d| hypertext::wrap_delta_colored(d, &bracket))
+                .unwrap_or(bracket)
+        } else {
+            bracket
+        };
+        parts.push(part);
     }
 
+    if let Some(ref_sec) = reference_tot_sec.filter(|t| t.is_finite() && *t >= 0.0) {
+        parts.push(format!("ref: {}", format_duration(ref_sec)));
+    }
     parts.push(format!("tot: {}", format_duration(tot_sec)));
     parts.join(" ")
 }
@@ -68,11 +93,42 @@ mod tests {
             0.5,
             &[1, 2, 3],
             &[Some(21.5), None, Some(14.0)],
+            &[Some(0.5), None, Some(-1.0)],
+            Some(91.45),
             35.5,
+            false,
             false,
         );
         assert!(line.contains("+0.500"));
         assert!(line.contains("[--]"));
+        assert!(line.contains("ref: 1:31.45"));
         assert!(line.contains("tot:"));
+
+        let rtss = format_sector_line(
+            0,
+            0.5,
+            &[1],
+            &[Some(10.0)],
+            &[Some(0.5)],
+            None,
+            10.0,
+            false,
+            true,
+        );
+        assert!(rtss.contains("<C=ff0000>+0.500"));
+
+        let rtss_fast = format_sector_line(
+            0,
+            -0.2,
+            &[1],
+            &[Some(10.0)],
+            &[Some(-0.3)],
+            None,
+            10.0,
+            false,
+            true,
+        );
+        assert!(rtss_fast.contains("<C=00ff00>"));
+        assert!(rtss_fast.contains("<C=00ff00>["));
     }
 }

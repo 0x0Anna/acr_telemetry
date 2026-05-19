@@ -28,4 +28,5 @@ winapi = { version = "0.3", features = [
     "synchapi",
     "winnt",
     "errhandlingapi",
+    "winuser",
 ] }

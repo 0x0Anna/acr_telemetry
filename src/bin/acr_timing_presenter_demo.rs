@@ -94,7 +94,7 @@ fn main() {
         } else {
             "demo waiting".into()
         };
-        let lines = presenter.osd_lines();
+        let lines = presenter.osd_lines(rtss);
         let msg = compose_osd_message(&status, &lines);
         print_osd_block(&msg);
 
@@ -118,7 +118,7 @@ fn main() {
         finish_sector(&mut presenter, prev, &sub_times);
     }
     let status = "demo finished";
-    let lines = presenter.osd_lines();
+    let lines = presenter.osd_lines(rtss);
     let msg = compose_osd_message(status, &lines);
     print_osd_block(&msg);
     #[cfg(windows)]
@@ -152,6 +152,7 @@ fn finish_sector(presenter: &mut PresenterState, sector_index: u32, sub_times: &
             tot_sec: tot,
             sub_ids,
             sub_times_sec: sub_times.to_vec(),
+            sub_delta_sec: vec![None; SUBS_PER_SECTOR],
             reference_tot_sec: SUBS_PER_SECTOR as f64,
         })));
     } else {

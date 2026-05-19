@@ -24,8 +24,11 @@ Events are published on an in-process bus (`EventSender` / `EventReceiver`). The
 ## Display (presenter)
 
 ```
-S1: +0.423 [0:19.34] [0:23.45] [--] [0:14.00]  tot: 1:18.59
+S1: +0.423 [0:19.34] [0:23.45] [--] [0:14.00] ref: 1:31.45 tot: 0:45.32
 ```
+
+- `ref:` — fastest **complete** reference sector time (`reference_tot_sec`; full sector, not partial cum Δ).
+- `tot:` — your elapsed time in the current (or just finished) sector.
 
 Last completed sector line + live line for current sector (max 8 sub slots).
 

@@ -52,6 +52,8 @@ const PACENOTE_ANCHOR_HELP_SECS: u64 = 3;
 const START_LAYOUT_TELEPORT_RESET_M: f64 = 30.0;
 /// Unlock only after this many seconds standstill at a start grid following a jump.
 const TELEPORT_UNLOCK_STILL_SEC: f64 = 3.0;
+/// In-game restart: reset an active run after this long at a known `start_points` anchor.
+const START_GRID_TIMING_RESET_STILL_SEC: f64 = 3.0;
 /// Clear a pending teleport unlock if the car keeps driving above standstill speed this long.
 const TELEPORT_PENDING_CLEAR_DRIVE_SEC: f64 = 2.0;
 /// Ignore sector line crossings for a single physics step longer than this (stale `last_pt` / menu teleport).
@@ -290,26 +292,14 @@ fn arm_modular_timing_run(
     drain_modular_timing_events(state, cfg);
 }
 
-fn log_sector_tot_vs_stage(
-    timing_state: &LiveTimingState,
-    sector_index: u32,
-    modular_tot_sec: f64,
-) {
-    let ix = sector_index as usize;
-    for sess in &timing_state.stage_sector_sessions {
-        if sess.markers.stage_slug != "cwmbiga_afon_biga" {
-            continue;
-        }
-        if let Some(stage_t) = sess.run.sector_secs.get(ix).copied().flatten() {
-            let delta = modular_tot_sec - stage_t;
-            eprintln!(
-                "S{} tot check: modular_osd={modular_tot_sec:.3}s stage_timer={stage_t:.3}s Δ={delta:+.3}s \
-                 (stage_timer ≈ in-game sector; |Δ|>0.5s → anchor/clock issue)",
-                sector_index + 1,
-            );
-        }
-        return;
-    }
+/// Calibrated stage-sector leg time for main sector `sector_index` (S1 → leg 0, …).
+fn stage_tot_sec_for_sector(timing_state: &LiveTimingState, sector_index: u32) -> Option<f64> {
+    let leg_ix = sector_index as usize;
+    timing_state
+        .stage_sector_sessions
+        .iter()
+        .filter_map(|sess| sess.run.sector_secs.get(leg_ix).and_then(|t| *t))
+        .find(|t| t.is_finite() && *t > 0.05)
 }
 
 fn drain_modular_timing_events(
@@ -320,14 +310,23 @@ fn drain_modular_timing_events(
         return;
     };
     let events = modular.event_rx.drain();
-    for event in events {
+    for mut event in events {
         if cfg.beep_on_cumulative_split {
             if let TimingEventBody::SubSplit(ref s) = event.body {
                 acr_timing::split_beep::play_split_feedback(s.cum_delta_sec, &cfg.cumulative_beep);
             }
         }
-        if let TimingEventBody::SectorCompleted(ref s) = event.body {
-            log_sector_tot_vs_stage(timing_state, s.sector_index, s.tot_sec);
+        if let TimingEventBody::SectorCompleted(ref mut s) = event.body {
+            if let Some(stage_t) = stage_tot_sec_for_sector(timing_state, s.sector_index) {
+                let modular_tot = s.tot_sec;
+                if (modular_tot - stage_t).abs() > 0.05 {
+                    eprintln!(
+                        "modular: S{} tot {modular_tot:.3}s → stage {stage_t:.3}s (OSD uses stage)",
+                        s.sector_index + 1,
+                    );
+                }
+                s.tot_sec = stage_t;
+            }
         }
         if let Some(m) = timing_state.modular.as_mut() {
             m.presenter.apply(&event);
@@ -335,28 +334,29 @@ fn drain_modular_timing_events(
     }
 }
 
-fn modular_presenter_detail(state: &mut LiveTimingState) -> String {
+fn modular_presenter_detail(state: &mut LiveTimingState, cfg: &CliConfig) -> String {
     let Some(m) = state.modular.as_mut() else {
         return String::new();
     };
-    let lines = m.presenter.osd_lines();
+    let lines = m.presenter.osd_lines(cfg.rtss);
     if lines.is_empty() {
         return String::new();
     }
     lines.join("\n")
 }
 
-fn cumulative_osd_detail(state: &mut LiveTimingState, _now: Instant) -> String {
-    modular_presenter_detail(state)
+fn cumulative_osd_detail(state: &mut LiveTimingState, cfg: &CliConfig, _now: Instant) -> String {
+    modular_presenter_detail(state, cfg)
 }
 
 /// Modular two-line OSD; optional cumulative CP flash as extra line (does not replace presenter).
 fn cumulative_osd_detail_with_flash(
     state: &mut LiveTimingState,
+    cfg: &CliConfig,
     sector_status_line: &Option<(String, Instant)>,
     now: Instant,
 ) -> String {
-    let modular = cumulative_osd_detail(state, now);
+    let modular = cumulative_osd_detail(state, cfg, now);
     if let Some((flash, sts)) = sector_status_line {
         if sts.elapsed() <= osd_detail_ttl_for_state(state) {
             if modular.is_empty() {
@@ -658,6 +658,79 @@ fn reset_subsection_leg_timing_accumulators(state: &mut LiveTimingState) {
     state.subsection_timing_position_reset = false;
 }
 
+/// True once subsection / cumulative / stage / start-staging timing has begun.
+fn live_timing_timer_running(state: &LiveTimingState) -> bool {
+    if state.start_armed || state.run_clock.leg_anchor().is_some() {
+        return true;
+    }
+    if state
+        .cumulative
+        .as_ref()
+        .is_some_and(|c| c.last_gate_ix.is_some())
+    {
+        return true;
+    }
+    state
+        .stage_sector_sessions
+        .iter()
+        .any(|s| s.run.armed && !s.run.completed)
+}
+
+fn near_track_start_point(
+    idx: &HashMap<String, Vec<Point2>>,
+    track_name: &str,
+    p: Point2,
+    radius_m: f64,
+) -> bool {
+    idx.get(track_name)
+        .is_some_and(|pts| pts.iter().any(|sp| dist(*sp, p) <= radius_m))
+}
+
+/// Full timing reset at the grid (in-game stage restart). Does not arm — wait for Start cross / staging.
+fn reset_live_timing_at_grid(
+    state: &mut LiveTimingState,
+    physics_hz: f64,
+    car_model: &str,
+    cum_def: Option<&CumulativeTrackSectors>,
+    bus: &EventSender,
+    store_path: &Path,
+) {
+    state.run_clock = acr_timing::run_timing_clock::RunTimingClock::new(physics_hz);
+    state.start_armed = false;
+    state.start_stage_pos = None;
+    state.start_stage_since = None;
+    state.start_stage_last_report_sec = -1;
+    state.last_sector_idx = None;
+    state.overall_finish_recorded = false;
+    reset_subsection_run(state);
+    reset_subsection_leg_timing_accumulators(state);
+    state.tracker = SectorPassTracker::new(state.ring_ids.len().max(1));
+
+    if let Some(cum) = cum_def {
+        state.cumulative = Some(acr_timing::cumulative_sector_timing::CumulativeLegState::new(
+            cum.clone(),
+        ));
+        if let Some(m) = state.modular.as_mut() {
+            m.presenter = PresenterState::default();
+            m.coordinator.reset_run();
+            m.coordinator.set_car(car_model);
+        } else {
+            ensure_modular_timing(state, bus, store_path, cum, &cum.reference_track, car_model);
+            if let Some(m) = state.modular.as_mut() {
+                m.coordinator.reset_run();
+            }
+        }
+    }
+
+    for session in &mut state.stage_sector_sessions {
+        session.run.reset_run();
+    }
+
+    eprintln!(
+        "timing: reset at start grid (≥{START_GRID_TIMING_RESET_STILL_SEC:.0}s standstill, timer was running)"
+    );
+}
+
 fn note_subsection_timing_position_reset(state: &mut LiveTimingState) {
     if !subsection_timing_active(state) || state.subsection_timing_position_reset {
         return;
@@ -932,6 +1005,7 @@ struct CliConfig {
     rtss_owner: String,
     rtss_slot: u32,
     rtss_clear_all: bool,
+    rtss_osd_placement: acr_timing::rtss_osd::RtssOsdPlacement,
     sectors_shp: Option<PathBuf>,
     sectors_coord_space: SectorsCoordSpace,
     sector_track_field: String,
@@ -1266,6 +1340,13 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
         .unwrap_or_else(|| "acr_track_match".to_string());
     let mut rtss_slot = tm.rtss_slot.unwrap_or(0u32);
     let mut rtss_clear_all = tm.rtss_clear_all.unwrap_or(false);
+    let mut rtss_osd_placement = acr_timing::rtss_osd::RtssOsdPlacement::from_config(
+        tm.rtss_osd_anchor.as_deref(),
+        tm.rtss_osd_offset_x,
+        tm.rtss_osd_offset_y,
+        tm.rtss_osd_x,
+        tm.rtss_osd_y,
+    );
     let mut sectors_shp: Option<PathBuf> = timing.sectors_shp.as_ref().map(PathBuf::from);
     let mut sector_track_field = timing
         .sector_track_field
@@ -1444,6 +1525,43 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
                 i += 1;
             }
             "--rtss-clear-all" => rtss_clear_all = true,
+            "--rtss-osd-anchor" => {
+                rtss_osd_placement.anchor = args
+                    .get(i + 1)
+                    .ok_or("--rtss-osd-anchor needs default|middle_monitor|pixel")?
+                    .to_string();
+                i += 1;
+            }
+            "--rtss-osd-offset-x" => {
+                rtss_osd_placement.offset_x = args
+                    .get(i + 1)
+                    .ok_or("--rtss-osd-offset-x needs integer")?
+                    .parse()?;
+                i += 1;
+            }
+            "--rtss-osd-offset-y" => {
+                rtss_osd_placement.offset_y = args
+                    .get(i + 1)
+                    .ok_or("--rtss-osd-offset-y needs integer")?
+                    .parse()?;
+                i += 1;
+            }
+            "--rtss-osd-x" => {
+                rtss_osd_placement.pixel_x = Some(
+                    args.get(i + 1)
+                        .ok_or("--rtss-osd-x needs integer")?
+                        .parse()?,
+                );
+                i += 1;
+            }
+            "--rtss-osd-y" => {
+                rtss_osd_placement.pixel_y = Some(
+                    args.get(i + 1)
+                        .ok_or("--rtss-osd-y needs integer")?
+                        .parse()?,
+                );
+                i += 1;
+            }
             "--sectors-shp" => {
                 sectors_shp = Some(PathBuf::from(
                     args.get(i + 1).ok_or("--sectors-shp needs .shp path")?,
@@ -1590,6 +1708,7 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
         rtss_owner,
         rtss_slot,
         rtss_clear_all,
+        rtss_osd_placement,
         sectors_shp,
         sectors_coord_space,
         sector_track_field,
@@ -1648,6 +1767,11 @@ fn print_usage() {
     eprintln!("       --rtss-owner NAME      RTSS OSD owner id (default: acr_track_match)");
     eprintln!("       --rtss-slot N          Force RTSS slot N (0 = auto, default: 0)");
     eprintln!("       --rtss-clear-all       Clear all RTSS slots once at startup (careful: clears other OSD sources)");
+    eprintln!("       --rtss-osd-anchor A    default | middle_monitor | pixel (TOML: rtss_osd_anchor)");
+    eprintln!("       --rtss-osd-offset-x N  Horizontal nudge after anchor (virtual px)");
+    eprintln!("       --rtss-osd-offset-y N  Vertical nudge (negative = up)");
+    eprintln!("       --rtss-osd-x N         Absolute X (with --rtss-osd-y)");
+    eprintln!("       --rtss-osd-y N         Absolute Y (virtual desktop, top-left origin)");
     eprintln!("       --sectors-shp FILE.shp Optional sector boundaries LineString SHP (timing)");
     eprintln!("       --sectors-coord-space file|game  SHP vertex coords (default: file = GIS swap)");
     eprintln!("       --sector-track-field F Track field in sectors SHP (default: src_layer)");
@@ -1684,6 +1808,16 @@ fn log_loaded_configs(loaded: &app_config::LoadedAppConfig) {
             "acr_timing: no {} (timing defaults only)",
             acr_timing::timing_config_file::TIMING_CONFIG_FILE
         ),
+    }
+    if loaded.track_match.rtss.unwrap_or(false) {
+        let p = acr_timing::rtss_osd::RtssOsdPlacement::from_config(
+            loaded.track_match.rtss_osd_anchor.as_deref(),
+            loaded.track_match.rtss_osd_offset_x,
+            loaded.track_match.rtss_osd_offset_y,
+            loaded.track_match.rtss_osd_x,
+            loaded.track_match.rtss_osd_y,
+        );
+        eprintln!("rtss_osd: placement {}", p.describe());
     }
     match &loaded.pacenotes_path {
         Some(p) => eprintln!("acr_pacenotes: loaded {}", p.display()),
@@ -2108,6 +2242,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
     let mut pacenote_ambiguous_pick: Option<AmbiguousPacenoteOverlayState> = None;
     let mut start_track_ambiguous_pick: Option<TrackStartPickOverlayState> = None;
     let mut grid_standstill_since: Option<Instant> = None;
+    let mut grid_timing_reset_still_since: Option<Instant> = None;
     let mut teleport_unlock_pending_jump_m: Option<f64> = None;
     let mut teleport_unlock_stillstand_since: Option<Instant> = None;
     let mut teleport_unlock_driving_since: Option<Instant> = None;
@@ -2242,6 +2377,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                     pacenote_ambiguous_pick = None;
                     start_track_ambiguous_pick = None;
                     grid_standstill_since = None;
+                    grid_timing_reset_still_since = None;
                     teleport_unlock_pending_jump_m = None;
                     teleport_unlock_stillstand_since = None;
                     teleport_unlock_driving_since = None;
@@ -2307,6 +2443,62 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                     stage_next_label,
                 },
             );
+            if let Some(track_name) = locked_track.as_deref() {
+                if let Some(state) = timing_state.as_mut() {
+                    if live_timing_timer_running(state)
+                        && speed_kmh_now <= cfg.grid_standstill_max_speed_kmh
+                        && near_track_start_point(
+                            &start_index,
+                            track_name,
+                            p,
+                            cfg.grid_start_trigger_radius_m,
+                        )
+                    {
+                        if grid_timing_reset_still_since.is_none() {
+                            grid_timing_reset_still_since = Some(Instant::now());
+                        } else if grid_timing_reset_still_since
+                            .unwrap()
+                            .elapsed()
+                            .as_secs_f64()
+                            >= START_GRID_TIMING_RESET_STILL_SEC
+                        {
+                            let car_model = if car_model_now.is_empty() {
+                                "unknown_car"
+                            } else {
+                                car_model_now.as_str()
+                            };
+                            let track_key = normalize_track_key(track_name);
+                            let cum_def = cumulative_tracks.get(&track_key);
+                            reset_live_timing_at_grid(
+                                state,
+                                cfg.timing_quality.physics_hz,
+                                car_model,
+                                cum_def,
+                                &timing_event_bus,
+                                &cfg.timing_reference_store_path,
+                            );
+                            grid_timing_reset_still_since = None;
+                            latest_timing_line = None;
+                            sector_status_line = Some((
+                                format!(
+                                    "timing reset at start ({:.0}s standstill)",
+                                    START_GRID_TIMING_RESET_STILL_SEC
+                                ),
+                                Instant::now(),
+                            ));
+                            let _ = push_rtss_osd(cfg, "");
+                            last_rtss_msg.clear();
+                            last_rtss_push = Instant::now();
+                        }
+                    } else {
+                        grid_timing_reset_still_since = None;
+                    }
+                } else {
+                    grid_timing_reset_still_since = None;
+                }
+            } else {
+                grid_timing_reset_still_since = None;
+            }
             if locked_track.is_some() {
                 if let Some(lp) = last_pt {
                     let jump_m = dist(lp, p);
@@ -2392,6 +2584,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                             pacenote_ambiguous_pick = None;
                             start_track_ambiguous_pick = None;
                             grid_standstill_since = None;
+                            grid_timing_reset_still_since = None;
                             clear_pacenote_live(
                                 &mut pacenote_course,
                                 &mut pacenote_course_track,
@@ -2974,10 +3167,10 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                     c
                                 }
                             };
-                            state.run_clock = acr_timing::run_timing_clock::RunTimingClock::new(
-                                cfg.timing_quality.physics_hz,
-                            );
                             if state.cumulative.is_none() {
+                                state.run_clock = acr_timing::run_timing_clock::RunTimingClock::new(
+                                    cfg.timing_quality.physics_hz,
+                                );
                                 state.cumulative = Some(
                                     acr_timing::cumulative_sector_timing::CumulativeLegState::new(
                                         cum_def.clone(),
@@ -3911,7 +4104,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                     let now_osd = Instant::now();
                     let msg = if let Some(ts) = timing_state.as_mut() {
                         let cum_detail = if ts.cumulative.is_some() {
-                            cumulative_osd_detail_with_flash(ts, &sector_status_line, now_osd)
+                            cumulative_osd_detail_with_flash(ts, cfg, &sector_status_line, now_osd)
                         } else {
                             String::new()
                         };
@@ -4739,7 +4932,8 @@ fn push_rtss_osd(cfg: &CliConfig, msg: &str) -> Result<(), Box<dyn std::error::E
                 msg,
                 acr_timing::rtss_osd::DEFAULT_MAX_OSD_LINES,
             );
-            if let Err(e) = acr_timing::rtss_osd::update(&cfg.rtss_owner, &safe, cfg.rtss_slot) {
+            let osd = cfg.rtss_osd_placement.apply_to_text(&safe);
+            if let Err(e) = acr_timing::rtss_osd::update(&cfg.rtss_owner, &osd, cfg.rtss_slot) {
                 eprintln!("RTSS update failed: {}", e);
             }
         }

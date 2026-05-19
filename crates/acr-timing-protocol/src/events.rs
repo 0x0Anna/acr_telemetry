@@ -87,6 +87,8 @@ pub struct SectorCompleted {
     /// Parallel to `reference_sub_ids` at sector start: `None` = missed sub.
     pub sub_ids: Vec<i32>,
     pub sub_times_sec: Vec<Option<f64>>,
+    /// Per-sub Δ vs reference (`time - ref`), aligned with `sub_ids`.
+    pub sub_delta_sec: Vec<Option<f64>>,
     pub reference_tot_sec: f64,
 }
 

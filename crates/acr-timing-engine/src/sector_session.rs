@@ -181,12 +181,25 @@ impl SectorSession {
                 .iter()
                 .map(|id| self.hit_times.get(id).copied())
                 .collect();
+            let sub_delta_sec: Vec<Option<f64>> = self
+                .sub_ids_order
+                .iter()
+                .map(|id| {
+                    self.hit_times.get(id).copied().and_then(|t| {
+                        self.ref_time_by_id
+                            .get(id)
+                            .filter(|r| r.is_finite())
+                            .map(|r| t - r)
+                    })
+                })
+                .collect();
             TimingEvent::new(TimingEventBody::SectorCompleted(SectorCompleted {
                 sector_index: self.sector_index,
                 cum_delta_sec: self.cum_delta_sec,
                 tot_sec,
                 sub_ids: self.sub_ids_order.clone(),
                 sub_times_sec,
+                sub_delta_sec,
                 reference_tot_sec: self.reference_tot_sec,
             }))
         } else {

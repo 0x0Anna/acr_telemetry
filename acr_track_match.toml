@@ -7,6 +7,14 @@ rtss = true
 rtss_owner = "acr_track_match"
 rtss_slot = 3
 
+# RTSS position — must be in THIS file when cwd is acc-stage-timing (see docs/RTSS_OVERLAY.md)
+# rtss_osd_anchor = "sticky_center"      # recommended: <P4><L0> screen center
+# rtss_osd_anchor = "middle_monitor"     # middle display + offsets (triple-screen)
+# rtss_osd_offset_y = -40
+# rtss_osd_anchor = "pixel"              # needs rtss_osd_x + rtss_osd_y (zoomed virtual pixels!)
+# rtss_osd_x = 2880
+# rtss_osd_y = 120
+
 track_lock_after_sec = 10.0
 track_keep_max_dist = 15.0
 track_switch_min_gain = 0.8
