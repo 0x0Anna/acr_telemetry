@@ -289,7 +289,7 @@ fn arm_modular_timing_run(
     m.coordinator.reset_run();
     m.coordinator.set_car(car);
     m.coordinator.timing_started();
-    drain_modular_timing_events(state, cfg);
+    drain_modular_timing_events(state, cfg, None);
 }
 
 /// Calibrated stage-sector leg time for main sector `sector_index` (S1 → leg 0, …).
@@ -302,23 +302,61 @@ fn stage_tot_sec_for_sector(timing_state: &LiveTimingState, sector_index: u32) -
         .find(|t| t.is_finite() && *t > 0.05)
 }
 
+fn stage_sektoren_summe_sec(timing_state: &LiveTimingState) -> f64 {
+    timing_state
+        .stage_sector_sessions
+        .iter()
+        .flat_map(|sess| sess.run.sector_secs.iter())
+        .filter_map(|t| *t)
+        .filter(|t| t.is_finite() && *t > 0.05)
+        .sum()
+}
+
+struct TimingDebugFrame<'a> {
+    physics: &'a PhysicsMap,
+    graphics_x: f64,
+    graphics_z: f64,
+    graphics_current_time_ms: i32,
+    speed_kmh: f32,
+    distance_traveled_m: f64,
+    packet_id: i32,
+}
+
+impl TimingDebugFrame<'_> {
+    fn spielzeit_sec(&self) -> f64 {
+        acr_timing::timing_debug::spielzeit_sec(self.graphics_current_time_ms)
+    }
+
+    fn run_sim_sec(&self, state: &LiveTimingState) -> Option<f64> {
+        state.run_clock.run_sim_sec(self.packet_id)
+    }
+}
+
 fn drain_modular_timing_events(
     timing_state: &mut LiveTimingState,
     cfg: &CliConfig,
+    debug: Option<&TimingDebugFrame<'_>>,
 ) {
-    let Some(modular) = timing_state.modular.as_mut() else {
-        return;
+    let events = match timing_state.modular.as_mut() {
+        None => return,
+        Some(m) => m.event_rx.drain(),
     };
-    let events = modular.event_rx.drain();
     for mut event in events {
         if cfg.beep_on_cumulative_split {
             if let TimingEventBody::SubSplit(ref s) = event.body {
-                acr_timing::split_beep::play_split_feedback(s.cum_delta_sec, &cfg.cumulative_beep);
+                let delta = match cfg.delta_display.split_feedback {
+                    acr_timing::SplitFeedbackDeltaSource::Subsector => {
+                        s.delta_i_sec.unwrap_or(s.cum_delta_sec)
+                    }
+                    acr_timing::SplitFeedbackDeltaSource::Stage => s.cum_delta_sec,
+                };
+                acr_timing::split_beep::play_split_feedback(delta, &cfg.cumulative_beep);
             }
         }
         if let TimingEventBody::SectorCompleted(ref mut s) = event.body {
+            let modular_tot = s.tot_sec;
+            let sub_block_sum: f64 = s.sub_times_sec.iter().filter_map(|t| *t).sum();
             if let Some(stage_t) = stage_tot_sec_for_sector(timing_state, s.sector_index) {
-                let modular_tot = s.tot_sec;
                 if (modular_tot - stage_t).abs() > 0.05 {
                     eprintln!(
                         "modular: S{} tot {modular_tot:.3}s → stage {stage_t:.3}s (OSD uses stage)",
@@ -327,9 +365,41 @@ fn drain_modular_timing_events(
                 }
                 s.tot_sec = stage_t;
             }
+            if cfg.timing_debug {
+                if let Some(dbg) = debug {
+                    let osd_after = timing_state
+                        .modular
+                        .as_ref()
+                        .map(|m| m.presenter.track_completed_cum_sec() + s.tot_sec)
+                        .unwrap_or(s.tot_sec);
+                    acr_timing::timing_debug::log_sektor_fertig_vergleich(
+                        s.sector_index,
+                        s.tot_sec,
+                        sub_block_sum,
+                        stage_tot_sec_for_sector(timing_state, s.sector_index),
+                        timing_state.subsection_cumulative_sec,
+                        osd_after,
+                        dbg.run_sim_sec(timing_state),
+                        dbg.spielzeit_sec(),
+                    );
+                }
+            }
         }
         if let Some(m) = timing_state.modular.as_mut() {
             m.presenter.apply(&event);
+        }
+        if let TimingEventBody::RunFinished(_) = event.body {
+            if cfg.timing_debug {
+                if let (Some(dbg), Some(m)) = (debug, timing_state.modular.as_ref()) {
+                    acr_timing::timing_debug::log_strecke_fertig_vergleich(
+                        m.presenter.track_completed_cum_sec(),
+                        timing_state.subsection_cumulative_sec,
+                        stage_sektoren_summe_sec(timing_state),
+                        dbg.run_sim_sec(timing_state),
+                        dbg.spielzeit_sec(),
+                    );
+                }
+            }
         }
     }
 }
@@ -338,7 +408,9 @@ fn modular_presenter_detail(state: &mut LiveTimingState, cfg: &CliConfig) -> Str
     let Some(m) = state.modular.as_mut() else {
         return String::new();
     };
-    let lines = m.presenter.osd_lines(cfg.rtss);
+    let lines = m
+        .presenter
+        .osd_lines(cfg.rtss, &cfg.delta_display.colors);
     if lines.is_empty() {
         return String::new();
     }
@@ -938,16 +1010,6 @@ fn commit_subsection_split(
         }
     }
 
-    if cumulative_pace {
-        eprintln!(
-            "cumulative [{from_sector}]-[{to_sector}]: {duration_sec:.3}s Σ={:.3}s ΔΣ={}",
-            state.subsection_cumulative_sec,
-            cum_delta
-                .map(|d| format!("{:+.3}s", d))
-                .unwrap_or_else(|| "—".to_string()),
-        );
-    }
-
     SubsectionSplitOutcome {
         line,
         leg_delta,
@@ -1050,6 +1112,9 @@ struct CliConfig {
     timing_quality: acr_timing::timing_frame_quality::TimingQualityConfig,
     /// Live: print `{:#?}` of the last received physics map at most once per second.
     debug_physics_1hz: bool,
+    /// `[zeitnahme]` stderr: positions, spielzeit, subsector vs sector sums.
+    timing_debug: bool,
+    delta_display: acr_timing::DeltaDisplayConfig,
 }
 
 struct TimingBlameCtx<'a> {
@@ -1069,6 +1134,7 @@ fn process_stage_sector_sessions_on_step(
     packet_id: i32,
     physics_hz: f64,
     graphics_distance_traveled: f32,
+    graphics_current_time_ms: i32,
     car_model: &str,
     _locked_track: Option<&str>,
     blame_ctx: &TimingBlameCtx<'_>,
@@ -1127,19 +1193,39 @@ fn process_stage_sector_sessions_on_step(
                     acr_timing::timing_sectors::GatePassMethod::RadiusDisc => "radius_disc",
                 })
                 .unwrap_or("?");
-            acr_timing::physics_wheel::log_sector_crossing(
-                &crossed.label,
-                crossed.role.as_str(),
-                via,
-                physics,
-                p.x,
-                p.z,
-                speed_kmh_now,
-                leg_recorded.map(|_| leg_dt),
-                graphics_distance_traveled,
-                crossed.x,
-                crossed.z,
-            );
+            if cfg.timing_debug
+                && acr_timing::stage_sector_timing::stage_marker_is_main_sector(crossed)
+            {
+                acr_timing::timing_debug::log_stage_sektor_zeit(
+                    crossed,
+                    via,
+                    leg_dt,
+                    leg_recorded,
+                    stage_sektoren_summe_sec(state),
+                    state.subsection_cumulative_sec,
+                    state.run_clock.run_sim_sec(packet_id),
+                    acr_timing::timing_debug::spielzeit_sec(graphics_current_time_ms),
+                    physics,
+                    p.x,
+                    p.z,
+                    speed_kmh_now as f32,
+                    graphics_distance_traveled,
+                );
+            } else if cfg.timing_debug {
+                acr_timing::physics_wheel::log_sector_crossing(
+                    &crossed.label,
+                    crossed.role.as_str(),
+                    via,
+                    physics,
+                    p.x,
+                    p.z,
+                    speed_kmh_now,
+                    leg_recorded.map(|_| leg_dt),
+                    graphics_distance_traveled,
+                    crossed.x,
+                    crossed.z,
+                );
+            }
         }
         let run_completed = outcome.run_completed;
         if leg_recorded.is_some() {
@@ -1430,6 +1516,8 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
     let timing_blame = timing.timing_blame.to_runtime(&correlation);
     let timing_voice = timing.timing_voice.clone();
     let timing_quality = timing.timing_quality.to_runtime();
+    let delta_display = timing.delta_display.to_runtime();
+    let mut timing_debug = timing.timing_debug;
 
     let mut i = 1;
     while i < args.len() {
@@ -1657,6 +1745,8 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
             }
             "--beep-on-split" => beep_on_split = true,
             "--debug-physics-1hz" => debug_physics_1hz = true,
+            "--timing-debug" => timing_debug = true,
+            "--no-timing-debug" => timing_debug = false,
             "--help" | "-h" => {
                 print_usage();
                 std::process::exit(0);
@@ -1742,6 +1832,8 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
         timing_voice,
         timing_quality,
         debug_physics_1hz,
+        timing_debug,
+        delta_display,
     })
 }
 
@@ -1787,6 +1879,7 @@ fn print_usage() {
     eprintln!("Grid (when start_points.geojson has anchors): standstill ≤ grid_standstill_max_speed_kmh, within grid_start_trigger_radius_m of a start → pick list; after grid_start_wide_after_sec stillstand list expands to grid_start_list_radius_wide_m (see TOML keys).");
     eprintln!("       --beep-on-split        Play split feedback (sine/WAV — [beep] in acr_timing.toml)");
     eprintln!("       --debug-physics-1hz    Live: stderr dump of last PhysicsMap (~1/s, Rust pretty-Debug)");
+    eprintln!("       --timing-debug / --no-timing-debug  Override [timing_debug] in acr_timing.toml");
     eprintln!("       --config FILE.toml          Track-match config (default: acr_track_match.toml)");
     eprintln!("       --timing-config FILE.toml   Timing config (default: acr_timing.toml, same dir as --config)");
     eprintln!("       --pacenotes-config FILE.toml Pacenotes config (default: acr_pacenotes.toml, same dir)");
@@ -1806,6 +1899,12 @@ fn log_loaded_configs(loaded: &app_config::LoadedAppConfig) {
             "acr_timing: no {} (timing defaults only)",
             acr_timing::timing_config_file::TIMING_CONFIG_FILE
         ),
+    }
+    if let Some(ref cb) = loaded.timing.cumulative_beep {
+        acr_timing::split_beep::log_wav_paths("cumulative_beep", cb);
+    }
+    if let Some(ref b) = loaded.timing.beep {
+        acr_timing::split_beep::log_wav_paths("beep", b);
     }
     if loaded.track_match.rtss.unwrap_or(false) {
         let p = acr_timing::rtss_osd::RtssOsdPlacement::from_config(
@@ -3205,6 +3304,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                             cfg.cumulative_timing.gate_radius_m(),
                                             Duration::from_millis(cfg.sector_cross_cooldown_ms),
                                             now_inst,
+                                            cfg.timing_debug,
                                         )
                                     });
                                 if let Some(leg) = leg_cross {
@@ -3248,6 +3348,49 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                             Some(&blame_ctx),
                                             true,
                                         );
+                                        if cfg.timing_debug {
+                                            let (from_label, to_label) = state
+                                                .cumulative
+                                                .as_ref()
+                                                .map(|c| {
+                                                    let m = &c.track.sectors.markers;
+                                                    (
+                                                        m.get(leg.from_gate_ix)
+                                                            .map(|x| x.label.as_str())
+                                                            .unwrap_or("?"),
+                                                        m.get(leg.to_gate_ix)
+                                                            .map(|x| x.label.as_str())
+                                                            .unwrap_or("?"),
+                                                    )
+                                                })
+                                                .unwrap_or(("?", "?"));
+                                            let dbg = TimingDebugFrame {
+                                                physics: &data.physics,
+                                                graphics_x: p.x,
+                                                graphics_z: p.z,
+                                                graphics_current_time_ms: data.graphics.current_time,
+                                                speed_kmh: data.physics.speed_kmh,
+                                                distance_traveled_m: odo_m,
+                                                packet_id: pkt,
+                                            };
+                                            acr_timing::timing_debug::log_subsektor_zeit(
+                                                from_label,
+                                                to_label,
+                                                leg.from_seg,
+                                                leg.to_seg,
+                                                dt,
+                                                dt_raw,
+                                                state.subsection_cumulative_sec,
+                                                dbg.run_sim_sec(state),
+                                                dbg.spielzeit_sec(),
+                                                &data.physics,
+                                                p.x,
+                                                p.z,
+                                                data.physics.speed_kmh,
+                                                odo_m,
+                                                pkt,
+                                            );
+                                        }
                                         if let Some(m) = state.modular.as_mut() {
                                             m.coordinator.set_car(car_model);
                                             if silent_cp {
@@ -3270,9 +3413,21 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                         .on_main_sector_end(label, now_inst);
                                                 }
                                             }
-                                            drain_modular_timing_events(state, cfg);
+                                            let dbg = TimingDebugFrame {
+                                                physics: &data.physics,
+                                                graphics_x: p.x,
+                                                graphics_z: p.z,
+                                                graphics_current_time_ms: data.graphics.current_time,
+                                                speed_kmh: data.physics.speed_kmh,
+                                                distance_traveled_m: odo_m,
+                                                packet_id: pkt,
+                                            };
+                                            drain_modular_timing_events(state, cfg, Some(&dbg));
                                         } else if silent_cp {
-                                            if cfg.beep_on_cumulative_split {
+                                            // Beep only without modular presenter (else drain_modular handles it).
+                                            if cfg.beep_on_cumulative_split
+                                                && state.modular.is_none()
+                                            {
                                                 if let Some(d) = outcome.leg_pb_delta {
                                                     acr_timing::split_beep::play_split_feedback(
                                                         d,
@@ -3332,6 +3487,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         data.physics.packet_id,
                                         cfg.timing_quality.physics_hz,
                                         data.graphics.distance_traveled,
+                                        data.graphics.current_time,
                                         car_model,
                                         locked_track.as_deref(),
                                         &blame_ctx,
@@ -3598,6 +3754,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         data.physics.packet_id,
                                         cfg.timing_quality.physics_hz,
                                         data.graphics.distance_traveled,
+                                        data.graphics.current_time,
                                         car_model,
                                         locked_track.as_deref(),
                                         &blame_ctx,
@@ -4126,6 +4283,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                     car_osd,
                                     cfg.rtss,
                                     now_osd,
+                                    &cfg.delta_display.colors,
                                 );
                             acr_timing::stage_sector_timing::compose_timing_osd(
                                 &strip, &cum_detail,

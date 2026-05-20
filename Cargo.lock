@@ -66,6 +66,7 @@ dependencies = [
  "chrono",
  "ctrlc",
  "dirs",
+ "hound",
  "rodio",
  "rusqlite",
  "serde",

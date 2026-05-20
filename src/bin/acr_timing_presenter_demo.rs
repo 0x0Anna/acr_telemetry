@@ -94,7 +94,7 @@ fn main() {
         } else {
             "demo waiting".into()
         };
-        let lines = presenter.osd_lines(rtss);
+        let lines = presenter.osd_lines(rtss, &acr_timing::DeltaColorStyle::default());
         let msg = compose_osd_message(&status, &lines);
         print_osd_block(&msg);
 
@@ -118,7 +118,7 @@ fn main() {
         finish_sector(&mut presenter, prev, &sub_times);
     }
     let status = "demo finished";
-    let lines = presenter.osd_lines(rtss);
+    let lines = presenter.osd_lines(rtss, &acr_timing::DeltaColorStyle::default());
     let msg = compose_osd_message(status, &lines);
     print_osd_block(&msg);
     #[cfg(windows)]

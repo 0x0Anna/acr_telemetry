@@ -4,6 +4,7 @@
 
 use std::time::Instant;
 
+use acr_timing::delta_display::DeltaColorStyle;
 use acr_timing_protocol::{SectorCompleted, SectorStarted, TimingEvent, TimingEventBody};
 
 use crate::osd::{format_duration, format_sector_line, format_track_completed_line};
@@ -141,7 +142,7 @@ impl PresenterState {
         self.live_line = Some(format!("S{}: …", sector_index + 1));
     }
 
-    fn refresh_run_completed_line(&mut self, rtss_colors: bool) {
+    fn refresh_run_completed_line(&mut self, rtss: bool, delta_style: &DeltaColorStyle) {
         if !self.run_frozen || self.run_sector_count == 0 {
             return;
         }
@@ -149,13 +150,14 @@ impl PresenterState {
             self.run_tot_sum_sec,
             self.run_ref_tot_sum_sec,
             self.run_cum_delta_sec,
-            rtss_colors,
+            rtss,
+            delta_style,
         ));
     }
 
-    pub fn refresh_live(&mut self, rtss_colors: bool) {
+    pub fn refresh_live(&mut self, rtss: bool, delta_style: &DeltaColorStyle) {
         if self.run_frozen {
-            self.refresh_run_completed_line(rtss_colors);
+            self.refresh_run_completed_line(rtss, delta_style);
             return;
         }
         let Some(sector_index) = self.live_sector_index else {
@@ -177,15 +179,21 @@ impl PresenterState {
             self.live_reference_tot_sec,
             tot_sec,
             false,
-            rtss_colors,
+            rtss,
+            delta_style,
         ));
     }
 
-    pub fn osd_lines(&mut self, rtss_colors: bool) -> Vec<String> {
-        self.refresh_live(rtss_colors);
+    /// Sum of completed sector `tot` values (OSD „Track completed cum“).
+    pub fn track_completed_cum_sec(&self) -> f64 {
+        self.run_tot_sum_sec
+    }
+
+    pub fn osd_lines(&mut self, rtss: bool, delta_style: &DeltaColorStyle) -> Vec<String> {
+        self.refresh_live(rtss, delta_style);
         let mut out = Vec::new();
         if let Some(c) = &self.last_completed {
-            out.push(format_completed(c, rtss_colors));
+            out.push(format_completed(c, rtss, delta_style));
         }
         if let Some(l) = &self.live_line {
             out.push(l.clone());
@@ -194,7 +202,7 @@ impl PresenterState {
     }
 }
 
-fn format_completed(s: &SectorCompleted, rtss_colors: bool) -> String {
+fn format_completed(s: &SectorCompleted, rtss: bool, delta_style: &DeltaColorStyle) -> String {
     let ref_tot = s.reference_tot_sec;
     format_sector_line(
         s.sector_index,
@@ -205,7 +213,8 @@ fn format_completed(s: &SectorCompleted, rtss_colors: bool) -> String {
         ref_tot.is_finite().then_some(ref_tot),
         s.tot_sec,
         false,
-        rtss_colors,
+        rtss,
+        delta_style,
     )
 }
 
@@ -224,7 +233,9 @@ mod tests {
                 stage_slug: "s".into(),
             },
         )));
-        assert!(p.osd_lines(false).is_empty());
+        assert!(p
+            .osd_lines(false, &DeltaColorStyle::default())
+            .is_empty());
     }
 
     #[test]
@@ -259,7 +270,7 @@ mod tests {
             reference_sub_times_sec: vec![2.0],
             reference_tot_sec: 80.0,
         })));
-        let lines = p.osd_lines(false);
+        let lines = p.osd_lines(false, &DeltaColorStyle::default());
         assert_eq!(lines.len(), 2);
         assert!(lines[0].starts_with("S1:"));
         assert!(lines[1].contains("Track completed"));

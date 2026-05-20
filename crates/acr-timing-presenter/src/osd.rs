@@ -1,7 +1,7 @@
 ﻿//! Sector line formatting: `S1: +0.423 [0:19.34] [--] ref: 1:31.45 tot: 0:45.32`
 //! With RTSS: `+`/brackets colored red (slower) / green (faster) via `<C=RRGGBB>`.
 
-use acr_timing::rtss_osd::hypertext;
+use acr_timing::delta_display::DeltaColorStyle;
 
 const MAX_SUB_SLOTS: usize = 8;
 
@@ -32,6 +32,7 @@ pub fn format_sector_line(
     tot_sec: f64,
     incomplete_mark: bool,
     rtss_colors: bool,
+    delta_style: &DeltaColorStyle,
 ) -> String {
     let prefix = if incomplete_mark {
         format!("S{}~:", sector_index + 1)
@@ -41,7 +42,7 @@ pub fn format_sector_line(
     let sign = if cum_delta_sec >= 0.0 { "+" } else { "" };
     let cum_text = format!("{sign}{cum_delta_sec:.3}");
     let cum_colored = if rtss_colors {
-        hypertext::wrap_delta_colored(cum_delta_sec, &cum_text)
+        delta_style.wrap_delta(cum_delta_sec, &cum_text)
     } else {
         cum_text
     };
@@ -61,7 +62,7 @@ pub fn format_sector_line(
         let part = if rtss_colors {
             delta
                 .filter(|d| d.is_finite())
-                .map(|d| hypertext::wrap_delta_colored(d, &bracket))
+                .map(|d| delta_style.wrap_delta(d, &bracket))
                 .unwrap_or(bracket)
         } else {
             bracket
@@ -82,6 +83,7 @@ pub fn format_track_completed_line(
     cum_ref_tot_sec: f64,
     cum_delta_sec: f64,
     rtss_colors: bool,
+    delta_style: &DeltaColorStyle,
 ) -> String {
     let mut parts = vec![
         "Track completed".to_string(),
@@ -92,10 +94,10 @@ pub fn format_track_completed_line(
     }
     let sign = if cum_delta_sec >= 0.0 { "+" } else { "" };
     let delta_body = format!("{sign}{cum_delta_sec:.3}");
-    let delta = if rtss_colors && cum_delta_sec.is_finite() && cum_delta_sec.abs() > 1e-9 {
+    let delta = if rtss_colors && cum_delta_sec.is_finite() {
         format!(
             "delta: {}",
-            hypertext::wrap_delta_colored(cum_delta_sec, &delta_body)
+            delta_style.wrap_delta(cum_delta_sec, &delta_body)
         )
     } else {
         format!("delta: {delta_body}")
@@ -113,9 +115,11 @@ pub fn compose_osd_message(status: &str, presenter_lines: &[String]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use acr_timing::delta_display::DeltaColorStyle;
 
     #[test]
     fn sector_line_with_gap() {
+        let style = DeltaColorStyle::default();
         let line = format_sector_line(
             0,
             0.5,
@@ -126,6 +130,7 @@ mod tests {
             35.5,
             false,
             false,
+            &style,
         );
         assert!(line.contains("+0.500"));
         assert!(line.contains("[--]"));
@@ -135,10 +140,26 @@ mod tests {
 
     #[test]
     fn track_completed_line() {
-        let line = format_track_completed_line(272.5, 270.0, 2.5, true);
+        let style = DeltaColorStyle::default();
+        let line = format_track_completed_line(272.5, 270.0, 2.5, true, &style);
         assert!(line.contains("Track completed"));
         assert!(line.contains("cum:"));
         assert!(line.contains("delta:"));
         assert!(line.contains("<C=ff0000>"));
+    }
+
+    #[test]
+    fn neutral_zone_uses_default_color() {
+        let style = DeltaColorStyle {
+            neutral_zone_sec: 0.05,
+            faster_color_rgb: "00aaff".into(),
+            slower_color_rgb: "ff8800".into(),
+        };
+        let inside = style.wrap_delta(0.03, "+0.030");
+        assert!(!inside.contains("<C="));
+        let slow = style.wrap_delta(0.12, "+0.120");
+        assert!(slow.contains("<C=ff8800>"));
+        let fast = style.wrap_delta(-0.12, "-0.120");
+        assert!(fast.contains("<C=00aaff>"));
     }
 }

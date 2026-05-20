@@ -405,17 +405,38 @@ pub mod hypertext {
         "<C>"
     }
 
-    /// Red if `delta > 0`, green if `delta < 0`, default color if ~0 or non-finite.
+    /// Default colors; neutral zone 0 s (only exact zero is uncolored).
     pub fn wrap_delta_colored(delta: f64, text: &str) -> String {
-        if !delta.is_finite() || delta.abs() < 1e-9 {
+        wrap_delta_colored_styled(
+            delta,
+            text,
+            0.0,
+            SLOWER_RGB,
+            FASTER_RGB,
+        )
+    }
+
+    /// RTSS color tags: |Δ| ≤ `neutral_zone_sec` → default; else slower/faster hex.
+    pub fn wrap_delta_colored_styled(
+        delta: f64,
+        text: &str,
+        neutral_zone_sec: f64,
+        slower_rgb: &str,
+        faster_rgb: &str,
+    ) -> String {
+        if !delta.is_finite() {
             return text.to_string();
         }
-        let (hex, body) = if delta > 0.0 {
-            (SLOWER_RGB, text)
+        let z = neutral_zone_sec.max(0.0);
+        if delta.abs() <= z {
+            return text.to_string();
+        }
+        let hex = if delta > z {
+            slower_rgb
         } else {
-            (FASTER_RGB, text)
+            faster_rgb
         };
-        format!("{}{}{}", color_rgb(hex), body, reset_color())
+        format!("{}{}{}", color_rgb(hex), text, reset_color())
     }
 
     /// Pixel position (zoomed pixels); virtual desktop origin top-left.

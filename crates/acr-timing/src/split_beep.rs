@@ -5,14 +5,16 @@
 //! **WAV** plays once per split (tier picks which file); repetition belongs in the file.
 //! `mode`: `sine` | `wav` | `both`. No queue — one thread per split.
 
-use std::fs::File;
-use std::io::BufReader;
 use std::path::{Path, PathBuf};
+use std::sync::mpsc;
+use std::sync::OnceLock;
 use std::thread;
 use std::time::Duration;
 
+use hound::{SampleFormat, WavReader};
+use rodio::buffer::SamplesBuffer;
 use rodio::source::SineWave;
-use rodio::{Decoder, OutputStream, Sink, Source};
+use rodio::{OutputStream, Sink, Source};
 use serde::Deserialize;
 
 fn default_mode() -> String {
@@ -151,17 +153,66 @@ fn play_sine(
     Ok(())
 }
 
+/// Decode via `hound` (24-bit PCM etc.); rodio's built-in WAV decoder often plays those silently.
 fn play_wav(
     path: &Path,
     gain: f32,
     handle: &rodio::OutputStreamHandle,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let file = File::open(path)?;
+    let mut reader = WavReader::open(path)?;
+    let spec = reader.spec();
+    let channels = spec.channels.max(1);
+    let bits = spec.bits_per_sample;
+    let max_i = (1i64 << (bits.saturating_sub(1))) as f32;
+
+    let samples: Vec<f32> = match spec.sample_format {
+        SampleFormat::Float => reader
+            .samples::<f32>()
+            .map(|s| s.unwrap_or(0.0))
+            .collect(),
+        SampleFormat::Int if bits <= 8 => reader
+            .samples::<i8>()
+            .map(|s| s.unwrap_or(0) as f32 / i8::MAX as f32)
+            .collect(),
+        SampleFormat::Int if bits <= 16 => reader
+            .samples::<i16>()
+            .map(|s| s.unwrap_or(0) as f32 / i16::MAX as f32)
+            .collect(),
+        SampleFormat::Int => reader
+            .samples::<i32>()
+            .map(|s| s.unwrap_or(0) as f32 / max_i)
+            .collect(),
+    };
+    if samples.is_empty() {
+        return Err("empty WAV".into());
+    }
     let sink = Sink::try_new(handle)?;
-    let source = Decoder::new(BufReader::new(file))?.amplify(gain);
+    let source = SamplesBuffer::new(channels, spec.sample_rate, samples).amplify(gain);
     sink.append(source);
     sink.sleep_until_end();
     Ok(())
+}
+
+/// Log resolved WAV paths once at startup (stderr).
+pub fn log_wav_paths(label: &str, cfg: &SplitBeepConfig) {
+    eprintln!(
+        "split audio [{label}]: mode={} volume={:.2}",
+        cfg.mode, cfg.volume
+    );
+    for (name, path) in [
+        ("faster_wav_1", cfg.faster_wav_1.as_deref()),
+        ("slower_wav_1", cfg.slower_wav_1.as_deref()),
+        ("faster_wav", cfg.faster_wav.as_deref()),
+        ("slower_wav", cfg.slower_wav.as_deref()),
+    ] {
+        if let Some(p) = path {
+            let ok = p.is_file();
+            eprintln!(
+                "split audio [{label}]: {name}={} exists={ok}",
+                p.display()
+            );
+        }
+    }
 }
 
 fn play_sine_pulse(
@@ -178,11 +229,43 @@ fn play_sine_pulse(
     play_sine(hz, ms, gain, handle)
 }
 
-fn play_split_feedback_blocking(delta: f64, cfg: &SplitBeepConfig) {
+struct BeepJob {
+    delta: f64,
+    cfg: SplitBeepConfig,
+}
+
+struct SplitBeepPlayer {
+    tx: mpsc::Sender<BeepJob>,
+}
+
+static BEEP_PLAYER: OnceLock<SplitBeepPlayer> = OnceLock::new();
+
+fn beep_player() -> &'static SplitBeepPlayer {
+    BEEP_PLAYER.get_or_init(|| {
+        let (tx, rx) = mpsc::channel();
+        thread::spawn(move || split_beep_worker(rx));
+        SplitBeepPlayer { tx }
+    })
+}
+
+fn split_beep_worker(rx: mpsc::Receiver<BeepJob>) {
     let Ok((_stream, handle)) = OutputStream::try_default() else {
         eprintln!("split audio: no audio output device");
         return;
     };
+    while let Ok(job) = rx.recv() {
+        play_split_feedback_on_handle(job.delta, &job.cfg, &handle);
+    }
+}
+
+fn play_split_feedback_on_handle(
+    delta: f64,
+    cfg: &SplitBeepConfig,
+    handle: &rodio::OutputStreamHandle,
+) {
+    if !delta.is_finite() {
+        return;
+    }
 
     let beep_count = sine_beep_count(delta);
     let is_faster = delta <= 0.0;
@@ -193,9 +276,17 @@ fn play_split_feedback_blocking(delta: f64, cfg: &SplitBeepConfig) {
     let mut played_wav = false;
     if want_wav {
         if let Some(path) = wav_path_for_tier(cfg, is_faster, beep_count) {
-            if play_wav(path, gain, &handle).is_ok() {
-                played_wav = true;
+            match play_wav(path, gain, handle) {
+                Ok(()) => played_wav = true,
+                Err(e) => eprintln!(
+                    "split audio: WAV {} (Δ={delta:+.3}s faster={is_faster}) — {e}",
+                    path.display()
+                ),
             }
+        } else {
+            eprintln!(
+                "split audio: no WAV (Δ={delta:+.3}s faster={is_faster} tier={beep_count})"
+            );
         }
     }
 
@@ -207,7 +298,7 @@ fn play_split_feedback_blocking(delta: f64, cfg: &SplitBeepConfig) {
     };
 
     for i in 0..sine_pulses {
-        if let Err(e) = play_sine_pulse(is_faster, cfg, &handle) {
+        if let Err(e) = play_sine_pulse(is_faster, cfg, handle) {
             eprintln!("split audio: {}", e);
         }
         if i + 1 < sine_pulses {
@@ -216,10 +307,15 @@ fn play_split_feedback_blocking(delta: f64, cfg: &SplitBeepConfig) {
     }
 }
 
-/// Split feedback; runs on a background thread (no queue).
+/// Queue split feedback on a single output stream (avoids cut-off from per-beep streams).
 pub fn play_split_feedback(delta: f64, cfg: &SplitBeepConfig) {
-    let cfg = cfg.clone();
-    thread::spawn(move || play_split_feedback_blocking(delta, &cfg));
+    if !delta.is_finite() {
+        return;
+    }
+    let _ = beep_player().tx.send(BeepJob {
+        delta,
+        cfg: cfg.clone(),
+    });
 }
 
 #[cfg(test)]
@@ -242,5 +338,35 @@ mod tests {
         assert_eq!(sine_beep_count(0.1), 1);
         assert_eq!(sine_beep_count(0.4), 2);
         assert_eq!(sine_beep_count(0.9), 3);
+    }
+
+    #[test]
+    fn good_wav_has_samples_via_hound() {
+        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../assets/split_sounds/good.wav");
+        assert!(path.is_file(), "missing {}", path.display());
+        let mut reader = hound::WavReader::open(&path).unwrap();
+        assert!(reader.samples::<i32>().count() > 1000);
+    }
+
+    #[test]
+    fn bad_wav_has_samples_via_hound() {
+        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../assets/split_sounds/bad.wav");
+        assert!(path.is_file(), "missing {}", path.display());
+        let mut reader = hound::WavReader::open(&path).unwrap();
+        assert!(reader.samples::<i32>().count() > 1000);
+    }
+
+    #[test]
+    fn slower_tier_picks_bad_not_good() {
+        let base = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../assets/split_sounds");
+        let cfg = SplitBeepConfig {
+            faster_wav_1: Some(base.join("good.wav")),
+            slower_wav_1: Some(base.join("bad.wav")),
+            ..Default::default()
+        };
+        assert!(wav_path_for_tier(&cfg, false, 1).unwrap().ends_with("bad.wav"));
+        assert!(wav_path_for_tier(&cfg, true, 1).unwrap().ends_with("good.wav"));
     }
 }

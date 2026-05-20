@@ -6,7 +6,7 @@ use std::time::Instant;
 
 use rusqlite::Connection;
 
-use crate::rtss_osd::hypertext;
+use crate::delta_display::DeltaColorStyle;
 use crate::timing_db::{self, SplitRecord};
 use crate::timing_pb::TimingPbStore;
 use crate::timing_sectors::{self, StageTimingSectors, TimingSectorMarker, TimingSectorRole};
@@ -206,14 +206,14 @@ fn effective_cur_sec(
     current_secs.get(leg_i).copied().flatten()
 }
 
-fn format_delta_slot(delta_sec: Option<f64>, rtss_colors: bool) -> String {
+fn format_delta_slot(delta_sec: Option<f64>, rtss_colors: bool, delta_style: &DeltaColorStyle) -> String {
     let Some(d) = delta_sec.filter(|x| x.is_finite()) else {
         return "...".to_string();
     };
     let sign = if d >= 0.0 { "+" } else { "-" };
     let text = format!("{sign}{}", format_duration(d.abs()));
-    if rtss_colors && d.abs() > 1e-9 {
-        hypertext::wrap_delta_colored(d, &text)
+    if rtss_colors {
+        delta_style.wrap_delta(d, &text)
     } else {
         text
     }
@@ -228,6 +228,7 @@ pub fn format_stage_goal_line(
     live_elapsed_sec: Option<f64>,
     rtss_colors: bool,
     rtss_safe: bool,
+    delta_style: &DeltaColorStyle,
 ) -> String {
     let leg_sep = if rtss_safe { " | " } else { " · " };
     let n = current_secs.len();
@@ -261,7 +262,7 @@ pub fn format_stage_goal_line(
                 (Some(r), Some(c)) if c.is_finite() => Some(c - r),
                 _ => None,
             };
-            format_delta_slot(delta, rtss_colors)
+            format_delta_slot(delta, rtss_colors, delta_style)
         })
         .collect::<Vec<_>>()
         .join(leg_sep);
@@ -333,6 +334,7 @@ pub fn format_multi_stage_sector_line(
     car_model: &str,
     rtss_safe: bool,
     now: Instant,
+    delta_style: &DeltaColorStyle,
 ) -> String {
     let car_model = if car_model.trim().is_empty() {
         "unknown_car"
@@ -358,6 +360,7 @@ pub fn format_multi_stage_sector_line(
                 sess.run.live_leg_elapsed_sec(now),
                 rtss_safe,
                 rtss_safe,
+                delta_style,
             )
         })
         .collect::<Vec<_>>()
@@ -811,6 +814,7 @@ mod goal_line_tests {
 
     #[test]
     fn goal_line_three_groups() {
+        let style = DeltaColorStyle::default();
         let line = format_stage_goal_line(
             "Hafren",
             &[Some(90.0), Some(100.0)],
@@ -819,6 +823,7 @@ mod goal_line_tests {
             Some(50.0),
             false,
             true,
+            &style,
         );
         assert!(line.contains("Hafren: ref "));
         assert!(line.contains(" | cur "));
@@ -829,6 +834,7 @@ mod goal_line_tests {
 
     #[test]
     fn delta_only_when_leg_completed() {
+        let style = DeltaColorStyle::default();
         let line = format_stage_goal_line(
             "Z",
             &[Some(10.0)],
@@ -837,6 +843,7 @@ mod goal_line_tests {
             Some(9.5),
             false,
             true,
+            &style,
         );
         assert!(line.contains("[0:09.500]"));
         let after_delta = line.split(" | delta ").nth(1).unwrap_or("");
@@ -845,6 +852,7 @@ mod goal_line_tests {
 
     #[test]
     fn delta_colored_when_rtss() {
+        let style = DeltaColorStyle::default();
         let line = format_stage_goal_line(
             "Z",
             &[Some(10.0)],
@@ -853,6 +861,7 @@ mod goal_line_tests {
             None,
             true,
             true,
+            &style,
         );
         assert!(line.contains("<C=ff0000>"));
     }

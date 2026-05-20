@@ -130,8 +130,14 @@ fn load_timing_toml(
     for dir in dirs {
         let p = dir.join(acr_timing::timing_config_file::TIMING_CONFIG_FILE);
         if p.exists() {
-            let raw = std::fs::read_to_string(&p)?;
-            return Ok((toml::from_str(&raw)?, Some(p)));
+            let (cfg, path) = acr_timing::timing_config_file::load(Some(&p))?;
+            return Ok((cfg, Some(path)));
+        }
+    }
+    for p in acr_timing::timing_config_file::config_search_paths() {
+        if p.exists() {
+            let (cfg, path) = acr_timing::timing_config_file::load(Some(&p))?;
+            return Ok((cfg, Some(path)));
         }
     }
     Ok((TimingConfigFile::default(), None))

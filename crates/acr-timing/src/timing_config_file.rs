@@ -1,8 +1,11 @@
 //! `acr_timing.toml` — sector timing, grid, beeps, calibrated stage sectors.
 
+use std::path::{Path, PathBuf};
+
 use serde::Deserialize;
 
 use crate::cumulative_timing_config::CumulativeTimingConfig;
+use crate::delta_display::DeltaDisplayConfigFile;
 use crate::split_beep::SplitBeepConfig;
 use crate::stage_timing_config::StageTimingConfig;
 use crate::timing_blame::BlameConfig;
@@ -108,7 +111,16 @@ pub struct TimingConfigFile {
     #[serde(default)]
     pub timing_voice: TimingVoiceConfig,
     #[serde(default)]
+    pub delta_display: DeltaDisplayConfigFile,
+    #[serde(default)]
     pub timing_quality: TimingQualityConfigFile,
+    /// Verbose `[zeitnahme]` stderr on subsector/sector crossings and finish comparison.
+    #[serde(default = "default_timing_debug")]
+    pub timing_debug: bool,
+}
+
+fn default_timing_debug() -> bool {
+    true
 }
 
 #[derive(Debug, Clone, Default, Deserialize)]
@@ -146,6 +158,72 @@ impl TimingQualityConfigFile {
 
 pub const TIMING_CONFIG_FILE: &str = "acr_timing.toml";
 
+fn wav_search_anchors(config_dir: &Path) -> Vec<PathBuf> {
+    let mut anchors = vec![config_dir.to_path_buf()];
+    if let Ok(cwd) = std::env::current_dir() {
+        anchors.push(cwd);
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            anchors.push(dir.to_path_buf());
+        }
+    }
+    anchors
+}
+
+/// Resolve optional WAV paths for split feedback (relative to `acr_timing.toml`, walk up to repo root).
+fn resolve_optional_wav(path: Option<PathBuf>, config_dir: &Path) -> Option<PathBuf> {
+    let path = path?;
+    if path.is_absolute() && path.is_file() {
+        return Some(path);
+    }
+    let anchors = wav_search_anchors(config_dir);
+    for anchor in &anchors {
+        let mut dir = anchor.clone();
+        loop {
+            let candidate = dir.join(&path);
+            if candidate.is_file() {
+                return Some(candidate);
+            }
+            if !dir.pop() {
+                break;
+            }
+        }
+    }
+    Some(config_dir.join(&path))
+}
+
+fn resolve_split_beep_paths(cfg: &mut SplitBeepConfig, config_dir: &Path) {
+    let r = |p: Option<PathBuf>| resolve_optional_wav(p, config_dir);
+    cfg.faster_wav = r(cfg.faster_wav.take());
+    cfg.slower_wav = r(cfg.slower_wav.take());
+    cfg.faster_wav_1 = r(cfg.faster_wav_1.take());
+    cfg.faster_wav_2 = r(cfg.faster_wav_2.take());
+    cfg.faster_wav_3 = r(cfg.faster_wav_3.take());
+    cfg.slower_wav_1 = r(cfg.slower_wav_1.take());
+    cfg.slower_wav_2 = r(cfg.slower_wav_2.take());
+    cfg.slower_wav_3 = r(cfg.slower_wav_3.take());
+}
+
+impl TimingConfigFile {
+    /// Make relative `assets/…` WAV paths independent of process CWD.
+    pub fn finalize_paths(&mut self, config_path: &Path) {
+        let config_dir = config_path
+            .parent()
+            .filter(|p| !p.as_os_str().is_empty())
+            .unwrap_or_else(|| Path::new("."));
+        if let Some(ref mut beep) = self.beep {
+            resolve_split_beep_paths(beep, config_dir);
+        }
+        if let Some(ref mut beep) = self.cumulative_beep {
+            resolve_split_beep_paths(beep, config_dir);
+        }
+        if let Some(ref mut beep) = self.silent_beep {
+            resolve_split_beep_paths(beep, config_dir);
+        }
+    }
+}
+
 pub fn config_search_paths() -> Vec<std::path::PathBuf> {
     let mut paths = Vec::new();
     if let Ok(exe) = std::env::current_exe() {
@@ -172,13 +250,16 @@ pub fn load(path_override: Option<&std::path::Path>) -> Result<(TimingConfigFile
             return Err(format!("timing config not found: {}", p.display()).into());
         }
         let raw = std::fs::read_to_string(p)?;
-        let cfg: TimingConfigFile = toml::from_str(&raw)?;
-        return Ok((cfg, p.to_path_buf()));
+        let mut cfg: TimingConfigFile = toml::from_str(&raw)?;
+        let path_buf = p.to_path_buf();
+        cfg.finalize_paths(&path_buf);
+        return Ok((cfg, path_buf));
     }
     for p in config_search_paths() {
         if p.exists() {
             let raw = std::fs::read_to_string(&p)?;
-            let cfg: TimingConfigFile = toml::from_str(&raw)?;
+            let mut cfg: TimingConfigFile = toml::from_str(&raw)?;
+            cfg.finalize_paths(&p);
             return Ok((cfg, p));
         }
     }
@@ -191,5 +272,7 @@ pub fn load_from_dir(dir: &std::path::Path) -> Result<TimingConfigFile, Box<dyn 
         return Ok(TimingConfigFile::default());
     }
     let raw = std::fs::read_to_string(&p)?;
-    Ok(toml::from_str(&raw)?)
+    let mut cfg: TimingConfigFile = toml::from_str(&raw)?;
+    cfg.finalize_paths(&p);
+    Ok(cfg)
 }
