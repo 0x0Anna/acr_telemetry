@@ -25,6 +25,9 @@ pub struct DeltaDisplayConfigFile {
     pub faster_color: String,
     #[serde(default = "default_slower_color")]
     pub slower_color: String,
+    /// After Finish: cycle completed sectors on the detail OSD line (seconds each; 0 = last sector only).
+    #[serde(default = "default_sector_recap_sec")]
+    pub sector_recap_sec: f64,
 }
 
 fn default_split_feedback() -> String {
@@ -39,6 +42,9 @@ fn default_faster_color() -> String {
 fn default_slower_color() -> String {
     "ff0000".into()
 }
+fn default_sector_recap_sec() -> f64 {
+    5.0
+}
 
 impl Default for DeltaDisplayConfigFile {
     fn default() -> Self {
@@ -47,6 +53,7 @@ impl Default for DeltaDisplayConfigFile {
             neutral_zone_sec: default_neutral_zone(),
             faster_color: default_faster_color(),
             slower_color: default_slower_color(),
+            sector_recap_sec: default_sector_recap_sec(),
         }
     }
 }
@@ -55,6 +62,7 @@ impl Default for DeltaDisplayConfigFile {
 pub struct DeltaDisplayConfig {
     pub split_feedback: SplitFeedbackDeltaSource,
     pub colors: DeltaColorStyle,
+    pub sector_recap_sec: f64,
 }
 
 #[derive(Debug, Clone)]
@@ -87,6 +95,7 @@ impl DeltaDisplayConfigFile {
         DeltaDisplayConfig {
             split_feedback: parse_split_feedback(&self.split_feedback),
             colors: self.colors(),
+            sector_recap_sec: self.sector_recap_sec.max(0.0),
         }
     }
 

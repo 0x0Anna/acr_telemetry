@@ -410,7 +410,7 @@ fn modular_presenter_detail(state: &mut LiveTimingState, cfg: &CliConfig) -> Str
     };
     let lines = m
         .presenter
-        .osd_lines(cfg.rtss, &cfg.delta_display.colors);
+        .osd_lines(cfg.rtss, &cfg.delta_display);
     if lines.is_empty() {
         return String::new();
     }

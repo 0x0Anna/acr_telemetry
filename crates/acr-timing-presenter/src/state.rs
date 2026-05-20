@@ -4,7 +4,7 @@
 
 use std::time::Instant;
 
-use acr_timing::delta_display::DeltaColorStyle;
+use acr_timing::delta_display::{DeltaColorStyle, DeltaDisplayConfig};
 use acr_timing_protocol::{SectorCompleted, SectorStarted, TimingEvent, TimingEventBody};
 
 use crate::osd::{format_duration, format_sector_line, format_track_completed_line};
@@ -26,6 +26,8 @@ pub struct PresenterState {
     run_ref_tot_sum_sec: f64,
     run_cum_delta_sec: f64,
     run_sector_count: u32,
+    completed_sectors: Vec<SectorCompleted>,
+    finish_carousel_at: Option<Instant>,
 }
 
 impl PresenterState {
@@ -41,6 +43,7 @@ impl PresenterState {
                 }
                 self.run_cum_delta_sec += s.cum_delta_sec;
                 self.run_sector_count += 1;
+                self.completed_sectors.push(s.clone());
                 self.last_completed = Some(s.clone());
                 if !self.run_frozen {
                     self.live_line = None;
@@ -79,6 +82,7 @@ impl PresenterState {
             }
             TimingEventBody::RunFinished(_) => {
                 self.run_frozen = true;
+                self.finish_carousel_at = Some(Instant::now());
                 self.live_sector_index = None;
                 self.live_sector_started = None;
                 self.live_sub_ids.clear();
@@ -189,10 +193,29 @@ impl PresenterState {
         self.run_tot_sum_sec
     }
 
-    pub fn osd_lines(&mut self, rtss: bool, delta_style: &DeltaColorStyle) -> Vec<String> {
+    fn carousel_sector<'a>(
+        &'a self,
+        recap_sec: f64,
+    ) -> Option<&'a SectorCompleted> {
+        if recap_sec <= 0.0 || self.completed_sectors.is_empty() {
+            return self.last_completed.as_ref();
+        }
+        let started = self.finish_carousel_at?;
+        let ix = (started.elapsed().as_secs_f64() / recap_sec).floor() as usize
+            % self.completed_sectors.len();
+        self.completed_sectors.get(ix)
+    }
+
+    pub fn osd_lines(&mut self, rtss: bool, display: &DeltaDisplayConfig) -> Vec<String> {
+        let delta_style = &display.colors;
         self.refresh_live(rtss, delta_style);
         let mut out = Vec::new();
-        if let Some(c) = &self.last_completed {
+        let completed = if self.run_frozen {
+            self.carousel_sector(display.sector_recap_sec)
+        } else {
+            self.last_completed.as_ref()
+        };
+        if let Some(c) = completed {
             out.push(format_completed(c, rtss, delta_style));
         }
         if let Some(l) = &self.live_line {
@@ -234,7 +257,7 @@ mod tests {
             },
         )));
         assert!(p
-            .osd_lines(false, &DeltaColorStyle::default())
+            .osd_lines(false, &DeltaDisplayConfig::default())
             .is_empty());
     }
 
@@ -270,12 +293,44 @@ mod tests {
             reference_sub_times_sec: vec![2.0],
             reference_tot_sec: 80.0,
         })));
-        let lines = p.osd_lines(false, &DeltaColorStyle::default());
+        let lines = p.osd_lines(false, &DeltaDisplayConfig::default());
         assert_eq!(lines.len(), 2);
         assert!(lines[0].starts_with("S1:"));
         assert!(lines[1].contains("Track completed"));
         assert!(lines[1].contains("cum:"));
         assert!(lines[1].contains("delta:"));
         assert!(!lines[1].starts_with("S2:"));
+    }
+
+    #[test]
+    fn finish_carousel_cycles_sectors() {
+        let mut p = PresenterState::default();
+        for (ix, tot) in [(0, 90.0), (1, 80.0), (2, 70.0)] {
+            p.apply(&TimingEvent::new(TimingEventBody::SectorCompleted(SectorCompleted {
+                sector_index: ix,
+                cum_delta_sec: 0.0,
+                tot_sec: tot,
+                sub_ids: vec![ix as i32 + 1],
+                sub_times_sec: vec![Some(1.0)],
+                sub_delta_sec: vec![Some(0.0)],
+                reference_tot_sec: tot,
+            })));
+        }
+        p.apply(&TimingEvent::new(TimingEventBody::RunFinished(
+            acr_timing_protocol::RunFinished {
+                reference_track: "t".into(),
+                stage_slug: "s".into(),
+            },
+        )));
+        let mut cfg = DeltaDisplayConfig::default();
+        cfg.sector_recap_sec = 5.0;
+        let lines = p.osd_lines(false, &cfg);
+        assert!(lines[0].starts_with("S1:"));
+        p.finish_carousel_at = Some(Instant::now() - std::time::Duration::from_secs(6));
+        let lines = p.osd_lines(false, &cfg);
+        assert!(lines[0].starts_with("S2:"));
+        p.finish_carousel_at = Some(Instant::now() - std::time::Duration::from_secs(11));
+        let lines = p.osd_lines(false, &cfg);
+        assert!(lines[0].starts_with("S3:"));
     }
 }
