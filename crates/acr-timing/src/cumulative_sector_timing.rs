@@ -82,6 +82,7 @@ impl CumulativeLegState {
     ) -> Option<CumulativeLegCross> {
         let markers = &self.track.sectors.markers;
         let gates = &self.track.sectors.gates;
+        let prev_ix = self.last_gate_ix;
         let mut crossed_ix: Option<usize> = None;
         for (i, marker) in markers.iter().enumerate() {
             if self
@@ -93,13 +94,18 @@ impl CumulativeLegState {
                 continue;
             }
             if timing_sectors::passes_timing_gate(from, to, i, marker, gates, radius_m) {
-                crossed_ix = Some(i);
+                let forward_ok = match prev_ix {
+                    None => true,
+                    Some(p) => i > p,
+                };
+                if forward_ok {
+                    crossed_ix = Some(crossed_ix.map_or(i, |best| best.min(i)));
+                }
             }
         }
         let to_ix = crossed_ix?;
         self.gate_cooldown_until[to_ix] = Some(now + cross_cooldown);
 
-        let prev_ix = self.last_gate_ix;
         if prev_ix == Some(to_ix) {
             return None;
         }
@@ -142,7 +148,7 @@ pub fn load_track(
     reference_track: &str,
     slug: &str,
 ) -> Result<CumulativeTrackSectors, Box<dyn std::error::Error>> {
-    let path = cfg.sectors_dir().join(format!("{slug}.geojson"));
+    let path = timing_sectors::resolve_cumulative_sectors_path(&cfg.sectors_dir(), slug);
     let sectors = timing_sectors::load(&path)?;
     let ref_norm = crate::stage_timing_config::normalize_track_slug(reference_track);
     let file_ref = crate::stage_timing_config::normalize_track_slug(&sectors.reference_track);
@@ -197,13 +203,20 @@ pub fn load_all(
 ) -> Result<std::collections::HashMap<String, CumulativeTrackSectors>, Box<dyn std::error::Error>> {
     let mut out = std::collections::HashMap::new();
     for (ref_track, slug) in &cfg.ref_track_sectors {
+        let path = timing_sectors::resolve_cumulative_sectors_path(&cfg.sectors_dir(), slug);
         let track = load_track(cfg, ref_track, slug)?;
         let key = crate::stage_timing_config::normalize_track_slug(ref_track);
+        let gate_mode = if timing_sectors::cumulative_sectors_use_linestrings(&path) {
+            "LineString gate lines"
+        } else {
+            "synthetic perpendicular gates"
+        };
         eprintln!(
-            "cumulative timing: {} → {} ({} gates, SHP subsection disabled)",
+            "cumulative timing: {} → {} ({} gates, {}, SHP subsection disabled)",
             ref_track,
-            cfg.sectors_dir().join(format!("{slug}.geojson")).display(),
-            track.sectors.markers.len()
+            path.display(),
+            track.sectors.markers.len(),
+            gate_mode
         );
         out.insert(key, track);
     }

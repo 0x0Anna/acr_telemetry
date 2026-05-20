@@ -9,13 +9,13 @@ pub enum SplitFeedbackDeltaSource {
     /// Per subsector / gate: `delta_i` (fallback: cumulative Δ in sector).
     #[default]
     Subsector,
-    /// Stage cumulative Δ (`cum_delta` in sector).
-    Stage,
+    /// Main-sector cumulative Δ (`cum_delta` within the current sector block).
+    Sector,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct DeltaDisplayConfigFile {
-    /// `subsector` | `stage` (aliases: `delta_i`, `cum`, `cum_delta`, `tot`).
+    /// `subsector` | `sector` (aliases: `stage`, `delta_i`, `cum`, `cum_delta`, `tot`).
     #[serde(default = "default_split_feedback")]
     pub split_feedback: String,
     #[serde(default = "default_neutral_zone")]
@@ -116,8 +116,8 @@ fn normalize_rgb(s: &str) -> String {
 
 fn parse_split_feedback(s: &str) -> SplitFeedbackDeltaSource {
     match s.trim().to_ascii_lowercase().as_str() {
-        "stage" | "cum" | "cum_delta" | "tot" | "delta_tot" | "cumulative" => {
-            SplitFeedbackDeltaSource::Stage
+        "sector" | "stage" | "cum" | "cum_delta" | "tot" | "delta_tot" | "cumulative" => {
+            SplitFeedbackDeltaSource::Sector
         }
         _ => SplitFeedbackDeltaSource::Subsector,
     }
@@ -130,8 +130,12 @@ mod tests {
     #[test]
     fn parse_split_feedback_aliases() {
         assert_eq!(
+            parse_split_feedback("sector"),
+            SplitFeedbackDeltaSource::Sector
+        );
+        assert_eq!(
             parse_split_feedback("stage"),
-            SplitFeedbackDeltaSource::Stage
+            SplitFeedbackDeltaSource::Sector
         );
         assert_eq!(
             parse_split_feedback("delta_i"),

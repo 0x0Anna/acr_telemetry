@@ -348,7 +348,7 @@ fn drain_modular_timing_events(
                     acr_timing::SplitFeedbackDeltaSource::Subsector => {
                         s.delta_i_sec.unwrap_or(s.cum_delta_sec)
                     }
-                    acr_timing::SplitFeedbackDeltaSource::Stage => s.cum_delta_sec,
+                    acr_timing::SplitFeedbackDeltaSource::Sector => s.cum_delta_sec,
                 };
                 acr_timing::split_beep::play_split_feedback(delta, &cfg.cumulative_beep);
             }

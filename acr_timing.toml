@@ -41,7 +41,8 @@ volume = 0.4
 
 # Δ for split WAVs and RTSS colors (neutral band, colorblind-friendly faster/slower).
 [delta_display]
-# Split feedback: subsector = delta_i per gate; stage = cumulative Δ in sector (tot).
+# Split feedback: subsector = delta_i per gate; sector = cumulative Δ in main sector (tot).
+# (alias: stage — same meaning, deprecated name)
 split_feedback = "subsector"
 neutral_zone_sec = 0.05
 faster_color = "00ff00"
