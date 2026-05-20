@@ -387,6 +387,245 @@ pub fn sleep_ms(ms: u32) {
     std::thread::sleep(std::time::Duration::from_millis(ms as u64));
 }
 
+/// Default line budget for timing / pacenote RTSS overlays (app may pass a higher value).
+pub const DEFAULT_MAX_OSD_LINES: usize = 8;
+
+/// RTSS hypertext color tags (case-sensitive; see RTSS SDK / guru3D hypertext threads).
+pub mod hypertext {
+    /// Slower than reference (+Δ).
+    pub const SLOWER_RGB: &str = "ff0000";
+    /// Faster than reference (−Δ).
+    pub const FASTER_RGB: &str = "00ff00";
+
+    pub fn color_rgb(hex_rgb: &str) -> String {
+        format!("<C={}>", hex_rgb.trim_start_matches('#'))
+    }
+
+    pub fn reset_color() -> &'static str {
+        "<C>"
+    }
+
+    /// Default colors; neutral zone 0 s (only exact zero is uncolored).
+    pub fn wrap_delta_colored(delta: f64, text: &str) -> String {
+        wrap_delta_colored_styled(
+            delta,
+            text,
+            0.0,
+            SLOWER_RGB,
+            FASTER_RGB,
+        )
+    }
+
+    /// RTSS color tags: |Δ| ≤ `neutral_zone_sec` → default; else slower/faster hex.
+    pub fn wrap_delta_colored_styled(
+        delta: f64,
+        text: &str,
+        neutral_zone_sec: f64,
+        slower_rgb: &str,
+        faster_rgb: &str,
+    ) -> String {
+        if !delta.is_finite() {
+            return text.to_string();
+        }
+        let z = neutral_zone_sec.max(0.0);
+        if delta.abs() <= z {
+            return text.to_string();
+        }
+        let hex = if delta > z {
+            slower_rgb
+        } else {
+            faster_rgb
+        };
+        format!("{}{}{}", color_rgb(hex), text, reset_color())
+    }
+
+    /// Pixel position (zoomed pixels); virtual desktop origin top-left.
+    pub fn pixel_position(x: i32, y: i32) -> String {
+        format!("<P={x},{y}>")
+    }
+
+    /// Sticky grid 0–8: 0=left-top … 4=center … 8=right-bottom (RTSS 7.3.2+).
+    pub fn sticky_position(pos: u8) -> String {
+        format!("<P{}>", pos.min(8))
+    }
+
+    pub fn layer(layer_id: u8) -> String {
+        format!("<L{}>", layer_id)
+    }
+
+    /// Sticky screen center + layer 0 (SDK pattern; not `<P=4>` — that renders as literal text).
+    pub fn sticky_center_layer0() -> String {
+        format!("{}{}", sticky_position(4), layer(0))
+    }
+}
+
+/// RTSS `<P=x,y>` placement (virtual desktop, zoomed pixels).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RtssOsdPlacement {
+    /// `default` (RTSS corner), `middle_monitor`, or `pixel`.
+    pub anchor: String,
+    pub offset_x: i32,
+    pub offset_y: i32,
+    /// Absolute virtual-desktop position (`pixel` anchor, or overrides `middle_monitor`).
+    pub pixel_x: Option<i32>,
+    pub pixel_y: Option<i32>,
+}
+
+impl Default for RtssOsdPlacement {
+    fn default() -> Self {
+        Self {
+            anchor: "default".into(),
+            offset_x: 0,
+            offset_y: 0,
+            pixel_x: None,
+            pixel_y: None,
+        }
+    }
+}
+
+impl RtssOsdPlacement {
+    pub fn from_config(
+        anchor: Option<&str>,
+        offset_x: Option<i32>,
+        offset_y: Option<i32>,
+        pixel_x: Option<i32>,
+        pixel_y: Option<i32>,
+    ) -> Self {
+        Self {
+            anchor: anchor
+                .map(|s| s.trim().to_lowercase())
+                .filter(|s| !s.is_empty())
+                .unwrap_or_else(|| "default".into()),
+            offset_x: offset_x.unwrap_or(0),
+            offset_y: offset_y.unwrap_or(0),
+            pixel_x,
+            pixel_y,
+        }
+    }
+
+    /// Resolved virtual-desktop coordinates for `<P=x,y>` (RTSS “zoomed” pixels).
+    pub fn resolve_pixel_origin(&self) -> Option<(i32, i32)> {
+        let (base_x, base_y) = if self.pixel_x.is_some() && self.pixel_y.is_some() {
+            (self.pixel_x.unwrap(), self.pixel_y.unwrap())
+        } else {
+            match self.anchor.as_str() {
+                "middle" | "middle_monitor" | "center_monitor" => middle_monitor_center()?,
+                // Offsets-only: absolute virtual-desktop position (common TOML mistake: anchor=pixel + offsets).
+                "pixel" => {
+                    if self.offset_x == 0 && self.offset_y == 0 {
+                        return None;
+                    }
+                    (0, 0)
+                }
+                "default" | "" => {
+                    if self.offset_x == 0 && self.offset_y == 0 {
+                        return None;
+                    }
+                    (0, 0)
+                }
+                _ => return None,
+            }
+        };
+        Some((base_x + self.offset_x, base_y + self.offset_y))
+    }
+
+    /// Use RTSS sticky center (`<P4><L0>`) instead of pixel coords (ignores offsets).
+    pub fn uses_sticky_center(&self) -> bool {
+        matches!(
+            self.anchor.as_str(),
+            "sticky_center" | "screen_center" | "center" | "sticky"
+        )
+    }
+
+    /// Prepend RTSS position tags when configured.
+    pub fn apply_to_text(&self, msg: &str) -> String {
+        if self.uses_sticky_center() {
+            return format!("{}{}", hypertext::sticky_center_layer0(), msg);
+        }
+        match self.resolve_pixel_origin() {
+            Some((x, y)) => format!("{}{}", hypertext::pixel_position(x, y), msg),
+            None => msg.to_string(),
+        }
+    }
+
+    /// One-line description for startup logs.
+    pub fn describe(&self) -> String {
+        if self.uses_sticky_center() {
+            return "sticky_center (<P4><L0>)".into();
+        }
+        if let Some((x, y)) = self.resolve_pixel_origin() {
+            return format!("pixel <P={x},{y}>");
+        }
+        if self.anchor != "default" {
+            return format!(
+                "anchor={} (no position tag — check rtss_osd_x/y or use middle_monitor / sticky_center)",
+                self.anchor
+            );
+        }
+        "default (RTSS global corner)".into()
+    }
+}
+
+/// Monitor rects as `(left, top, right, bottom)` in virtual-desktop space.
+pub fn middle_monitor_center_from_rects(rects: &[(i32, i32, i32, i32)]) -> Option<(i32, i32)> {
+    if rects.is_empty() {
+        return None;
+    }
+    let mut sorted: Vec<_> = rects.to_vec();
+    sorted.sort_by_key(|(l, t, _, _)| (*l, *t));
+    let (l, t, r, b) = sorted[sorted.len() / 2];
+    let cx = (l + r) / 2;
+    let cy = t + (b - t) / 4;
+    Some((cx, cy))
+}
+
+#[cfg(windows)]
+pub fn middle_monitor_center() -> Option<(i32, i32)> {
+    middle_monitor_center_from_rects(&enum_monitor_rects())
+}
+
+#[cfg(not(windows))]
+pub fn middle_monitor_center() -> Option<(i32, i32)> {
+    None
+}
+
+#[cfg(windows)]
+fn enum_monitor_rects() -> Vec<(i32, i32, i32, i32)> {
+    use winapi::shared::minwindef::{BOOL, LPARAM, TRUE};
+    use winapi::shared::windef::{HDC, HMONITOR, RECT};
+    use winapi::um::winuser::EnumDisplayMonitors;
+
+    struct Collect(Vec<(i32, i32, i32, i32)>);
+
+    unsafe extern "system" fn cb(
+        _hmon: HMONITOR,
+        _hdc: HDC,
+        lprc: *mut RECT,
+        data: LPARAM,
+    ) -> BOOL {
+        if lprc.is_null() {
+            return TRUE;
+        }
+        unsafe {
+            let c = &mut *(data as *mut Collect);
+            let r = *lprc;
+            c.0.push((r.left, r.top, r.right, r.bottom));
+        }
+        TRUE
+    }
+
+    let mut collect = Collect(Vec::new());
+    unsafe {
+        EnumDisplayMonitors(
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            Some(cb),
+            &mut collect as *mut _ as LPARAM,
+        );
+    }
+    collect.0
+}
+
 /// Prepare arbitrary multi-line text for RTSS OSD: strip characters RTSS may treat as layout
 /// separators, normalize whitespace per line, pad to at least two lines, then truncate to
 /// `max_lines` (clamped to 2..32).
@@ -395,8 +634,6 @@ pub fn sanitize_multiline_osd_text(msg: &str, max_lines: usize) -> String {
     for ch in msg.chars() {
         let mapped = match ch {
             '|' => ' ',
-            '[' => '(',
-            ']' => ')',
             '\r' => '\n',
             '\n' => '\n',
             '\t' => ' ',

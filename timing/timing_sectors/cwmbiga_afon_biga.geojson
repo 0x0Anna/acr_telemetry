@@ -4,20 +4,16 @@
   "properties": {
     "stage": "Cwmbiga - Afon Biga",
     "stage_slug": "cwmbiga_afon_biga",
+    "finish": "Afon Biga",
+    "finish_short": "Afon",
+    "heading_at_start_rad": -0.217,
     "reference_track": "hafren_north",
     "coordinate_space": "acc_world_zx",
     "swap_xz": true,
-    "calibration_method": "manual_stillstand_player",
-    "calibration_note": "Player super-slow pass; wheel centroid at each stop ([stillstand] log). No split-time auto lookup.",
+    "calibration_method": "Stopping at each split",
+    "calibration_note": "wheel centroid at each stop.",
     "position_source": "physics_tyre_contact_centroid",
-    "reference_recording": "acc_physics_1778933210.rkyv",
-    "reference_t_move_sec": {
-      "Start": 0.0,
-      "Sector_1": 127.7,
-      "Sector_2": 267.2,
-      "Sector_3": 382.8,
-      "Finish": 478.9
-    },
+    
     "marker_count": 5
   },
   "features": [
@@ -32,7 +28,7 @@
         "game_x": 657.7,
         "game_z": -1087.1,
         "distance_traveled_m": 154,
-        "description": "Manual stillstand — grid / stage zero"
+        "description": "grid / stage zero"
       }
     },
     {
@@ -46,7 +42,7 @@
         "game_x": -993.0,
         "game_z": 311.9,
         "distance_traveled_m": 2997,
-        "description": "Manual stillstand — end sector 1"
+        "description": "end sector 1"
       }
     },
     {
@@ -60,7 +56,7 @@
         "game_x": 111.4,
         "game_z": 46.1,
         "distance_traveled_m": 6412,
-        "description": "Manual stillstand — end sector 2"
+        "description": "end sector 2"
       }
     },
     {
@@ -74,7 +70,7 @@
         "game_x": 1601.5,
         "game_z": -576.8,
         "distance_traveled_m": 9587,
-        "description": "Manual stillstand — end sector 3"
+        "description": "end sector 3"
       }
     },
     {
@@ -88,7 +84,7 @@
         "game_x": 1133.5,
         "game_z": 1126.8,
         "distance_traveled_m": 11764,
-        "description": "Manual stillstand — finish"
+        "description": "finish"
       }
     }
   ]

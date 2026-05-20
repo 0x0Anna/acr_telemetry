@@ -1,10 +1,19 @@
 [workspace]
-members = [".", "crates/acr-telemetry", "crates/acr-pacenote", "crates/acr-timing"]
+members = [
+    ".",
+    "crates/acr-telemetry",
+    "crates/acr-pacenote",
+    "crates/acr-timing",
+    "crates/acr-timing-protocol",
+    "crates/acr-timing-store",
+    "crates/acr-timing-engine",
+    "crates/acr-timing-presenter",
+]
 resolver = "2"
 
 [package]
 name = "acr_recorder"
-version = "0.0.5"
+version = "0.2.0"
 edition = "2024"
 
 [lib]
@@ -39,6 +48,10 @@ required-features = ["acr_timing_bin"]
 [[bin]]
 name = "acr_rtss_osd"
 path = "src/bin/acr_rtss_osd.rs"
+
+[[bin]]
+name = "acr_timing_presenter_demo"
+path = "src/bin/acr_timing_presenter_demo.rs"
 
 [[bin]]
 name = "acr_motec"
@@ -80,6 +93,10 @@ path = "src/bin/acr_find_position_times.rs"
 name = "acr_stream_lag_test"
 path = "src/bin/acr_stream_lag_test.rs"
 
+[[bin]]
+name = "acr_analyze_timing_recording"
+path = "src/bin/acr_analyze_timing_recording.rs"
+
 [features]
 default = ["acr_timing_bin"]
 # Timing-only build: pacenotes disabled at runtime (`acr_timing` bin always sets this).
@@ -88,6 +105,10 @@ acr_timing_bin = []
 [dependencies]
 acr_telemetry = { path = "crates/acr-telemetry" }
 acr_timing = { path = "crates/acr-timing" }
+acr_timing_protocol = { path = "crates/acr-timing-protocol" }
+acr_timing_store = { path = "crates/acr-timing-store" }
+acr_timing_engine = { path = "crates/acr-timing-engine" }
+acr_timing_presenter = { path = "crates/acr-timing-presenter" }
 acr_pacenote = { path = "crates/acr-pacenote" }
 acc_shared_memory_rs = { path = "vendor/acc_shared_memory_rs" }
 rkyv = { version = "0.7", features = ["std"] }

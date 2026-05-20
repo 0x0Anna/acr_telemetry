@@ -3,7 +3,7 @@
 ; Compile only:         ISCC.exe /DMyAppVersion=0.1.0 install\ACR_Recorder.iss
 
 #ifndef MyAppVersion
-  #define MyAppVersion "0.0.5"
+  #define MyAppVersion "0.2.0"
 #endif
 
 #define MyAppName "ACR Recorder"
@@ -44,6 +44,7 @@ Name: "launchbridge"; Description: "Start Telemetry Bridge after installation"; 
 Name: "{app}\telemetry_raw"; Permissions: users-modify
 Name: "{app}\timing\runs"; Permissions: users-modify
 Name: "{app}\reference_tracks"; Permissions: users-modify
+Name: "{app}\assets\split_sounds"; Permissions: users-modify
 
 [Files]
 Source: "staging\acr_recorder.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -66,6 +67,8 @@ Source: "staging\docs\*"; DestDir: "{app}\docs"; Flags: ignoreversion recursesub
 Source: "staging\config-examples\*"; DestDir: "{app}\config-examples"; Flags: onlyifdoesntexist ignoreversion
 Source: "staging\timing\*"; DestDir: "{app}\timing"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "timing.db,timing.db-wal,timing.db-shm"
 Source: "staging\reference_tracks\*"; DestDir: "{app}\reference_tracks"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "staging\assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "staging\voices\*"; DestDir: "{app}\voices"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*.md"
 
 [Icons]
 Name: "{group}\ACR Recorder"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"

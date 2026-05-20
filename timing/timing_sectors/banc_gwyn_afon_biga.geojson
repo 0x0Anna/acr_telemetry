@@ -1,0 +1,73 @@
+{
+  "type": "FeatureCollection",
+  "name": "timing_sectors:banc_gwyn_afon_biga",
+  "properties": {
+    "stage": "Banc Gwyn - Afon Biga",
+    "stage_slug": "banc_gwyn_afon_biga",
+    "finish": "Afon Biga",
+    "finish_short": "Afon",
+    "heading_at_start_rad": -2.154,
+    "reference_track": "hafren_north",
+    "coordinate_space": "acc_world_zx",
+    "swap_xz": true,
+    "calibration_method": "Stopping at each split",
+    "calibration_note": "wheel centroid at each stop.",
+    "position_source": "physics_tyre_contact_centroid",
+    "also_run_slugs": ["cwmbiga_afon_biga"],
+    "marker_count": 4
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [85.2, 78.6] },
+      "properties": {
+        "kind": "timing_sector_timing_start",
+        "marker_role": "timing_start",
+        "marker_order": 0,
+        "marker_label": "Start",
+        "game_x": 78.6,
+        "game_z": 85.2, 
+        "description": "grid / stage zero"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [543.3, 787.9] },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 1,
+        "marker_label": "Sector 1",
+        "game_x": 787.9,
+        "game_z": 543.3,     
+        "description": "end sector 1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-83.7, 1674.1] },
+      "properties": {
+        "kind": "timing_sector_sector_boundary",
+        "marker_role": "sector_boundary",
+        "marker_order": 2,
+        "marker_label": "Sector 2",
+        "game_x": 1674.1,
+        "game_z": -83.7,
+        "description": "end sector 2"
+      }
+    },
+        {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [1127.6, 1133.1] },
+      "properties": {
+        "kind": "timing_sector_finish",
+        "marker_role": "finish",
+        "marker_order": 3,
+        "marker_label": "Finish",
+        "game_x": 1133.1,
+        "game_z": 1127.6,
+        "description": "finish"
+      }
+    }
+  ]
+}

@@ -1,8 +1,8 @@
-# Moved to `install/`
+# Installer moved
 
-Windows installer and portable packaging now live in **[install/README.md](../install/README.md)**.
+Windows packaging lives under **`install/`** (not this folder).
 
-Quick build from the repo root:
+See [install/README.md](../install/README.md) and run:
 
 ```powershell
 pwsh install\build.ps1

@@ -1,0 +1,9 @@
+[package]
+name = "acr_timing_presenter"
+version = "0.1.0"
+edition = "2024"
+description = "Timing presentation: RTSS lines, beeps from protocol events"
+
+[dependencies]
+acr_timing_protocol = { path = "../acr-timing-protocol" }
+acr_timing = { path = "../acr-timing" }

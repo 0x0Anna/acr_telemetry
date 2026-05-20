@@ -1,13 +1,18 @@
-Timing data for sector splits.
+Timing data for sector splits (install bundle).
 
-Ring sectors (subsector splits A-B):
-  sectors_filtered.shp — polyline crossings, stored in timing/timing.db
+Ring sectors (SHP subsector splits A-B):
+  sectors_filtered.shp — polyline crossings → timing/timing.db
 
-Stage sectors (S1, S2, … leg times on a calibrated stage):
-  timing_sectors/<slug>.geojson — gate lines per stage
-  acr_timing.toml [stage_timing.ref_stage_sectors] — maps reference track name to <slug>
+Stage sectors (Afon S1/S2/S3/Finish leg times):
+  timing_sectors/<slug>.geojson
+  [stage_timing.ref_stage_sectors] in acr_timing.toml
 
-Bundled calibration: hafren_north → cwmbiga_afon_biga.geojson
+Cumulative GeoJSON subsectors (gate lines, RTSS modular OSD):
+  cumulative_sectors/{track}_linestrings.geojson (preferred)
+  cumulative_sectors/{track}.geojson (point fallback)
+  [cumulative_timing.ref_track_sectors] in acr_timing.toml
 
-timing.db is created on first run. Add more stages: new GeoJSON under timing_sectors/
-and a matching entry in [stage_timing.ref_stage_sectors].
+Bundled: hafren_north → linestrings + cwmbiga_afon_biga stage gates.
+Split WAVs: assets/split_sounds/ (see [cumulative_beep] in acr_timing.toml).
+
+timing.db is created on first run. timing_pb.toml: copy from timing/timing_pb.toml.example for personal bests.

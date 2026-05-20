@@ -31,7 +31,8 @@ $Bins = @(
     'acr_analysis_export',
     'acr_track_match',
     'acr_timing',
-    'acr_rtss_osd'
+    'acr_rtss_osd',
+    'acr_analyze_timing_recording'
 )
 
 if (-not $SkipCargoBuild) {
@@ -50,7 +51,7 @@ if (-not $SkipCargoBuild) {
 $Staging = Join-Path $InstallDir 'staging'
 if (Test-Path $Staging) { Remove-Item $Staging -Recurse -Force }
 New-Item -ItemType Directory -Path $Staging | Out-Null
-foreach ($sub in @('batch', 'docs', 'config-examples', 'reference_tracks', 'telemetry_raw')) {
+foreach ($sub in @('batch', 'docs', 'config-examples', 'reference_tracks', 'telemetry_raw', 'assets')) {
     New-Item -ItemType Directory -Path (Join-Path $Staging $sub) -Force | Out-Null
 }
 
@@ -88,15 +89,31 @@ $timingDst = Join-Path $Staging 'timing'
 New-Item -ItemType Directory -Path $timingDst -Force | Out-Null
 if (Test-Path $timingSrc) {
     Get-ChildItem $timingSrc -File | ForEach-Object { Copy-Item $_.FullName $timingDst }
-    foreach ($sub in @('timing_sectors', 'overall_markers')) {
+    foreach ($sub in @('timing_sectors', 'cumulative_sectors', 'overall_markers')) {
         $subSrc = Join-Path $timingSrc $sub
         if (Test-Path $subSrc) {
             Copy-Item $subSrc (Join-Path $timingDst $sub) -Recurse -Force
         }
     }
+    $pbExample = Join-Path $timingSrc 'timing_pb.toml.example'
+    if (Test-Path $pbExample) { Copy-Item $pbExample $timingDst }
 }
 Copy-Item (Join-Path $InstallDir 'assets\timing\README.txt') $timingDst -Force
 New-Item -ItemType Directory -Path (Join-Path $timingDst 'runs') -Force | Out-Null
+
+$splitSoundsSrc = Join-Path $Root 'assets\split_sounds'
+$splitSoundsDst = Join-Path $Staging 'assets\split_sounds'
+if (Test-Path $splitSoundsSrc) {
+    New-Item -ItemType Directory -Path $splitSoundsDst -Force | Out-Null
+    Copy-Item (Join-Path $splitSoundsSrc '*') $splitSoundsDst -Recurse -Force
+}
+
+$voicesSrc = Join-Path $Root 'voices\timing_en'
+$voicesDst = Join-Path $Staging 'voices\timing_en'
+if (Test-Path $voicesSrc) {
+    New-Item -ItemType Directory -Path (Join-Path $Staging 'voices') -Force | Out-Null
+    Copy-Item $voicesSrc $voicesDst -Recurse -Force
+}
 
 $refSrc = Join-Path $Root 'reference_tracks'
 $refDst = Join-Path $Staging 'reference_tracks'

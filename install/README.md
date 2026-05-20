@@ -62,7 +62,7 @@ CI: `pwsh install/build.ps1 -SkipCargoBuild` after `cargo build` (see `.github/w
 
 - `acr_recorder`, `acr_export`, `acr_motec`, `acr_telemetry_bridge`
 
-- `acr_analysis_export`, `acr_track_match`, `acr_timing`, `acr_rtss_osd`
+- `acr_analysis_export`, `acr_track_match`, `acr_timing`, `acr_rtss_osd`, `acr_analyze_timing_recording`
 
 
 
@@ -98,9 +98,13 @@ Installer-ready templates: `install\config\` (relative paths). Reference copies 
 
   telemetry_raw/       empty (recordings)
 
-  timing/              sector shapefiles + start_points.geojson from repo
+  timing/              sectors_filtered.shp, timing_sectors/, cumulative_sectors/
 
   timing/runs/         HTML reports at runtime
+
+  assets/split_sounds/ WAV split feedback ([cumulative_beep])
+
+  voices/timing_en/    optional blame/copilot clips ([timing_voice])
 
   reference_tracks/    Bundled shapefiles (hafren_north, saverne, …)
 
@@ -140,5 +144,5 @@ Notes/stop files still use `%APPDATA%\acr_telemetry` unless you set `notes_dir` 
 
 
 
-Bump `version` in root `Cargo.toml` (e.g. `0.0.5`). CI derives the installer version from the git tag (`v0.0.5_…` → `0.0.5`). Local override: `install/build.ps1 -Version 0.0.5`.
+Bump `version` in root `Cargo.toml` (e.g. `0.2.0`). CI derives the installer version from the git tag (`v0.2.0_…` → `0.2.0`). Local override: `install/build.ps1 -Version 0.2.0`.
 

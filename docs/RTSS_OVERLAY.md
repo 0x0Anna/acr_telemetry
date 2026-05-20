@@ -11,108 +11,95 @@ RTSS exposes a **shared memory** interface (typical name: `RTSSSharedMemoryV2`).
   - RTSS **< 2.7**: `szOSD` (short)
   - RTSS **>= 2.7**: `szOSDEx` (long; typically up to 4095 characters + NUL)
 - Trigger refresh: `dwOSDFrame++`
-  - Note: in the RTSS v2 header layout, `dwOSDArrSize` is at byte offset **28** and `dwOSDFrame` at **32**. `acr_recorder` increments `dwOSDFrame` at offset 32.
 
 ## Requirements
 
 - **RivaTuner Statistics Server (RTSS)** is running (tray/service).
-- RTSS OSD is visible in-game (same idea as FPS/Afterburner OSD).
+- RTSS OSD is visible **in a hooked game** (desktop alone often shows nothing).
+
+## Config file location
+
+`acr_timing` / `acr_track_match` load **`acr_track_match.toml` from the process working directory first**, then next to the `.exe`, then `%APPDATA%\acr_recorder\`.
+
+Typical dev run (config must live in this repo folder):
+
+```powershell
+cd C:\temp\acc-stage-timing
+cargo run --release --bin acr_timing --features acr_timing_bin
+```
+
+On startup you should see:
+
+```text
+acr_track_match: loaded C:\temp\acc-stage-timing\acr_track_match.toml
+rtss_osd: placement pixel <P=2880,120>
+```
+
+Editing `acr_telemetry\acr_track_match.toml` has **no effect** unless you run the binary from that directory or pass `--config`.
+
+## Position (`acr_track_match.toml` or CLI)
+
+| `rtss_osd_anchor` | Behaviour |
+|-------------------|-----------|
+| *(omit)* / `default` | RTSS global OSD corner (no position tag) |
+| `middle_monitor` | `<P=x,y>` at center of middle display (sorted left→right) + offsets |
+| `sticky_center` | `<P4><L0>` screen-center sticky anchor (recommended; ignores pixel offsets) |
+| `pixel` | `<P=x,y>` at `rtss_osd_x`/`rtss_osd_y`, or at offsets only if x/y omitted |
+
+**Important:** `<P=4>` is **wrong** — the `=` form is only for pixel coordinates `<P=x,y>`. Center screen without pixel math: `rtss_osd_anchor = "sticky_center"`.
+
+Pixel coordinates are **RTSS “zoomed” virtual-desktop pixels** (see RTSS tray → On-Screen Display → zoom). A value that looks right in a calculator is often far off in-game; calibrate with small steps or use `middle_monitor` / `sticky_center`.
+
+Example (triple 1920×1080, middle panel, slightly up):
+
+```toml
+rtss_osd_anchor = "middle_monitor"
+rtss_osd_offset_y = -40
+```
+
+Example (screen center, RTSS 7.3.2+):
+
+```toml
+rtss_osd_anchor = "sticky_center"
+```
+
+Example (fixed virtual-desktop pixels — e.g. center of middle monitor ≈ x=2880 on 3×1920):
+
+```toml
+rtss_osd_anchor = "pixel"
+rtss_osd_x = 2880
+rtss_osd_y = 120
+```
+
+CLI overrides: `--rtss-osd-anchor`, `--rtss-osd-offset-x/y`, `--rtss-osd-x/y`.
+
+## RTSS hypertext (colors, position)
+
+| Tag | Meaning |
+|-----|---------|
+| `<P=x,y>` | Absolute cursor in zoomed pixels (top-left origin) |
+| `<P4><L0>` | Sticky **screen center**, layer 0 — **no `=`** |
+| `<C=RRGGBB>` / `<C>` | Text color / reset |
+
+Wrong (shows literally on screen): `<P=4>hello` — use `<P4><L0>hello` or `<P=100,100>hello`.
+
+Timing OSD colors use `<C=ff0000>` / `<C=00ff00>` in the presenter; `sanitize_multiline_osd_text` keeps `<…>` tags (does not strip hypertext).
 
 ## Binaries
 
-After building, tools are under `target/release/`:
-
-- `acr_rtss_osd.exe` — generic RTSS text pusher
-- `acr_track_match.exe` — track matching; optional `--rtss`
-
-Build:
-
 ```powershell
-cargo build --release --bin acr_rtss_osd --bin acr_track_match
+cargo build --release --bin acr_rtss_osd --bin acr_timing --features acr_timing_bin
 ```
 
-## `acr_rtss_osd` (manual / scripting)
-
-### One-shot text
+Manual position test (in game with RTSS hooked):
 
 ```powershell
-.\target\release\acr_rtss_osd.exe --owner acr_demo --text "hello from acr"
+.\target\release\acr_rtss_osd.exe --owner acr_demo --text "<P4><L0><C=ff0000>ROT<C> <C=00ff00>GRUEN<C> test"
+.\target\release\acr_rtss_osd.exe --owner acr_demo --text "<P=2880,120>pixel test (calibrate zoom!)"
 ```
-
-### Text from file
-
-```powershell
-.\target\release\acr_rtss_osd.exe --owner acr_demo --file .\note.txt
-```
-
-### Follow file (poll)
-
-```powershell
-.\target\release\acr_rtss_osd.exe --owner acr_demo --file "$env:APPDATA\acr_telemetry\acr_detected_track.txt" --follow --poll-ms 200
-```
-
-### Force slot (optional)
-
-To avoid clashes with other tools:
-
-```powershell
-.\target\release\acr_rtss_osd.exe --owner acr_demo --text "..." --slot 3
-```
-
-`--slot 0` means: find a free slot automatically / re-find owner (default).
-
-### Clean up / release
-
-```powershell
-.\target\release\acr_rtss_osd.exe --owner acr_demo --release
-```
-
-## `acr_track_match` + RTSS (recommended for “detected track …”)
-
-`acr_track_match` can update RTSS alongside the text file:
-
-```powershell
-.\target\release\acr_track_match.exe --refs .\reference_tracks --live --rtss --rtss-owner acr_track_match
-```
-
-Optional forced slot:
-
-```powershell
-.\target\release\acr_track_match.exe --refs .\reference_tracks --live --rtss --rtss-owner acr_track_match --rtss-slot 3
-```
-
-On exit, the tool tries to clear the owner slot via `release`.
-
-## Text file (fallback / other overlays)
-
-Default path (unless overridden):
-
-- `%APPDATA%\acr_telemetry\acr_detected_track.txt`
-
-`acr_track_match` writes there **atomically** (temp + rename) so readers do not see half-written content.
-
-`acr_telemetry_bridge` can also expose the text as a JSON field:
-
-- `detected_track_message`
-
-## Limits / reality check
-
-- RTSS OSD is **text/markup** (depends on RTSS version). Not “arbitrary binary” in the sense of embedded objects through the simple text path.
-- Our strings go through **ANSI `CString`** (like many RTSS samples): **no NUL bytes** in the text; non-ASCII characters may look different depending on code page/RTSS/OSD.
-- RTSS does **not** necessarily redraw every frame; `dwOSDFrame++` is the usual “please redraw” trigger.
 
 ## Troubleshooting
 
-- **`OpenFileMappingW` fails**: RTSS is not running / no shared memory session.
-- **Signature != `RTSS` / “header didn't validate”**:
-  - In `acr_recorder`, opening tries in order:
-    - `RTSSSharedMemoryV2`
-    - `Global\\RTSSSharedMemoryV2`
-    - `Local\\RTSSSharedMemoryV2`
-  - If no valid signature is read, there is typically **no RTSS shared memory object** visible to your session (or it is blocked by policy/AV), or a **session/isolation** issue (rare).
-  - Practical check: restart RTSS once and confirm OSD is actually active in-game (otherwise RTSS would not show anything either).
-- **No free slot**: other tools occupy OSD slots; set `--slot` or change owner.
-- **`dwOSDEntrySize` looks “too small” (e.g. 256)**:
-  - On some RTSS versions this field is **not reliable** as the true memory width of a slot.
-  - `acr_recorder` therefore uses a **conservative minimum stride** (text fields plus large buffer where needed from v2.12) and takes `max(dwOSDEntrySize, minimum_required)`.
-- **Text shows but looks “wrong”**: check RTSS markup/tags (RTSS docs/forums) and length (4095+).
+- **Position does nothing**: check startup log `rtss_osd: placement …`. If it says `no position tag`, anchor `pixel` without `rtss_osd_x`/`rtss_osd_y` and zero offsets does nothing. Wrong config file directory is the most common cause.
+- **`OpenFileMappingW` fails**: RTSS not running.
+- **Text in wrong place with pixels**: adjust RTSS OSD zoom or switch to `sticky_center` / `middle_monitor`.

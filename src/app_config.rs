@@ -21,11 +21,22 @@ pub struct TrackMatchConfigFile {
     pub rate: Option<u64>,
     pub min_ref_spacing: Option<f64>,
     pub labels: Option<String>,
-    pub overlay_file: Option<String>,
     pub rtss: Option<bool>,
     pub rtss_owner: Option<String>,
     pub rtss_slot: Option<u32>,
     pub rtss_clear_all: Option<bool>,
+    /// `default` | `middle_monitor` | `sticky_center` | `pixel` — see docs/RTSS_OVERLAY.md.
+    #[serde(default)]
+    pub rtss_osd_anchor: Option<String>,
+    #[serde(default)]
+    pub rtss_osd_offset_x: Option<i32>,
+    #[serde(default)]
+    pub rtss_osd_offset_y: Option<i32>,
+    /// Absolute virtual-desktop X/Y (`rtss_osd_anchor = "pixel"` or override).
+    #[serde(default)]
+    pub rtss_osd_x: Option<i32>,
+    #[serde(default)]
+    pub rtss_osd_y: Option<i32>,
     pub track_keep_max_dist: Option<f64>,
     pub track_switch_min_gain: Option<f64>,
     pub track_lock_after_sec: Option<f64>,
@@ -119,8 +130,14 @@ fn load_timing_toml(
     for dir in dirs {
         let p = dir.join(acr_timing::timing_config_file::TIMING_CONFIG_FILE);
         if p.exists() {
-            let raw = std::fs::read_to_string(&p)?;
-            return Ok((toml::from_str(&raw)?, Some(p)));
+            let (cfg, path) = acr_timing::timing_config_file::load(Some(&p))?;
+            return Ok((cfg, Some(path)));
+        }
+    }
+    for p in acr_timing::timing_config_file::config_search_paths() {
+        if p.exists() {
+            let (cfg, path) = acr_timing::timing_config_file::load(Some(&p))?;
+            return Ok((cfg, Some(path)));
         }
     }
     Ok((TimingConfigFile::default(), None))

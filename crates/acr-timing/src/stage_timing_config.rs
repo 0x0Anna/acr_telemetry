@@ -5,6 +5,9 @@ use std::path::PathBuf;
 
 use serde::Deserialize;
 
+/// Max parallel calibrated stage timers per locked reference track (same start + spline).
+pub const MAX_PARALLEL_STAGE_TIMINGS: usize = 3;
+
 #[derive(Debug, Clone, Default, Deserialize)]
 pub struct StageTimingConfig {
     /// HTML run logs: `{stage_slug}_{car}_{timestamp}.html`
@@ -41,10 +44,14 @@ pub enum StageSlugEntry {
 }
 
 impl StageSlugEntry {
-    pub fn primary(&self) -> Option<&str> {
+    pub fn primary(&self) -> Option<String> {
+        self.slugs().into_iter().next()
+    }
+
+    pub fn slugs(&self) -> Vec<String> {
         match self {
-            StageSlugEntry::One(s) => Some(s.as_str()),
-            StageSlugEntry::Many(v) => v.first().map(String::as_str),
+            StageSlugEntry::One(s) => vec![s.clone()],
+            StageSlugEntry::Many(v) => v.clone(),
         }
     }
 }
@@ -67,13 +74,22 @@ impl StageTimingConfig {
     }
 
     pub fn stage_slug_for_reference(&self, reference_track: &str) -> Option<String> {
+        self.stage_slugs_for_reference(reference_track)
+            .into_iter()
+            .next()
+    }
+
+    /// All calibrated stage slugs for this reference track (e.g. full + half stage).
+    pub fn stage_slugs_for_reference(&self, reference_track: &str) -> Vec<String> {
         let want = normalize_track_slug(reference_track);
         for (key, entry) in &self.ref_stage_sectors {
             if normalize_track_slug(key) == want {
-                return entry.primary().map(str::to_string);
+                let mut slugs = entry.slugs();
+                slugs.truncate(MAX_PARALLEL_STAGE_TIMINGS);
+                return slugs;
             }
         }
-        None
+        Vec::new()
     }
 
     pub fn path_for_stage_slug(&self, stage_slug: &str) -> PathBuf {
@@ -129,6 +145,24 @@ mod tests {
         assert_eq!(
             cfg.stage_slug_for_reference("Hafren_North").as_deref(),
             Some("cwmbiga_afon_biga")
+        );
+    }
+
+    #[test]
+    fn parallel_stage_slugs_capped_at_three() {
+        let mut cfg = StageTimingConfig::default();
+        cfg.ref_stage_sectors.insert(
+            "hafren_north".to_string(),
+            StageSlugEntry::Many(vec![
+                "a".into(),
+                "b".into(),
+                "c".into(),
+                "d".into(),
+            ]),
+        );
+        assert_eq!(
+            cfg.stage_slugs_for_reference("hafren_north"),
+            vec!["a", "b", "c"]
         );
     }
 }
