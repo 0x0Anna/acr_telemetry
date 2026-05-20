@@ -6,6 +6,7 @@ use serde::Deserialize;
 
 use crate::cumulative_timing_config::CumulativeTimingConfig;
 use crate::delta_display::DeltaDisplayConfigFile;
+use crate::reference_times::ReferenceTimesConfigFile;
 use crate::split_beep::SplitBeepConfig;
 use crate::stage_timing_config::StageTimingConfig;
 use crate::timing_blame::BlameConfig;
@@ -112,6 +113,9 @@ pub struct TimingConfigFile {
     pub timing_voice: TimingVoiceConfig,
     #[serde(default)]
     pub delta_display: DeltaDisplayConfigFile,
+    /// Reference PB for Δ: per sector, per sub, or composite stage best.
+    #[serde(default)]
+    pub reference_times: ReferenceTimesConfigFile,
     #[serde(default)]
     pub timing_quality: TimingQualityConfigFile,
     /// Verbose `[zeitnahme]` stderr on subsector/sector crossings and finish comparison.

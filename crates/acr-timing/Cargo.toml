@@ -9,6 +9,7 @@ name = "acr_timing"
 path = "src/lib.rs"
 
 [dependencies]
+acr_timing_store = { path = "../acr-timing-store" }
 acr_telemetry = { path = "../acr-telemetry" }
 acc_shared_memory_rs = { path = "../../vendor/acc_shared_memory_rs" }
 rusqlite = { version = "0.32", features = ["bundled"] }

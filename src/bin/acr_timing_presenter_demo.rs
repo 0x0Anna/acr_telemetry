@@ -56,6 +56,7 @@ fn main() {
                     TimingStarted {
                         reference_track: "demo".into(),
                         stage_slug: "demo".into(),
+                        reference_stage_tot_sec: None,
                     },
                 )));
                 timing_started = true;

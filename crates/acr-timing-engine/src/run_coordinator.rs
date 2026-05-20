@@ -5,7 +5,7 @@ use std::time::Instant;
 use acr_timing_protocol::{
     EventSender, RunFinished, TimingEvent, TimingEventBody, TimingStarted,
 };
-use acr_timing_store::ReferenceStore;
+use acr_timing_store::{ReferenceStore, ReferenceTimeMode};
 
 use crate::sector_plan::sector_boundaries_from_labels;
 use crate::sector_session::{SectorBoundary, SectorSession, SectorSessionConfig};
@@ -14,6 +14,8 @@ pub struct RunCoordinator {
     bus: EventSender,
     store: ReferenceStore,
     cfg: SectorSessionConfig,
+    reference_mode: ReferenceTimeMode,
+    reference_stage_tot_sec: Option<f64>,
     sectors: Vec<SectorBoundary>,
     sector_cursor: usize,
     session: Option<SectorSession>,
@@ -21,16 +23,27 @@ pub struct RunCoordinator {
 }
 
 impl RunCoordinator {
-    pub fn new(bus: EventSender, store: ReferenceStore, cfg: SectorSessionConfig) -> Self {
+    pub fn new(
+        bus: EventSender,
+        store: ReferenceStore,
+        cfg: SectorSessionConfig,
+        reference_mode: ReferenceTimeMode,
+    ) -> Self {
         Self {
             bus,
             store,
             cfg,
+            reference_mode,
+            reference_stage_tot_sec: None,
             sectors: Vec::new(),
             sector_cursor: 0,
             session: None,
             timing_active: false,
         }
+    }
+
+    pub fn set_reference_mode(&mut self, mode: ReferenceTimeMode) {
+        self.reference_mode = mode;
     }
 
     pub fn set_route(&mut self, ordered_labels: &[(i32, String)]) {
@@ -53,10 +66,30 @@ impl RunCoordinator {
         self.timing_active = true;
         self.sector_cursor = 0;
         self.session = None;
+        let sector_count = self.sectors.len() as u32;
+        self.reference_stage_tot_sec = self
+            .store
+            .best_stage_tot_sec(
+                &self.cfg.reference_track,
+                &self.cfg.car,
+                &self.cfg.stage_slug,
+                sector_count,
+            )
+            .ok()
+            .flatten()
+            .filter(|t| t.is_finite() && *t > 0.05);
+        eprintln!(
+            "modular: reference mode {} stage_ref={}",
+            self.reference_mode.as_str(),
+            self.reference_stage_tot_sec
+                .map(|t| format!("{t:.3}s"))
+                .unwrap_or_else(|| "—".into())
+        );
         self.bus.publish(TimingEvent::new(TimingEventBody::TimingStarted(
             TimingStarted {
                 reference_track: self.cfg.reference_track.clone(),
                 stage_slug: self.cfg.stage_slug.clone(),
+                reference_stage_tot_sec: self.reference_stage_tot_sec,
             },
         )));
         self.begin_sector_if_needed();
@@ -74,7 +107,8 @@ impl RunCoordinator {
         };
         let reference = self
             .store
-            .reference_snapshot(
+            .resolve_reference(
+                self.reference_mode,
                 &self.cfg.reference_track,
                 &self.cfg.car,
                 &self.cfg.stage_slug,
@@ -125,6 +159,7 @@ impl RunCoordinator {
             self.bus.publish(TimingEvent::new(TimingEventBody::RunFinished(RunFinished {
                 reference_track: self.cfg.reference_track.clone(),
                 stage_slug: self.cfg.stage_slug.clone(),
+                reference_stage_tot_sec: self.reference_stage_tot_sec,
             })));
         } else {
             self.begin_sector_if_needed();

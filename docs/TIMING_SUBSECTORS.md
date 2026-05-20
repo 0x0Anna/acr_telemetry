@@ -31,6 +31,10 @@ cumulative timing: hafren_north → …/hafren_north_linestrings.geojson (30 gat
 ## Config highlights (`acr_timing.toml`)
 
 ```toml
+[reference_times]
+# best_sector | best_stage | best_subsector
+mode = "best_sector"
+
 [delta_display]
 split_feedback = "subsector"   # or "sector" (cum Δ in main sector; alias: stage)
 sector_recap_sec = 5.0         # after Finish: rotate S1..Sn on upper RTSS line (0 = last only)

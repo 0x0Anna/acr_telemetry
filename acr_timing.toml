@@ -40,6 +40,13 @@ volume = 0.4
 # slower_wav_3 = "assets/split_sounds/slow_big.wav"  # optional: |Δ| tier 3 (WAV once)
 
 # Δ for split WAVs and RTSS colors (neutral band, colorblind-friendly faster/slower).
+# Reference times for Δ (modular RTSS + sector totals). Later: filters like best_of_today.
+[reference_times]
+# best_sector = fastest complete run per main sector (default)
+# best_stage = composite stage PB (sum of per-sector bests)
+# best_subsector = per gate minimum leg time (may mix runs)
+mode = "best_sector"
+
 [delta_display]
 # Split feedback: subsector = delta_i per gate; sector = cumulative Δ in main sector (tot).
 # (alias: stage — same meaning, deprecated name)

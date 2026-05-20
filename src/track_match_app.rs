@@ -245,6 +245,7 @@ fn ensure_modular_timing(
     cum: &CumulativeTrackSectors,
     reference_track: &str,
     car: &str,
+    reference_mode: acr_timing::ReferenceTimeMode,
 ) {
     if state.modular.is_some() {
         return;
@@ -261,13 +262,16 @@ fn ensure_modular_timing(
         car: car.to_string(),
         stage_slug: cum.slug.clone(),
     };
-    let mut coordinator = RunCoordinator::new(bus.clone(), store, cfg);
+    let mut coordinator = RunCoordinator::new(bus.clone(), store, cfg, reference_mode);
     let labels = cumulative_ordered_labels(cum);
     coordinator.set_route(&labels);
     let n_sectors = sector_boundaries_from_labels(&labels).len();
     eprintln!(
-        "modular timing: {} / {} ({} main-sector blocks)",
-        reference_track, cum.slug, n_sectors
+        "modular timing: {} / {} ({} main-sector blocks, ref={})",
+        reference_track,
+        cum.slug,
+        n_sectors,
+        reference_mode.as_str()
     );
     state.modular = Some(ModularTimingState {
         coordinator,
@@ -766,6 +770,7 @@ fn reset_live_timing_at_grid(
     cum_def: Option<&CumulativeTrackSectors>,
     bus: &EventSender,
     store_path: &Path,
+    reference_mode: acr_timing::ReferenceTimeMode,
 ) {
     state.run_clock = acr_timing::run_timing_clock::RunTimingClock::new(physics_hz);
     state.start_armed = false;
@@ -786,8 +791,17 @@ fn reset_live_timing_at_grid(
             m.presenter = PresenterState::default();
             m.coordinator.reset_run();
             m.coordinator.set_car(car_model);
+            m.coordinator.set_reference_mode(reference_mode);
         } else {
-            ensure_modular_timing(state, bus, store_path, cum, &cum.reference_track, car_model);
+            ensure_modular_timing(
+                state,
+                bus,
+                store_path,
+                cum,
+                &cum.reference_track,
+                car_model,
+                reference_mode,
+            );
             if let Some(m) = state.modular.as_mut() {
                 m.coordinator.reset_run();
             }
@@ -1115,6 +1129,7 @@ struct CliConfig {
     /// `[zeitnahme]` stderr: positions, spielzeit, subsector vs sector sums.
     timing_debug: bool,
     delta_display: acr_timing::DeltaDisplayConfig,
+    reference_times: acr_timing::ReferenceTimesConfig,
 }
 
 struct TimingBlameCtx<'a> {
@@ -1517,6 +1532,7 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
     let timing_voice = timing.timing_voice.clone();
     let timing_quality = timing.timing_quality.to_runtime();
     let delta_display = timing.delta_display.to_runtime();
+    let reference_times = timing.reference_times.to_runtime();
     let mut timing_debug = timing.timing_debug;
 
     let mut i = 1;
@@ -1834,6 +1850,7 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
         debug_physics_1hz,
         timing_debug,
         delta_display,
+        reference_times,
     })
 }
 
@@ -2573,6 +2590,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                 cum_def,
                                 &timing_event_bus,
                                 &cfg.timing_reference_store_path,
+                                cfg.reference_times.mode,
                             );
                             grid_timing_reset_still_since = None;
                             latest_timing_line = None;
@@ -3280,6 +3298,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                     cum_def,
                                     track_name,
                                     car_model_live,
+                                    cfg.reference_times.mode,
                                 );
                             }
                             ensure_stage_timing_sectors(

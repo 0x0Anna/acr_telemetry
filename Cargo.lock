@@ -63,6 +63,7 @@ version = "0.1.0"
 dependencies = [
  "acc_shared_memory_rs",
  "acr_telemetry",
+ "acr_timing_store",
  "chrono",
  "ctrlc",
  "dirs",

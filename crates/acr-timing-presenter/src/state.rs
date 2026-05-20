@@ -28,13 +28,16 @@ pub struct PresenterState {
     run_sector_count: u32,
     completed_sectors: Vec<SectorCompleted>,
     finish_carousel_at: Option<Instant>,
+    /// Composite stage reference (sum of sector bests), from [`TimingStarted`].
+    reference_stage_tot_sec: Option<f64>,
 }
 
 impl PresenterState {
     pub fn apply(&mut self, event: &TimingEvent) {
         match &event.body {
-            TimingEventBody::TimingStarted(_) => {
+            TimingEventBody::TimingStarted(s) => {
                 *self = Self::default();
+                self.reference_stage_tot_sec = s.reference_stage_tot_sec;
             }
             TimingEventBody::SectorCompleted(s) => {
                 self.run_tot_sum_sec += s.tot_sec;
@@ -80,8 +83,11 @@ impl PresenterState {
                     None,
                 );
             }
-            TimingEventBody::RunFinished(_) => {
+            TimingEventBody::RunFinished(s) => {
                 self.run_frozen = true;
+                if s.reference_stage_tot_sec.is_some() {
+                    self.reference_stage_tot_sec = s.reference_stage_tot_sec;
+                }
                 self.finish_carousel_at = Some(Instant::now());
                 self.live_sector_index = None;
                 self.live_sector_started = None;
@@ -150,10 +156,17 @@ impl PresenterState {
         if !self.run_frozen || self.run_sector_count == 0 {
             return;
         }
+        let (ref_tot, cum_delta) =
+            if let Some(stage_ref) = self.reference_stage_tot_sec.filter(|t| t.is_finite() && *t > 0.05)
+            {
+                (stage_ref, self.run_tot_sum_sec - stage_ref)
+            } else {
+                (self.run_ref_tot_sum_sec, self.run_cum_delta_sec)
+            };
         self.live_line = Some(format_track_completed_line(
             self.run_tot_sum_sec,
-            self.run_ref_tot_sum_sec,
-            self.run_cum_delta_sec,
+            ref_tot,
+            cum_delta,
             rtss,
             delta_style,
         ));
@@ -254,6 +267,7 @@ mod tests {
             acr_timing_protocol::TimingStarted {
                 reference_track: "t".into(),
                 stage_slug: "s".into(),
+                reference_stage_tot_sec: None,
             },
         )));
         assert!(p
@@ -284,6 +298,7 @@ mod tests {
             acr_timing_protocol::RunFinished {
                 reference_track: "t".into(),
                 stage_slug: "s".into(),
+                reference_stage_tot_sec: Some(90.0),
             },
         )));
         p.apply(&TimingEvent::new(TimingEventBody::SectorStarted(SectorStarted {
@@ -320,6 +335,7 @@ mod tests {
             acr_timing_protocol::RunFinished {
                 reference_track: "t".into(),
                 stage_slug: "s".into(),
+                reference_stage_tot_sec: None,
             },
         )));
         let mut cfg = DeltaDisplayConfig::default();

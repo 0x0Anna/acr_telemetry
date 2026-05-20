@@ -30,6 +30,9 @@ slower_duration_ms = 140
 gap_ms = 200
 volume = 0.4
 
+[reference_times]
+mode = "best_sector"
+
 [delta_display]
 split_feedback = "subsector"
 sector_recap_sec = 5.0

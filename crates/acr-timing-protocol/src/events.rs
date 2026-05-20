@@ -55,6 +55,8 @@ pub struct RouteIdentified {
 pub struct TimingStarted {
     pub reference_track: String,
     pub stage_slug: String,
+    /// Composite stage reference (sum of sector bests), when configured.
+    pub reference_stage_tot_sec: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -102,6 +104,7 @@ pub struct SectorIncomplete {
 pub struct RunFinished {
     pub reference_track: String,
     pub stage_slug: String,
+    pub reference_stage_tot_sec: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
