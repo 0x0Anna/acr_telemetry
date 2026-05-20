@@ -11,7 +11,9 @@ Format: same as timing/timing_sectors/*.geojson
 
 All crossings: cumulative pace beep ([cumulative_beep]), HTML log, no OSD split line.
 
+hafren_north_linestrings.geojson (preferred at runtime)
+  Calibrated gate LineStrings for Hafren North cumulative + modular timing.
+  Loader picks {slug}_linestrings.geojson when present (see resolve_cumulative_sectors_path).
+
 hafren_north.geojson
-  Copied from timing/timing_sectors/cwmbiga_afon_biga.geojson (Start, S1–S3, Finish).
-  seg_id = marker_order (0…4). Insert new points with marker_role=sector_boundary,
-  marker_order and seg_id strictly increasing along the route (leave gaps in seg_id for later).
+  Point gates (fallback). Same marker_order / labels as linestrings variant.
