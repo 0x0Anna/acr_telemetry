@@ -25,7 +25,7 @@ dependencies = [
 
 [[package]]
 name = "acr_recorder"
-version = "0.2.0"
+version = "0.0.6"
 dependencies = [
  "acc_shared_memory_rs",
  "acr_pacenote",

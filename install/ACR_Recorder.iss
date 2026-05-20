@@ -3,7 +3,7 @@
 ; Compile only:         ISCC.exe /DMyAppVersion=0.1.0 install\ACR_Recorder.iss
 
 #ifndef MyAppVersion
-  #define MyAppVersion "0.2.0"
+  #define MyAppVersion "0.0.6"
 #endif
 
 #define MyAppName "ACR Recorder"

@@ -144,5 +144,5 @@ Notes/stop files still use `%APPDATA%\acr_telemetry` unless you set `notes_dir` 
 
 
 
-Bump `version` in root `Cargo.toml` (e.g. `0.2.0`). CI derives the installer version from the git tag (`v0.2.0_…` → `0.2.0`). Local override: `install/build.ps1 -Version 0.2.0`.
+Bump `version` in root `Cargo.toml` (e.g. `0.0.6`). CI derives the installer version from the git tag (`v0.0.6_…` → `0.0.6`). Local override: `install/build.ps1 -Version 0.0.6`.
 
