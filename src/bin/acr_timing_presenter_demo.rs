@@ -95,7 +95,11 @@ fn main() {
         } else {
             "demo waiting".into()
         };
-        let lines = presenter.osd_lines(rtss, &acr_timing::DeltaDisplayConfig::default());
+        let lines = presenter.osd_lines(
+            rtss,
+            &acr_timing::DeltaDisplayConfig::default(),
+            Some(&acr_timing::OsdTemplateConfig::default()),
+        );
         let msg = compose_osd_message(&status, &lines);
         print_osd_block(&msg);
 
@@ -119,7 +123,11 @@ fn main() {
         finish_sector(&mut presenter, prev, &sub_times);
     }
     let status = "demo finished";
-    let lines = presenter.osd_lines(rtss, &acr_timing::DeltaDisplayConfig::default());
+    let lines = presenter.osd_lines(
+        rtss,
+        &acr_timing::DeltaDisplayConfig::default(),
+        Some(&acr_timing::OsdTemplateConfig::default()),
+    );
     let msg = compose_osd_message(status, &lines);
     print_osd_block(&msg);
     #[cfg(windows)]

@@ -2,6 +2,10 @@
 //! With RTSS: `+`/brackets colored red (slower) / green (faster) via `<C=RRGGBB>`.
 
 use acr_timing::delta_display::DeltaColorStyle;
+use acr_timing::osd_template::{
+    format_finish_line_templated, format_sector_line_templated, FinishLineCtx, OsdTemplateConfig,
+    SectorLineCtx, SubSlotCtx,
+};
 
 const MAX_SUB_SLOTS: usize = 8;
 
@@ -33,7 +37,31 @@ pub fn format_sector_line(
     incomplete_mark: bool,
     rtss_colors: bool,
     delta_style: &DeltaColorStyle,
+    templates: Option<&OsdTemplateConfig>,
 ) -> String {
+    if let Some(tpl) = templates {
+        let subs: Vec<SubSlotCtx> = sub_ids
+            .iter()
+            .enumerate()
+            .map(|(i, _)| SubSlotCtx {
+                time_sec: sub_times_sec.get(i).copied().flatten(),
+                delta_sec: sub_delta_sec.get(i).copied().flatten(),
+            })
+            .collect();
+        return format_sector_line_templated(
+            tpl,
+            &SectorLineCtx {
+                sector_index,
+                cum_delta_sec,
+                tot_sec,
+                reference_tot_sec,
+                incomplete: incomplete_mark,
+                subs,
+            },
+            rtss_colors,
+            delta_style,
+        );
+    }
     let prefix = if incomplete_mark {
         format!("S{}~:", sector_index + 1)
     } else {
@@ -84,7 +112,20 @@ pub fn format_track_completed_line(
     cum_delta_sec: f64,
     rtss_colors: bool,
     delta_style: &DeltaColorStyle,
+    templates: Option<&OsdTemplateConfig>,
 ) -> String {
+    if let Some(tpl) = templates {
+        return format_finish_line_templated(
+            tpl,
+            &FinishLineCtx {
+                cum_tot_sec,
+                ref_tot_sec: cum_ref_tot_sec,
+                cum_delta_sec,
+            },
+            rtss_colors,
+            delta_style,
+        );
+    }
     let mut parts = vec![
         "Track completed".to_string(),
         format!("cum: {}", format_duration(cum_tot_sec)),
@@ -131,6 +172,7 @@ mod tests {
             false,
             false,
             &style,
+            Some(&OsdTemplateConfig::default()),
         );
         assert!(line.contains("+0.500"));
         assert!(line.contains("[--]"));
@@ -141,10 +183,17 @@ mod tests {
     #[test]
     fn track_completed_line() {
         let style = DeltaColorStyle::default();
-        let line = format_track_completed_line(272.5, 270.0, 2.5, true, &style);
+        let line = format_track_completed_line(
+            272.5,
+            270.0,
+            2.5,
+            true,
+            &style,
+            Some(&OsdTemplateConfig::default()),
+        );
         assert!(line.contains("Track completed"));
-        assert!(line.contains("cum:"));
-        assert!(line.contains("delta:"));
+        assert!(line.contains("cum "));
+        assert!(line.contains("+2.500"));
         assert!(line.contains("<C=ff0000>"));
     }
 

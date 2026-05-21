@@ -5,6 +5,7 @@
 use std::time::Instant;
 
 use acr_timing::delta_display::{DeltaColorStyle, DeltaDisplayConfig};
+use acr_timing::osd_template::OsdTemplateConfig;
 use acr_timing_protocol::{SectorCompleted, SectorStarted, TimingEvent, TimingEventBody};
 
 use crate::osd::{format_duration, format_sector_line, format_track_completed_line};
@@ -152,7 +153,12 @@ impl PresenterState {
         self.live_line = Some(format!("S{}: …", sector_index + 1));
     }
 
-    fn refresh_run_completed_line(&mut self, rtss: bool, delta_style: &DeltaColorStyle) {
+    fn refresh_run_completed_line(
+        &mut self,
+        rtss: bool,
+        delta_style: &DeltaColorStyle,
+        templates: Option<&OsdTemplateConfig>,
+    ) {
         if !self.run_frozen || self.run_sector_count == 0 {
             return;
         }
@@ -169,12 +175,18 @@ impl PresenterState {
             cum_delta,
             rtss,
             delta_style,
+            templates,
         ));
     }
 
-    pub fn refresh_live(&mut self, rtss: bool, delta_style: &DeltaColorStyle) {
+    pub fn refresh_live(
+        &mut self,
+        rtss: bool,
+        delta_style: &DeltaColorStyle,
+        templates: Option<&OsdTemplateConfig>,
+    ) {
         if self.run_frozen {
-            self.refresh_run_completed_line(rtss, delta_style);
+            self.refresh_run_completed_line(rtss, delta_style, templates);
             return;
         }
         let Some(sector_index) = self.live_sector_index else {
@@ -198,6 +210,7 @@ impl PresenterState {
             false,
             rtss,
             delta_style,
+            templates,
         ));
     }
 
@@ -219,9 +232,14 @@ impl PresenterState {
         self.completed_sectors.get(ix)
     }
 
-    pub fn osd_lines(&mut self, rtss: bool, display: &DeltaDisplayConfig) -> Vec<String> {
+    pub fn osd_lines(
+        &mut self,
+        rtss: bool,
+        display: &DeltaDisplayConfig,
+        templates: Option<&OsdTemplateConfig>,
+    ) -> Vec<String> {
         let delta_style = &display.colors;
-        self.refresh_live(rtss, delta_style);
+        self.refresh_live(rtss, delta_style, templates);
         let mut out = Vec::new();
         let completed = if self.run_frozen {
             self.carousel_sector(display.sector_recap_sec)
@@ -229,7 +247,7 @@ impl PresenterState {
             self.last_completed.as_ref()
         };
         if let Some(c) = completed {
-            out.push(format_completed(c, rtss, delta_style));
+            out.push(format_completed(c, rtss, delta_style, templates));
         }
         if let Some(l) = &self.live_line {
             out.push(l.clone());
@@ -238,7 +256,12 @@ impl PresenterState {
     }
 }
 
-fn format_completed(s: &SectorCompleted, rtss: bool, delta_style: &DeltaColorStyle) -> String {
+fn format_completed(
+    s: &SectorCompleted,
+    rtss: bool,
+    delta_style: &DeltaColorStyle,
+    templates: Option<&OsdTemplateConfig>,
+) -> String {
     let ref_tot = s.reference_tot_sec;
     format_sector_line(
         s.sector_index,
@@ -251,6 +274,7 @@ fn format_completed(s: &SectorCompleted, rtss: bool, delta_style: &DeltaColorSty
         false,
         rtss,
         delta_style,
+        templates,
     )
 }
 
@@ -271,7 +295,7 @@ mod tests {
             },
         )));
         assert!(p
-            .osd_lines(false, &DeltaDisplayConfig::default())
+            .osd_lines(false, &DeltaDisplayConfig::default(), None)
             .is_empty());
     }
 
@@ -308,7 +332,7 @@ mod tests {
             reference_sub_times_sec: vec![2.0],
             reference_tot_sec: 80.0,
         })));
-        let lines = p.osd_lines(false, &DeltaDisplayConfig::default());
+        let lines = p.osd_lines(false, &DeltaDisplayConfig::default(), None);
         assert_eq!(lines.len(), 2);
         assert!(lines[0].starts_with("S1:"));
         assert!(lines[1].contains("Track completed"));
@@ -340,13 +364,13 @@ mod tests {
         )));
         let mut cfg = DeltaDisplayConfig::default();
         cfg.sector_recap_sec = 5.0;
-        let lines = p.osd_lines(false, &cfg);
+        let lines = p.osd_lines(false, &cfg, None);
         assert!(lines[0].starts_with("S1:"));
         p.finish_carousel_at = Some(Instant::now() - std::time::Duration::from_secs(6));
-        let lines = p.osd_lines(false, &cfg);
+        let lines = p.osd_lines(false, &cfg, None);
         assert!(lines[0].starts_with("S2:"));
         p.finish_carousel_at = Some(Instant::now() - std::time::Duration::from_secs(11));
-        let lines = p.osd_lines(false, &cfg);
+        let lines = p.osd_lines(false, &cfg, None);
         assert!(lines[0].starts_with("S3:"));
     }
 }

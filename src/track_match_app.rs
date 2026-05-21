@@ -414,7 +414,7 @@ fn modular_presenter_detail(state: &mut LiveTimingState, cfg: &CliConfig) -> Str
     };
     let lines = m
         .presenter
-        .osd_lines(cfg.rtss, &cfg.delta_display);
+        .osd_lines(cfg.rtss, &cfg.delta_display, Some(&cfg.osd_templates));
     if lines.is_empty() {
         return String::new();
     }
@@ -1130,6 +1130,7 @@ struct CliConfig {
     timing_debug: bool,
     delta_display: acr_timing::DeltaDisplayConfig,
     reference_times: acr_timing::ReferenceTimesConfig,
+    osd_templates: acr_timing::OsdTemplateConfig,
 }
 
 struct TimingBlameCtx<'a> {
@@ -1533,6 +1534,7 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
     let timing_quality = timing.timing_quality.to_runtime();
     let delta_display = timing.delta_display.to_runtime();
     let reference_times = timing.reference_times.to_runtime();
+    let osd_templates = timing.osd_display.to_runtime();
     let mut timing_debug = timing.timing_debug;
 
     let mut i = 1;
@@ -1851,6 +1853,7 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
         timing_debug,
         delta_display,
         reference_times,
+        osd_templates,
     })
 }
 

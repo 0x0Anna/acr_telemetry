@@ -47,6 +47,13 @@ volume = 0.4
 # best_subsector = per gate minimum leg time (may mix runs)
 mode = "best_sector"
 
+# RTSS sector lines: template + variables (literal RTSS tags OK, e.g. <P4><L0>).
+[osd_display]
+preset = "default"
+# sector_line = "S{sector}: {cum_delta_colored} {subs} ref: {ref:time} tot: {tot:time}"
+# sub_slot = "[{time:time}]"
+# finish_line = "Track completed  cum {cum_tot:time}  ref {ref_tot:time}  {delta_colored}"
+
 [delta_display]
 # Split feedback: subsector = delta_i per gate; sector = cumulative Δ in main sector (tot).
 # (alias: stage — same meaning, deprecated name)

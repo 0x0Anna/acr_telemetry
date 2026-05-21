@@ -85,6 +85,32 @@ Wrong (shows literally on screen): `<P=4>hello` — use `<P4><L0>hello` or `<P=1
 
 Timing OSD colors use `<C=ff0000>` / `<C=00ff00>` in the presenter; `sanitize_multiline_osd_text` keeps `<…>` tags (does not strip hypertext).
 
+## Sector / finish line templates (`acr_timing.toml` → `[osd_display]`)
+
+You do **not** need hardcoded `type1`/`type2` only — use a **format string** with variables, and embed RTSS tags directly in the template.
+
+| Variable | Meaning |
+|----------|---------|
+| `{sector}` | Main sector number (1-based) |
+| `{cum_delta}` / `{cum_delta:+.3}` | Sector cumulative Δ |
+| `{cum_delta_colored}` | Δ with RTSS color (uses `[delta_display]` colors) |
+| `{subs}` | Expands `sub_slot` for each sub gate (last `max_sub_slots`) |
+| `{time:time}` / `{delta:+.3}` | Inside `sub_slot`: leg time / Δ |
+| `{ref:time}` `{tot:time}` | Reference / sector total |
+| `{cum_tot:time}` `{ref_tot:time}` `{delta_colored}` | On finish line |
+
+Presets (used when `sector_line` is omitted): `default`, `compact` (aliases: `type2`, `minimal`). Set `preset = "custom"` and define `sector_line` / `finish_line` yourself.
+
+Example (sticky center + compact sector line):
+
+```toml
+[osd_display]
+preset = "custom"
+sector_line = "<P4><L0>S{sector} {cum_delta_colored} {subs}"
+sub_slot = "[{time:time}]"
+finish_line = "Done {cum_tot:time} {delta_colored}"
+```
+
 ## Binaries
 
 ```powershell
