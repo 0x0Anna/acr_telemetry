@@ -33,6 +33,12 @@ volume = 0.4
 [reference_times]
 mode = "best_sector"
 
+[osd_display]
+preset = "default"
+# sector_line = "S{sector}: {cum_delta_colored} {subs} ref: {ref:time} tot: {tot:time}"
+# sub_slot = "[{time:time}]"
+# finish_line = "Track completed  cum {cum_tot:time}  ref {ref_tot:time}  {delta_colored}"
+
 [delta_display]
 split_feedback = "subsector"
 sector_recap_sec = 5.0

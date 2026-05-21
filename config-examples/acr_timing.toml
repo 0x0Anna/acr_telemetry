@@ -34,6 +34,9 @@ volume = 0.4
 [reference_times]
 mode = "best_sector"
 
+[osd_display]
+preset = "default"
+
 [delta_display]
 split_feedback = "subsector"
 sector_recap_sec = 5.0
