@@ -61,7 +61,12 @@ pub fn run(options: Options, running: &AtomicBool) -> Result<(), Box<dyn std::er
         let _ = std::fs::remove_file(&stop_path);
     }
 
-    eprintln!("MoTeC live: output → {}", ld_path.display());
+    let motec_cfg = &cfg.export.motec;
+    eprintln!(
+        "MoTeC live: output → {} (profile={})",
+        ld_path.display(),
+        motec_cfg.profile
+    );
     eprintln!("Ctrl+C or create '{}' to stop.", stop_path.display());
 
     let mut acc = ACCSharedMemory::new()?;

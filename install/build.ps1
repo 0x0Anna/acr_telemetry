@@ -65,6 +65,12 @@ foreach ($bin in $Bins) {
 Get-ChildItem (Join-Path $InstallDir 'config') -Filter '*.toml' | ForEach-Object {
     Copy-Item $_.FullName $Staging
 }
+$motecProfilesSrc = Join-Path $InstallDir 'config\motec_profiles'
+$motecProfilesDst = Join-Path $Staging 'motec_profiles'
+if (Test-Path $motecProfilesSrc) {
+    New-Item -ItemType Directory -Path $motecProfilesDst -Force | Out-Null
+    Copy-Item (Join-Path $motecProfilesSrc '*.toml') $motecProfilesDst
+}
 
 Copy-Item (Join-Path $Root 'batch\*.bat') (Join-Path $Staging 'batch')
 Copy-Item (Join-Path $Root 'LICENSE') $Staging

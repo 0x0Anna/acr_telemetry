@@ -27,3 +27,11 @@ distance_reset_cooldown_secs = 8
 default_method = "csv"
 # Default path for SQLite database (relative to CWD or absolute)
 sqlite_db_path = "c:/temp/acc/telemetry.db"
+
+# MoTeC .ld channel naming (acr_export, acr_motec, acr_recorder --motec)
+[export.motec]
+# Profile: motec_profiles/<profile>.toml (next to exe, or profiles_dir)
+#   rbr   = sim/RBR-style (default)
+#   rally = MoTeC Rally Basic / ADL names
+profile = "rbr"
+# profiles_dir = "motec_profiles"

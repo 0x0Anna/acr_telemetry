@@ -1,0 +1,586 @@
+//! MoTeC LD channel profiles loaded from TOML (`motec_profiles/<name>.toml`).
+
+use std::path::{Path, PathBuf};
+
+use serde::Deserialize;
+
+use crate::config;
+use crate::record::{GraphicsRecord, PhysicsRecord};
+
+/// Nominal wheel radius for rad/s → km/h (ACC wheel_angular_speed).
+const WHEEL_RADIUS_M: f32 = 0.33;
+const RAD_S_TO_KMH: f32 = WHEEL_RADIUS_M * 3.6;
+const PSI_TO_BAR: f32 = 0.068_947_57;
+const BRAKE_STATUS_THRESHOLD: f32 = 0.05;
+
+#[derive(Debug, Clone, Deserialize)]
+struct ProfileFile {
+    #[serde(default)]
+    description: String,
+    channels: Vec<ChannelSpecFile>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+struct ChannelSpecFile {
+    name: String,
+    #[serde(default)]
+    unit: String,
+    source: String,
+    #[serde(default = "default_scale")]
+    scale: f32,
+    #[serde(default)]
+    offset: f32,
+    #[serde(default)]
+    graphics: bool,
+}
+
+fn default_scale() -> f32 {
+    1.0
+}
+
+#[derive(Debug, Clone)]
+pub struct MotecProfile {
+    pub id: String,
+    pub description: String,
+    pub channels: Vec<ProfileChannel>,
+}
+
+#[derive(Debug, Clone)]
+pub struct ProfileChannel {
+    pub name: String,
+    pub unit: String,
+    pub source: ChannelSource,
+    pub scale: f32,
+    pub offset: f32,
+    pub graphics_only: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ChannelSource {
+    Time,
+    SpeedKmh,
+    Rpm,
+    Gas,
+    Brake,
+    SteerAngle,
+    Gear,
+    GForceX,
+    GForceY,
+    GForceTotal,
+    EngineRotation,
+    GearOk,
+    BrakeStatus,
+    SuspensionTravelFl,
+    SuspensionTravelFr,
+    SuspensionTravelRl,
+    SuspensionTravelRr,
+    SuspensionTravelMmFl,
+    SuspensionTravelMmFr,
+    SuspensionTravelMmRl,
+    SuspensionTravelMmRr,
+    CarPosX,
+    CarPosY,
+    CarPosZ,
+    TyreContactXFl,
+    TyreContactYFl,
+    TyreContactZFl,
+    TyreContactXFr,
+    TyreContactYFr,
+    TyreContactZFr,
+    TyreContactXRl,
+    TyreContactYRl,
+    TyreContactZRl,
+    TyreContactXRr,
+    TyreContactYRr,
+    TyreContactZRr,
+    TyreTempCFl,
+    TyreTempCFr,
+    TyreTempCRl,
+    TyreTempCRr,
+    WheelPressureBarFl,
+    WheelPressureBarFr,
+    WheelPressureBarRl,
+    WheelPressureBarRr,
+    BrakeTempCFl,
+    BrakeTempCFr,
+    BrakeTempCRl,
+    BrakeTempCRr,
+    TyreWearPctFl,
+    TyreWearPctFr,
+    TyreWearPctRl,
+    TyreWearPctRr,
+    WheelSpeedKmhFl,
+    WheelSpeedKmhFr,
+    WheelSpeedKmhRl,
+    WheelSpeedKmhRr,
+    WheelSpeedKmhFront,
+    WheelSpeedKmhRear,
+    WheelSlipMax,
+    GraphicsPosX,
+    GraphicsPosY,
+    GraphicsPosZ,
+}
+
+impl ChannelSource {
+    fn parse(s: &str) -> Result<Self, String> {
+        use ChannelSource::*;
+        let v = match s {
+            "time" => Time,
+            "speed_kmh" => SpeedKmh,
+            "rpm" => Rpm,
+            "gas" => Gas,
+            "brake" => Brake,
+            "steer_angle" => SteerAngle,
+            "gear" => Gear,
+            "g_force_x" => GForceX,
+            "g_force_y" => GForceY,
+            "g_force_total" => GForceTotal,
+            "engine_rotation" => EngineRotation,
+            "gear_ok" => GearOk,
+            "brake_status" => BrakeStatus,
+            "suspension_travel_fl" => SuspensionTravelFl,
+            "suspension_travel_fr" => SuspensionTravelFr,
+            "suspension_travel_rl" => SuspensionTravelRl,
+            "suspension_travel_rr" => SuspensionTravelRr,
+            "suspension_travel_mm_fl" => SuspensionTravelMmFl,
+            "suspension_travel_mm_fr" => SuspensionTravelMmFr,
+            "suspension_travel_mm_rl" => SuspensionTravelMmRl,
+            "suspension_travel_mm_rr" => SuspensionTravelMmRr,
+            "car_pos_x" => CarPosX,
+            "car_pos_y" => CarPosY,
+            "car_pos_z" => CarPosZ,
+            "tyre_contact_x_fl" => TyreContactXFl,
+            "tyre_contact_y_fl" => TyreContactYFl,
+            "tyre_contact_z_fl" => TyreContactZFl,
+            "tyre_contact_x_fr" => TyreContactXFr,
+            "tyre_contact_y_fr" => TyreContactYFr,
+            "tyre_contact_z_fr" => TyreContactZFr,
+            "tyre_contact_x_rl" => TyreContactXRl,
+            "tyre_contact_y_rl" => TyreContactYRl,
+            "tyre_contact_z_rl" => TyreContactZRl,
+            "tyre_contact_x_rr" => TyreContactXRr,
+            "tyre_contact_y_rr" => TyreContactYRr,
+            "tyre_contact_z_rr" => TyreContactZRr,
+            "tyre_temp_c_fl" => TyreTempCFl,
+            "tyre_temp_c_fr" => TyreTempCFr,
+            "tyre_temp_c_rl" => TyreTempCRl,
+            "tyre_temp_c_rr" => TyreTempCRr,
+            "wheel_pressure_bar_fl" => WheelPressureBarFl,
+            "wheel_pressure_bar_fr" => WheelPressureBarFr,
+            "wheel_pressure_bar_rl" => WheelPressureBarRl,
+            "wheel_pressure_bar_rr" => WheelPressureBarRr,
+            "brake_temp_c_fl" => BrakeTempCFl,
+            "brake_temp_c_fr" => BrakeTempCFr,
+            "brake_temp_c_rl" => BrakeTempCRl,
+            "brake_temp_c_rr" => BrakeTempCRr,
+            "tyre_wear_pct_fl" => TyreWearPctFl,
+            "tyre_wear_pct_fr" => TyreWearPctFr,
+            "tyre_wear_pct_rl" => TyreWearPctRl,
+            "tyre_wear_pct_rr" => TyreWearPctRr,
+            "wheel_speed_kmh_fl" => WheelSpeedKmhFl,
+            "wheel_speed_kmh_fr" => WheelSpeedKmhFr,
+            "wheel_speed_kmh_rl" => WheelSpeedKmhRl,
+            "wheel_speed_kmh_rr" => WheelSpeedKmhRr,
+            "wheel_speed_kmh_front" => WheelSpeedKmhFront,
+            "wheel_speed_kmh_rear" => WheelSpeedKmhRear,
+            "wheel_slip_max" => WheelSlipMax,
+            "graphics_pos_x" => GraphicsPosX,
+            "graphics_pos_y" => GraphicsPosY,
+            "graphics_pos_z" => GraphicsPosZ,
+            other => return Err(format!("unknown MoTeC channel source '{other}'")),
+        };
+        Ok(v)
+    }
+}
+
+/// Load profile by id (filename without `.toml`).
+pub fn load_profile(profile_id: &str, profiles_dir: Option<&Path>) -> Result<MotecProfile, String> {
+    let id = profile_id.trim();
+    if id.is_empty() {
+        return Err("MoTeC profile name is empty".into());
+    }
+    if let Some(path) = find_profile_file(id, profiles_dir) {
+        let text = std::fs::read_to_string(&path)
+            .map_err(|e| format!("read {}: {e}", path.display()))?;
+        return parse_profile_text(id, &text);
+    }
+    let text = builtin_profile_toml(id)?;
+    parse_profile_text(id, text)
+}
+
+fn find_profile_file(profile_id: &str, profiles_dir: Option<&Path>) -> Option<PathBuf> {
+    let filename = format!("{profile_id}.toml");
+    let mut candidates: Vec<PathBuf> = Vec::new();
+    if let Some(dir) = profiles_dir {
+        candidates.push(dir.join(&filename));
+    }
+    if let Some(base) = config::base_dir() {
+        candidates.push(base.join("motec_profiles").join(&filename));
+    }
+    if let Ok(cwd) = std::env::current_dir() {
+        candidates.push(cwd.join("motec_profiles").join(&filename));
+    }
+    candidates.into_iter().find(|p| p.is_file())
+}
+
+fn builtin_profile_toml(profile_id: &str) -> Result<&'static str, String> {
+    match profile_id {
+        "rbr" => Ok(include_str!("../../config/motec_profiles/rbr.toml")),
+        "rally" => Ok(include_str!("../../config/motec_profiles/rally.toml")),
+        other => Err(format!(
+            "MoTeC profile '{other}' not found in motec_profiles/ and no built-in profile"
+        )),
+    }
+}
+
+fn parse_profile_text(id: &str, text: &str) -> Result<MotecProfile, String> {
+    let file: ProfileFile = toml::from_str(text).map_err(|e| format!("profile '{id}' TOML: {e}"))?;
+    if file.channels.is_empty() {
+        return Err(format!("profile '{id}' has no [[channels]]"));
+    }
+    let mut channels = Vec::with_capacity(file.channels.len());
+    for ch in file.channels {
+        let source = ChannelSource::parse(&ch.source)?;
+        channels.push(ProfileChannel {
+            name: ch.name,
+            unit: ch.unit,
+            source,
+            scale: ch.scale,
+            offset: ch.offset,
+            graphics_only: ch.graphics,
+        });
+    }
+    Ok(MotecProfile {
+        id: id.to_string(),
+        description: file.description,
+        channels,
+    })
+}
+
+/// Resolve profile using export config (see `MotecExportConfig`).
+pub fn load_profile_from_config(
+    profile_id: &str,
+    profiles_dir: Option<&str>,
+) -> Result<MotecProfile, String> {
+    let dir = profiles_dir
+        .filter(|s| !s.trim().is_empty())
+        .map(config::resolve_path);
+    load_profile(profile_id, dir.as_deref())
+}
+
+pub fn build_ld_channels(
+    profile: &MotecProfile,
+    records: &[PhysicsRecord],
+    sample_rate_hz: u32,
+    graphics: Option<(&[GraphicsRecord], u32)>,
+) -> Result<Vec<(String, String, Vec<f32>)>, String> {
+    let has_graphics = graphics.map(|(g, _)| !g.is_empty()).unwrap_or(false);
+    let mut out = Vec::new();
+    for ch in &profile.channels {
+        if ch.graphics_only && !has_graphics {
+            continue;
+        }
+        let mut data = extract_channel(
+            ch.source,
+            records,
+            sample_rate_hz,
+            graphics,
+        )?;
+        if ch.scale != 1.0 || ch.offset != 0.0 {
+            for v in &mut data {
+                *v = *v * ch.scale + ch.offset;
+            }
+        }
+        out.push((ch.name.clone(), ch.unit.clone(), data));
+    }
+    Ok(out)
+}
+
+fn extract_channel(
+    source: ChannelSource,
+    records: &[PhysicsRecord],
+    sample_rate_hz: u32,
+    graphics: Option<(&[GraphicsRecord], u32)>,
+) -> Result<Vec<f32>, String> {
+    let n = records.len();
+    let hz = sample_rate_hz.max(1) as f32;
+    Ok(match source {
+        ChannelSource::Time => (0..n).map(|i| i as f32 / hz).collect(),
+        ChannelSource::SpeedKmh => records.iter().map(|r| r.speed_kmh).collect(),
+        ChannelSource::Rpm => records.iter().map(|r| r.rpm as f32).collect(),
+        ChannelSource::Gas => records.iter().map(|r| r.gas).collect(),
+        ChannelSource::Brake => records.iter().map(|r| r.brake).collect(),
+        ChannelSource::SteerAngle => records.iter().map(|r| r.steer_angle).collect(),
+        ChannelSource::Gear => records.iter().map(|r| r.gear as f32).collect(),
+        ChannelSource::GForceX => records.iter().map(|r| r.g_force.x).collect(),
+        ChannelSource::GForceY => records.iter().map(|r| r.g_force.y).collect(),
+        ChannelSource::GForceTotal => records
+            .iter()
+            .map(|r| (r.g_force.x * r.g_force.x + r.g_force.y * r.g_force.y).sqrt())
+            .collect(),
+        ChannelSource::EngineRotation => records
+            .iter()
+            .map(|r| r.rpm as f32 * std::f32::consts::TAU / 60.0)
+            .collect(),
+        ChannelSource::GearOk => records.iter().map(|r| (r.gear - 1) as f32).collect(),
+        ChannelSource::BrakeStatus => records
+            .iter()
+            .map(|r| if r.brake > BRAKE_STATUS_THRESHOLD { 1.0 } else { 0.0 })
+            .collect(),
+        ChannelSource::SuspensionTravelFl => records
+            .iter()
+            .map(|r| r.suspension_travel.front_left)
+            .collect(),
+        ChannelSource::SuspensionTravelFr => records
+            .iter()
+            .map(|r| r.suspension_travel.front_right)
+            .collect(),
+        ChannelSource::SuspensionTravelRl => records
+            .iter()
+            .map(|r| r.suspension_travel.rear_left)
+            .collect(),
+        ChannelSource::SuspensionTravelRr => records
+            .iter()
+            .map(|r| r.suspension_travel.rear_right)
+            .collect(),
+        ChannelSource::SuspensionTravelMmFl => records
+            .iter()
+            .map(|r| r.suspension_travel.front_left * 1000.0)
+            .collect(),
+        ChannelSource::SuspensionTravelMmFr => records
+            .iter()
+            .map(|r| r.suspension_travel.front_right * 1000.0)
+            .collect(),
+        ChannelSource::SuspensionTravelMmRl => records
+            .iter()
+            .map(|r| r.suspension_travel.rear_left * 1000.0)
+            .collect(),
+        ChannelSource::SuspensionTravelMmRr => records
+            .iter()
+            .map(|r| r.suspension_travel.rear_right * 1000.0)
+            .collect(),
+        ChannelSource::CarPosX | ChannelSource::CarPosY | ChannelSource::CarPosZ => {
+            let idx = match source {
+                ChannelSource::CarPosX => 0,
+                ChannelSource::CarPosY => 1,
+                _ => 2,
+            };
+            records
+                .iter()
+                .map(|r| {
+                    let p = &r.tyre_contact_point;
+                    let vals = [
+                        (p.front_left.x + p.front_right.x + p.rear_left.x + p.rear_right.x)
+                            * 0.25,
+                        (p.front_left.y + p.front_right.y + p.rear_left.y + p.rear_right.y)
+                            * 0.25,
+                        (p.front_left.z + p.front_right.z + p.rear_left.z + p.rear_right.z)
+                            * 0.25,
+                    ];
+                    vals[idx]
+                })
+                .collect()
+        }
+        ChannelSource::TyreContactXFl => records
+            .iter()
+            .map(|r| r.tyre_contact_point.front_left.x)
+            .collect(),
+        ChannelSource::TyreContactYFl => records
+            .iter()
+            .map(|r| r.tyre_contact_point.front_left.y)
+            .collect(),
+        ChannelSource::TyreContactZFl => records
+            .iter()
+            .map(|r| r.tyre_contact_point.front_left.z)
+            .collect(),
+        ChannelSource::TyreContactXFr => records
+            .iter()
+            .map(|r| r.tyre_contact_point.front_right.x)
+            .collect(),
+        ChannelSource::TyreContactYFr => records
+            .iter()
+            .map(|r| r.tyre_contact_point.front_right.y)
+            .collect(),
+        ChannelSource::TyreContactZFr => records
+            .iter()
+            .map(|r| r.tyre_contact_point.front_right.z)
+            .collect(),
+        ChannelSource::TyreContactXRl => records
+            .iter()
+            .map(|r| r.tyre_contact_point.rear_left.x)
+            .collect(),
+        ChannelSource::TyreContactYRl => records
+            .iter()
+            .map(|r| r.tyre_contact_point.rear_left.y)
+            .collect(),
+        ChannelSource::TyreContactZRl => records
+            .iter()
+            .map(|r| r.tyre_contact_point.rear_left.z)
+            .collect(),
+        ChannelSource::TyreContactXRr => records
+            .iter()
+            .map(|r| r.tyre_contact_point.rear_right.x)
+            .collect(),
+        ChannelSource::TyreContactYRr => records
+            .iter()
+            .map(|r| r.tyre_contact_point.rear_right.y)
+            .collect(),
+        ChannelSource::TyreContactZRr => records
+            .iter()
+            .map(|r| r.tyre_contact_point.rear_right.z)
+            .collect(),
+        ChannelSource::TyreTempCFl => records
+            .iter()
+            .map(|r| r.tyre_core_temp.front_left - 273.15)
+            .collect(),
+        ChannelSource::TyreTempCFr => records
+            .iter()
+            .map(|r| r.tyre_core_temp.front_right - 273.15)
+            .collect(),
+        ChannelSource::TyreTempCRl => records
+            .iter()
+            .map(|r| r.tyre_core_temp.rear_left - 273.15)
+            .collect(),
+        ChannelSource::TyreTempCRr => records
+            .iter()
+            .map(|r| r.tyre_core_temp.rear_right - 273.15)
+            .collect(),
+        ChannelSource::WheelPressureBarFl => records
+            .iter()
+            .map(|r| r.wheel_pressure.front_left * PSI_TO_BAR)
+            .collect(),
+        ChannelSource::WheelPressureBarFr => records
+            .iter()
+            .map(|r| r.wheel_pressure.front_right * PSI_TO_BAR)
+            .collect(),
+        ChannelSource::WheelPressureBarRl => records
+            .iter()
+            .map(|r| r.wheel_pressure.rear_left * PSI_TO_BAR)
+            .collect(),
+        ChannelSource::WheelPressureBarRr => records
+            .iter()
+            .map(|r| r.wheel_pressure.rear_right * PSI_TO_BAR)
+            .collect(),
+        ChannelSource::BrakeTempCFl => records
+            .iter()
+            .map(|r| r.brake_temp.front_left - 273.15)
+            .collect(),
+        ChannelSource::BrakeTempCFr => records
+            .iter()
+            .map(|r| r.brake_temp.front_right - 273.15)
+            .collect(),
+        ChannelSource::BrakeTempCRl => records
+            .iter()
+            .map(|r| r.brake_temp.rear_left - 273.15)
+            .collect(),
+        ChannelSource::BrakeTempCRr => records
+            .iter()
+            .map(|r| r.brake_temp.rear_right - 273.15)
+            .collect(),
+        ChannelSource::TyreWearPctFl => records
+            .iter()
+            .map(|r| r.tyre_wear.front_left * 100.0)
+            .collect(),
+        ChannelSource::TyreWearPctFr => records
+            .iter()
+            .map(|r| r.tyre_wear.front_right * 100.0)
+            .collect(),
+        ChannelSource::TyreWearPctRl => records
+            .iter()
+            .map(|r| r.tyre_wear.rear_left * 100.0)
+            .collect(),
+        ChannelSource::TyreWearPctRr => records
+            .iter()
+            .map(|r| r.tyre_wear.rear_right * 100.0)
+            .collect(),
+        ChannelSource::WheelSpeedKmhFl => records
+            .iter()
+            .map(|r| r.wheel_angular_speed.front_left.abs() * RAD_S_TO_KMH)
+            .collect(),
+        ChannelSource::WheelSpeedKmhFr => records
+            .iter()
+            .map(|r| r.wheel_angular_speed.front_right.abs() * RAD_S_TO_KMH)
+            .collect(),
+        ChannelSource::WheelSpeedKmhRl => records
+            .iter()
+            .map(|r| r.wheel_angular_speed.rear_left.abs() * RAD_S_TO_KMH)
+            .collect(),
+        ChannelSource::WheelSpeedKmhRr => records
+            .iter()
+            .map(|r| r.wheel_angular_speed.rear_right.abs() * RAD_S_TO_KMH)
+            .collect(),
+        ChannelSource::WheelSpeedKmhFront => records
+            .iter()
+            .map(|r| {
+                (r.wheel_angular_speed.front_left.abs() + r.wheel_angular_speed.front_right.abs())
+                    * 0.5
+                    * RAD_S_TO_KMH
+            })
+            .collect(),
+        ChannelSource::WheelSpeedKmhRear => records
+            .iter()
+            .map(|r| {
+                (r.wheel_angular_speed.rear_left.abs() + r.wheel_angular_speed.rear_right.abs())
+                    * 0.5
+                    * RAD_S_TO_KMH
+            })
+            .collect(),
+        ChannelSource::WheelSlipMax => records
+            .iter()
+            .map(|r| {
+                r.wheel_slip
+                    .front_left
+                    .max(r.wheel_slip.front_right)
+                    .max(r.wheel_slip.rear_left)
+                    .max(r.wheel_slip.rear_right)
+            })
+            .collect(),
+        ChannelSource::GraphicsPosX => {
+            let (g, _) = graphics.ok_or("graphics_pos_x requires graphics sidecar")?;
+            resample_graphics_to_len(g, n, |rec| rec.car_coordinates_x)
+        }
+        ChannelSource::GraphicsPosY => {
+            let (g, _) = graphics.ok_or("graphics_pos_y requires graphics sidecar")?;
+            resample_graphics_to_len(g, n, |rec| rec.car_coordinates_y)
+        }
+        ChannelSource::GraphicsPosZ => {
+            let (g, _) = graphics.ok_or("graphics_pos_z requires graphics sidecar")?;
+            resample_graphics_to_len(g, n, |rec| rec.car_coordinates_z)
+        }
+    })
+}
+
+fn resample_graphics_to_len(
+    graphics: &[GraphicsRecord],
+    target_len: usize,
+    getter: impl Fn(&GraphicsRecord) -> f32,
+) -> Vec<f32> {
+    if target_len == 0 || graphics.is_empty() {
+        return Vec::new();
+    }
+    if target_len == 1 {
+        return vec![getter(&graphics[0])];
+    }
+    if graphics.len() == 1 {
+        return vec![getter(&graphics[0]); target_len];
+    }
+    (0..target_len)
+        .map(|i| {
+            let src_idx = i * (graphics.len() - 1) / (target_len - 1);
+            getter(&graphics[src_idx])
+        })
+        .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn loads_builtin_rally_and_rbr() {
+        for id in ["rally", "rbr"] {
+            let p = load_profile(id, None).expect(id);
+            assert!(!p.channels.is_empty(), "{id}");
+        }
+    }
+}
