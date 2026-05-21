@@ -291,6 +291,7 @@ impl From<PhysicsRecordV1> for PhysicsRecord {
             slip_vibration: v.slip_vibration,
             g_vibration: v.g_vibration,
             abs_vibration: v.abs_vibration,
+            capture_time_sec: 0.0,
         }
     }
 }

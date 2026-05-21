@@ -1,5 +1,6 @@
 //! rkyv-serializable physics snapshot for high-rate recording.
 
+pub mod disk_v2;
 pub mod v1;
 
 use acc_shared_memory_rs::maps::{GraphicsMap, PhysicsMap, StaticsMap};
@@ -149,10 +150,14 @@ pub struct PhysicsRecord {
     pub slip_vibration: f32,
     pub g_vibration: f32,
     pub abs_vibration: f32,
+
+    /// Wall-clock seconds since recording start when this sample was captured.
+    pub capture_time_sec: f64,
 }
 
 impl PhysicsRecord {
-    pub fn from_physics(p: &PhysicsMap) -> Self {
+    /// Build a physics snapshot with capture timestamp (seconds since recording start).
+    pub fn from_physics(p: &PhysicsMap, capture_time_sec: f64) -> Self {
         Self {
             packet_id: p.packet_id,
 
@@ -383,7 +388,46 @@ impl PhysicsRecord {
             slip_vibration: p.slip_vibration,
             g_vibration: p.g_vibration,
             abs_vibration: p.abs_vibration,
+            capture_time_sec,
         }
+    }
+
+    /// MoTeC `Time` channel: seconds from first sample (0-based).
+    pub fn motec_time_secs(records: &[Self]) -> Vec<f32> {
+        if records.is_empty() {
+            return Vec::new();
+        }
+        let t0 = records[0].capture_time_sec;
+        records
+            .iter()
+            .map(|r| (r.capture_time_sec - t0) as f32)
+            .collect()
+    }
+}
+
+/// Fill `capture_time_sec` on legacy recordings (schema v1/v2) that stored zeros only.
+pub fn ensure_capture_times(records: &mut [PhysicsRecord], sample_rate_hz: u32) {
+    if records.is_empty() {
+        return;
+    }
+    if records.iter().any(|r| r.capture_time_sec > 0.0) {
+        return;
+    }
+    let hz = sample_rate_hz.max(1) as f64;
+    let pid0 = records[0].packet_id;
+    let mut last_secs = 0.0_f64;
+    for i in 0..records.len() {
+        let pid = records[i].packet_id;
+        let same_as_prev = i > 0 && pid == records[i - 1].packet_id;
+        let mut secs = (pid.wrapping_sub(pid0)) as u32 as f64 / hz;
+        if same_as_prev {
+            secs = i as f64 / hz;
+        }
+        if secs < last_secs {
+            secs = i as f64 / hz;
+        }
+        last_secs = secs;
+        records[i].capture_time_sec = secs;
     }
 }
 

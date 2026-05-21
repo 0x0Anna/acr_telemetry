@@ -205,7 +205,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 last_statics_debug = std::time::Instant::now();
             }
             consecutive_none = 0;
-            let record = PhysicsRecord::from_physics(&data.physics);
+            let record = PhysicsRecord::from_physics(&data.physics, recorder.elapsed().as_secs_f64());
             recorder.record(record)?;
             
             // Record graphics at ~60 Hz (time-based) - only if enabled

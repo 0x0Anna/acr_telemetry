@@ -10,8 +10,9 @@ use rkyv::Deserialize;
 
 use crate::format_meta::{
     self, FormatMetadataDoc, GRAPHICS_RECORD_SCHEMA_V1, GRAPHICS_RECORD_SCHEMA_V2,
-    PHYSICS_RECORD_SCHEMA_V1, PHYSICS_RECORD_SCHEMA_V2,
+    PHYSICS_RECORD_SCHEMA_V1, PHYSICS_RECORD_SCHEMA_V2, PHYSICS_RECORD_SCHEMA_V3,
 };
+use crate::record::disk_v2::PhysicsRecordDiskV2;
 use crate::record::v1::{GraphicsRecordV1, PhysicsRecordV1};
 use crate::record::{GraphicsRecord, PhysicsRecord, StaticsRecord};
 
@@ -146,6 +147,10 @@ pub fn read_physics(
                 records.extend(chunk_v1.into_iter().map(PhysicsRecord::from));
             }
             PHYSICS_RECORD_SCHEMA_V2 => {
+                let chunk_v2: Vec<PhysicsRecordDiskV2> = deserialize_chunk(&chunk)?;
+                records.extend(chunk_v2.into_iter().map(PhysicsRecord::from));
+            }
+            PHYSICS_RECORD_SCHEMA_V3 => {
                 records.extend(deserialize_chunk::<PhysicsRecord>(&chunk)?);
             }
             other => {
@@ -156,6 +161,7 @@ pub fn read_physics(
             }
         }
     }
+    crate::record::ensure_capture_times(&mut records, header.sample_rate_hz);
     Ok((header.sample_rate_hz, header.binary_version, records))
 }
 

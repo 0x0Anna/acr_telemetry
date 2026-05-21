@@ -274,6 +274,8 @@ pub fn build_ld_channels(
     sample_rate_hz: u32,
     graphics: Option<(&[GraphicsRecord], u32)>,
 ) -> Result<Vec<(String, String, Vec<f32>)>, String> {
+    let mut records = records.to_vec();
+    crate::record::ensure_capture_times(&mut records, sample_rate_hz);
     let has_graphics = graphics.map(|(g, _)| !g.is_empty()).unwrap_or(false);
     let mut out = Vec::new();
     for ch in &profile.channels {
@@ -282,7 +284,7 @@ pub fn build_ld_channels(
         }
         let mut data = extract_channel(
             ch.source,
-            records,
+            &records,
             sample_rate_hz,
             graphics,
         )?;
@@ -303,9 +305,9 @@ fn extract_channel(
     graphics: Option<(&[GraphicsRecord], u32)>,
 ) -> Result<Vec<f32>, String> {
     let n = records.len();
-    let hz = sample_rate_hz.max(1) as f32;
+    let _hz = sample_rate_hz.max(1) as f32;
     Ok(match source {
-        ChannelSource::Time => (0..n).map(|i| i as f32 / hz).collect(),
+        ChannelSource::Time => PhysicsRecord::motec_time_secs(records),
         ChannelSource::SpeedKmh => records.iter().map(|r| r.speed_kmh).collect(),
         ChannelSource::Rpm => records.iter().map(|r| r.rpm as f32).collect(),
         ChannelSource::Gas => records.iter().map(|r| r.gas).collect(),
@@ -581,6 +583,134 @@ mod tests {
         for id in ["rally", "rbr"] {
             let p = load_profile(id, None).expect(id);
             assert!(!p.channels.is_empty(), "{id}");
+        }
+    }
+
+    #[test]
+    fn motec_time_secs_from_capture_timestamps() {
+        let mut a = minimal_physics_record();
+        a.capture_time_sec = 1.0;
+        let mut b = minimal_physics_record();
+        b.capture_time_sec = 1.01;
+        let mut c = minimal_physics_record();
+        c.capture_time_sec = 1.05;
+        let t = PhysicsRecord::motec_time_secs(&[a, b, c]);
+        assert!((t[0] - 0.0).abs() < 1e-6);
+        assert!((t[1] - 0.01).abs() < 1e-6);
+        assert!((t[2] - 0.05).abs() < 1e-6);
+    }
+
+    fn minimal_physics_record() -> PhysicsRecord {
+        use crate::record::{
+            CarDamageRecord, ContactPointRecord, PhysicsRecord, Vector3fRecord, WheelsRecord,
+        };
+        let z = 0.0_f32;
+        let w = WheelsRecord {
+            front_left: z,
+            front_right: z,
+            rear_left: z,
+            rear_right: z,
+        };
+        let c = ContactPointRecord {
+            front_left: Vector3fRecord { x: z, y: z, z },
+            front_right: Vector3fRecord { x: z, y: z, z },
+            rear_left: Vector3fRecord { x: z, y: z, z },
+            rear_right: Vector3fRecord { x: z, y: z, z },
+        };
+        PhysicsRecord {
+            packet_id: 0,
+            gas: z,
+            brake: z,
+            clutch: z,
+            steer_angle: z,
+            gear: 0,
+            rpm: 0,
+            autoshifter_on: false,
+            ignition_on: false,
+            starter_engine_on: false,
+            is_engine_running: false,
+            speed_kmh: z,
+            velocity: Vector3fRecord { x: z, y: z, z },
+            local_velocity: Vector3fRecord { x: z, y: z, z },
+            local_angular_vel: Vector3fRecord { x: z, y: z, z },
+            g_force: Vector3fRecord { x: z, y: z, z },
+            heading: z,
+            pitch: z,
+            roll: z,
+            final_ff: z,
+            wheel_slip: w.clone(),
+            wheel_load: w.clone(),
+            wheel_pressure: w.clone(),
+            wheel_angular_speed: w.clone(),
+            tyre_wear: w.clone(),
+            tyre_dirty_level: w.clone(),
+            tyre_core_temp: w.clone(),
+            camber_rad: w.clone(),
+            suspension_travel: w.clone(),
+            brake_temp: w.clone(),
+            brake_pressure: w.clone(),
+            suspension_damage: w.clone(),
+            slip_ratio: w.clone(),
+            slip_angle: w.clone(),
+            pad_life: w.clone(),
+            disc_life: w.clone(),
+            front_brake_compound: 0,
+            rear_brake_compound: 0,
+            tyre_temp_i: w.clone(),
+            tyre_temp_m: w.clone(),
+            tyre_temp_o: w.clone(),
+            tyre_temp_extra: w.clone(),
+            tyre_contact_point: c.clone(),
+            tyre_contact_normal: c.clone(),
+            tyre_contact_heading: c,
+            fuel: z,
+            tc: z,
+            abs: z,
+            pit_limiter_on: false,
+            turbo_boost: z,
+            air_temp: z,
+            road_temp: z,
+            water_temp: z,
+            car_damage: CarDamageRecord {
+                front: z,
+                rear: z,
+                left: z,
+                right: z,
+                center: z,
+            },
+            is_ai_controlled: false,
+            brake_bias: z,
+            tc_in_action: false,
+            abs_in_action: false,
+            drs: 0,
+            cg_height: z,
+            number_of_tyres_out: 0,
+            kers_charge: z,
+            kers_input: z,
+            ride_height_front: z,
+            ride_height_rear: z,
+            ballast: z,
+            air_density: z,
+            performance_meter: z,
+            engine_brake: 0,
+            ers_recovery_level: 0,
+            ers_power_level: 0,
+            ers_heat_charging: 0,
+            ers_is_charging: 0,
+            kers_current_kj: z,
+            drs_available: 0,
+            drs_enabled: 0,
+            p2p_activation: 0,
+            p2p_status: 0,
+            current_max_rpm: 0,
+            mz: w.clone(),
+            fz: w.clone(),
+            my: w,
+            kerb_vibration: z,
+            slip_vibration: z,
+            g_vibration: z,
+            abs_vibration: z,
+            capture_time_sec: 0.0,
         }
     }
 }

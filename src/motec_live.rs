@@ -76,6 +76,7 @@ pub fn run(options: Options, running: &AtomicBool) -> Result<(), Box<dyn std::er
         .map(|data| StaticsRecord::from_statics(&data.statics));
 
     let mut physics_records: Vec<PhysicsRecord> = Vec::new();
+    let capture_start = std::time::Instant::now();
 
     let poll = poll_interval();
     let idle_sleep = Duration::from_millis(16);
@@ -93,7 +94,10 @@ pub fn run(options: Options, running: &AtomicBool) -> Result<(), Box<dyn std::er
             );
 
             consecutive_none = 0;
-            physics_records.push(PhysicsRecord::from_physics(&data.physics));
+            physics_records.push(PhysicsRecord::from_physics(
+                &data.physics,
+                capture_start.elapsed().as_secs_f64(),
+            ));
 
             if last_print.elapsed() >= Duration::from_secs(5) {
                 let elapsed = physics_records.len() as f64 / TARGET_HZ as f64;
