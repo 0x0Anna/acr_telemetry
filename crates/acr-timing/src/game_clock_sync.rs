@@ -209,6 +209,8 @@ pub struct GameClockCorrector {
     last_apply_game_t: Option<f64>,
     last_apply_replica_before: Option<f64>,
     last_apply_err_sec: Option<f64>,
+    /// `race_time_s` at JSONL ingest, advanced by file age (game time when line was written).
+    last_ingest_game_t: Option<f64>,
 }
 
 impl GameClockCorrector {
@@ -231,7 +233,33 @@ impl GameClockCorrector {
             last_apply_game_t: None,
             last_apply_replica_before: None,
             last_apply_err_sec: None,
+            last_ingest_game_t: None,
         }
+    }
+
+    fn jsonl_file_age_sec(path: &Path) -> Option<f64> {
+        let modified = std::fs::metadata(path).ok()?.modified().ok()?;
+        SystemTime::now()
+            .duration_since(modified)
+            .ok()
+            .map(|d| d.as_secs_f64())
+    }
+
+    /// `race_time_s` at ingest + wall time since that JSONL read (covers poll/mod delay).
+    fn game_race_wall_extrapolated_sec(&self) -> Option<f64> {
+        let read_at = self.last_sample_read?;
+        let stale = read_at.elapsed().as_secs_f64();
+        let rate = if self.race_time_running() {
+            self.rate_time.max(0.0)
+        } else {
+            0.0
+        };
+        if let Some(t0) = self.last_ingest_game_t {
+            return Some(t0 + stale.min(2.0) * rate);
+        }
+        let base = self.game_race_live_sec()?;
+        let file_age = Self::jsonl_file_age_sec(&self.cfg.jsonl_path).unwrap_or(0.0);
+        Some(base + (stale + file_age).min(2.0) * rate)
     }
 
     pub fn enabled(&self) -> bool {
@@ -246,15 +274,15 @@ impl GameClockCorrector {
         }
     }
 
-    /// HUD rally time for OSD and gate math: extrapolated replica while running, frozen sample when paused.
+    /// HUD rally time: wall extrapolation from last JSONL ingest while running (not physics dt only).
     pub fn game_race_hud_sec(&self) -> Option<f64> {
         if !self.cfg.enabled {
             return None;
         }
         if self.race_time_running() {
             return self
-                .replica_race_time_sec()
-                .or_else(|| self.game_race_live_sec());
+                .game_race_wall_extrapolated_sec()
+                .or_else(|| self.replica_race_time_sec());
         }
         self.game_race_live_sec()
             .or_else(|| self.replica_race_time_sec())
@@ -326,7 +354,11 @@ impl GameClockCorrector {
         }
 
         if self.race_time_running() && self.rate_time > 0.0 {
-            self.replica_time_sec += dt_sim_sec * self.rate_time;
+            if let Some(hud) = self.game_race_wall_extrapolated_sec() {
+                self.replica_time_sec = hud;
+            } else {
+                self.replica_time_sec += dt_sim_sec * self.rate_time;
+            }
         }
         if let Some(d) = our_distance_m {
             if let Some(prev) = self.last_our_distance_m {
@@ -347,26 +379,33 @@ impl GameClockCorrector {
     ) {
         let horizon = self.cfg.expected_tick_sec.max(0.25);
 
+        let file_age = Self::jsonl_file_age_sec(&self.cfg.jsonl_path)
+            .filter(|a| *a < self.cfg.max_sample_age_sec)
+            .unwrap_or(0.0)
+            .min(0.5);
         if let Some(game_t) = sample.race_time_s.filter(|t| t.is_finite()) {
+            let ingest_rate = if sample.race_time_valid { 1.0 } else { 0.0 };
+            let ingest_game = game_t + file_age * ingest_rate;
+            self.last_ingest_game_t = Some(ingest_game);
             if !self.initialized {
-                self.replica_time_sec = game_t;
-                self.rate_time = if sample.race_time_valid { 1.0 } else { 0.0 };
+                self.replica_time_sec = ingest_game;
+                self.rate_time = ingest_rate;
                 self.initialized = true;
             } else if !sample.race_time_valid {
                 // Game frozen (pause/menu): hold HUD time, do not advance on physics ticks.
-                self.replica_time_sec = game_t;
+                self.replica_time_sec = ingest_game;
                 self.rate_time = 0.0;
             } else {
                 // 1-Hz-Zeitkorrektur: Replik läuft weiter (physics tick), JSONL zieht nach.
                 let replica_before = self.replica_time_sec;
-                let err = game_t - replica_before;
+                let err = ingest_game - replica_before;
                 self.last_apply_wall = Some(SystemTime::now());
-                self.last_apply_game_t = Some(game_t);
+                self.last_apply_game_t = Some(ingest_game);
                 self.last_apply_replica_before = Some(replica_before);
                 self.last_apply_err_sec = Some(err);
                 let snap = self.cfg.time_snap_threshold_sec.max(0.05);
                 if err.abs() > snap {
-                    self.replica_time_sec = game_t;
+                    self.replica_time_sec = ingest_game;
                     self.rate_time = 1.0;
                 } else if err.abs() > 1e-4 {
                     let horizon = self.cfg.expected_tick_sec.max(0.25);
@@ -423,6 +462,7 @@ impl GameClockCorrector {
         self.last_apply_game_t = None;
         self.last_apply_replica_before = None;
         self.last_apply_err_sec = None;
+        self.last_ingest_game_t = None;
     }
 
     /// JSONL sample still within `[game_clock] max_sample_age_sec`.
@@ -459,11 +499,6 @@ impl GameClockCorrector {
         }
     }
 
-    fn jsonl_file_age_sec(&self) -> Option<f64> {
-        let modified = std::fs::metadata(&self.cfg.jsonl_path).ok()?.modified().ok()?;
-        SystemTime::now().duration_since(modified).ok().map(|d| d.as_secs_f64())
-    }
-
     fn fmt_wall(t: SystemTime) -> String {
         match t.duration_since(SystemTime::UNIX_EPOCH) {
             Ok(d) => Local
@@ -491,7 +526,7 @@ impl GameClockCorrector {
         let jsonl_read_ago = self
             .last_sample_read
             .map(|t| t.elapsed().as_secs_f64());
-        let jsonl_file_age = self.jsonl_file_age_sec();
+        let jsonl_file_age = Self::jsonl_file_age_sec(&self.cfg.jsonl_path);
         let sample = self.last_sample.as_ref();
         let jsonl_race = sample.and_then(|s| s.race_time_s);
         let sample_kind = sample
@@ -501,6 +536,7 @@ impl GameClockCorrector {
         let mod_wall = sample.and_then(|s| s.t_wall_s);
 
         let hud = self.game_race_hud_sec();
+        let wall_hud = self.game_race_wall_extrapolated_sec();
         let lag = self.replica_lag_vs_game_sec();
         let rel_hud = stage_anchor_sec.and_then(|a| hud.map(|h| (h - a).max(0.0)));
 
@@ -533,7 +569,7 @@ impl GameClockCorrector {
             "[game_clock_sync] Aktuelle Systemzeit: {wall_s} | \
 letzte JSONL-Synchro (System): {sync_wall} vor {sync_ago_s}s | \
 JSONL-Inhalt: race_time_s={} sample={sample_kind} valid={valid} mod_t_wall_s={mod_wall_s} file_age={}s read_ago={}s sectors={} | \
-Spielzeit: JSONL_race_t={} Replik/HUD={} lag(JSONL−repl)={} rate={:.4} poll_iv={:.2}s | \
+Spielzeit: JSONL_race_t={} HUD_wall={} (jsonl+stale+file_age) Replik={} lag(JSONL−repl)={} rate={:.4} poll_iv={:.2}s | \
 stage_rel_hud={} (anchor={}) | letzte Korrektur: {corr}",
             jsonl_race
                 .map(|t| format!("{t:.3}"))
@@ -548,7 +584,11 @@ stage_rel_hud={} (anchor={}) | letzte Korrektur: {corr}",
             jsonl_race
                 .map(|t| format!("{t:.3}"))
                 .unwrap_or_else(|| "-".into()),
-            hud.map(|t| format!("{t:.3}"))
+            wall_hud
+                .map(|t| format!("{t:.3}"))
+                .unwrap_or_else(|| "-".into()),
+            self.replica_race_time_sec()
+                .map(|t| format!("{t:.3}"))
                 .unwrap_or_else(|| "-".into()),
             lag.map(|l| format!("{l:+.3}s"))
                 .unwrap_or_else(|| "-".into()),
@@ -892,6 +932,7 @@ mod tests {
     fn rate_clamp_example() {
         let cfg = GameClockSyncConfig {
             enabled: true,
+            jsonl_path: PathBuf::from("_test_no_jsonl.jsonl"),
             expected_tick_sec: 1.0,
             max_rate_adjust: 0.01,
             ..Default::default()
@@ -950,6 +991,7 @@ mod tests {
     fn pause_freezes_replica() {
         let cfg = GameClockSyncConfig {
             enabled: true,
+            jsonl_path: PathBuf::from("_test_no_jsonl.jsonl"),
             ..Default::default()
         };
         let mut c = GameClockCorrector::new(cfg);
