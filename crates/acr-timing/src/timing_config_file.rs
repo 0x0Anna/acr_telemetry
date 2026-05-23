@@ -1,13 +1,15 @@
 //! `acr_timing.toml` — sector timing, grid, beeps, calibrated stage sectors.
 
-use std::path::{Path, PathBuf};
-
 use serde::Deserialize;
+
+use std::path::PathBuf;
 
 use crate::cumulative_timing_config::CumulativeTimingConfig;
 use crate::delta_display::DeltaDisplayConfigFile;
 use crate::osd_template::OsdTemplateConfigFile;
 use crate::reference_times::ReferenceTimesConfigFile;
+use crate::game_clock_sector_override::GameClockSectorAdopterConfig;
+use crate::game_clock_sync::default_jsonl_path;
 use crate::split_beep::SplitBeepConfig;
 use crate::stage_timing_config::StageTimingConfig;
 use crate::timing_blame::BlameConfig;
@@ -114,21 +116,80 @@ pub struct TimingConfigFile {
     pub timing_voice: TimingVoiceConfig,
     #[serde(default)]
     pub delta_display: DeltaDisplayConfigFile,
-    /// Reference PB for Δ: per sector, per sub, or composite stage best.
     #[serde(default)]
     pub reference_times: ReferenceTimesConfigFile,
-    /// RTSS sector/finish line templates (`{sector}`, `{subs}`, `{cum_delta_colored}`, …).
     #[serde(default)]
     pub osd_display: OsdTemplateConfigFile,
     #[serde(default)]
     pub timing_quality: TimingQualityConfigFile,
-    /// Verbose `[zeitnahme]` stderr on subsector/sector crossings and finish comparison.
+    /// UE4SS `acr_game_clock.jsonl` (optional sector split adoption).
+    #[serde(default)]
+    pub game_clock: GameClockConfigFile,
     #[serde(default = "default_timing_debug")]
     pub timing_debug: bool,
 }
 
 fn default_timing_debug() -> bool {
     true
+}
+
+#[derive(Debug, Clone, Default, Deserialize)]
+pub struct GameClockConfigFile {
+    /// Master switch: read JSONL when true (required for `sector_splits`).
+    #[serde(default)]
+    pub enabled: bool,
+    /// After a gate cross, adopt UE4SS `split_s` when JSONL is fresh (default off).
+    #[serde(default)]
+    pub sector_splits: bool,
+    /// Empty = `%APPDATA%/acr_telemetry/acr_game_clock.jsonl` (Windows).
+    pub jsonl_path: Option<String>,
+    pub max_sample_age_sec: Option<f64>,
+    /// Poll JSONL at most every N seconds after a sector cross (default 1).
+    pub sector_poll_interval_sec: Option<f64>,
+    /// Max wait for game sector time before using gate time (default 2.5).
+    pub sector_adopt_window_sec: Option<f64>,
+    pub jsonl_poll_interval_sec: Option<f64>,
+    pub time_snap_threshold_sec: Option<f64>,
+    pub time_soft_snap_blend: Option<f64>,
+}
+
+impl GameClockConfigFile {
+    pub fn to_runtime(&self) -> crate::game_clock_sync::GameClockSyncConfig {
+        let tick_hz = 2.0_f64;
+        crate::game_clock_sync::GameClockSyncConfig {
+            enabled: self.enabled,
+            jsonl_path: self
+                .jsonl_path
+                .as_ref()
+                .filter(|s| !s.trim().is_empty())
+                .map(PathBuf::from)
+                .unwrap_or_else(default_jsonl_path),
+            max_sample_age_sec: self.max_sample_age_sec.unwrap_or(1.25),
+            expected_tick_sec: 0.5,
+            max_rate_adjust: 0.02,
+            correct_distance: true,
+            jsonl_poll_interval_sec: self.jsonl_poll_interval_sec.unwrap_or(0.5).max(0.2),
+            time_snap_threshold_sec: self.time_snap_threshold_sec.unwrap_or(0.4).max(0.05),
+            time_soft_snap_blend: self.time_soft_snap_blend.unwrap_or(0.35).clamp(0.0, 1.0),
+        }
+    }
+
+    pub fn sector_adopter_config(&self) -> Option<GameClockSectorAdopterConfig> {
+        if !self.enabled || !self.sector_splits {
+            return None;
+        }
+        Some(GameClockSectorAdopterConfig {
+            jsonl_path: self
+                .jsonl_path
+                .as_ref()
+                .filter(|s| !s.trim().is_empty())
+                .map(PathBuf::from)
+                .unwrap_or_else(default_jsonl_path),
+            max_sample_age_sec: self.max_sample_age_sec.unwrap_or(1.25),
+            poll_interval_sec: self.sector_poll_interval_sec.unwrap_or(1.0).max(0.25),
+            adopt_window_sec: self.sector_adopt_window_sec.unwrap_or(2.5).max(0.5),
+        })
+    }
 }
 
 #[derive(Debug, Clone, Default, Deserialize)]
@@ -166,72 +227,6 @@ impl TimingQualityConfigFile {
 
 pub const TIMING_CONFIG_FILE: &str = "acr_timing.toml";
 
-fn wav_search_anchors(config_dir: &Path) -> Vec<PathBuf> {
-    let mut anchors = vec![config_dir.to_path_buf()];
-    if let Ok(cwd) = std::env::current_dir() {
-        anchors.push(cwd);
-    }
-    if let Ok(exe) = std::env::current_exe() {
-        if let Some(dir) = exe.parent() {
-            anchors.push(dir.to_path_buf());
-        }
-    }
-    anchors
-}
-
-/// Resolve optional WAV paths for split feedback (relative to `acr_timing.toml`, walk up to repo root).
-fn resolve_optional_wav(path: Option<PathBuf>, config_dir: &Path) -> Option<PathBuf> {
-    let path = path?;
-    if path.is_absolute() && path.is_file() {
-        return Some(path);
-    }
-    let anchors = wav_search_anchors(config_dir);
-    for anchor in &anchors {
-        let mut dir = anchor.clone();
-        loop {
-            let candidate = dir.join(&path);
-            if candidate.is_file() {
-                return Some(candidate);
-            }
-            if !dir.pop() {
-                break;
-            }
-        }
-    }
-    Some(config_dir.join(&path))
-}
-
-fn resolve_split_beep_paths(cfg: &mut SplitBeepConfig, config_dir: &Path) {
-    let r = |p: Option<PathBuf>| resolve_optional_wav(p, config_dir);
-    cfg.faster_wav = r(cfg.faster_wav.take());
-    cfg.slower_wav = r(cfg.slower_wav.take());
-    cfg.faster_wav_1 = r(cfg.faster_wav_1.take());
-    cfg.faster_wav_2 = r(cfg.faster_wav_2.take());
-    cfg.faster_wav_3 = r(cfg.faster_wav_3.take());
-    cfg.slower_wav_1 = r(cfg.slower_wav_1.take());
-    cfg.slower_wav_2 = r(cfg.slower_wav_2.take());
-    cfg.slower_wav_3 = r(cfg.slower_wav_3.take());
-}
-
-impl TimingConfigFile {
-    /// Make relative `assets/…` WAV paths independent of process CWD.
-    pub fn finalize_paths(&mut self, config_path: &Path) {
-        let config_dir = config_path
-            .parent()
-            .filter(|p| !p.as_os_str().is_empty())
-            .unwrap_or_else(|| Path::new("."));
-        if let Some(ref mut beep) = self.beep {
-            resolve_split_beep_paths(beep, config_dir);
-        }
-        if let Some(ref mut beep) = self.cumulative_beep {
-            resolve_split_beep_paths(beep, config_dir);
-        }
-        if let Some(ref mut beep) = self.silent_beep {
-            resolve_split_beep_paths(beep, config_dir);
-        }
-    }
-}
-
 pub fn config_search_paths() -> Vec<std::path::PathBuf> {
     let mut paths = Vec::new();
     if let Ok(exe) = std::env::current_exe() {
@@ -258,16 +253,13 @@ pub fn load(path_override: Option<&std::path::Path>) -> Result<(TimingConfigFile
             return Err(format!("timing config not found: {}", p.display()).into());
         }
         let raw = std::fs::read_to_string(p)?;
-        let mut cfg: TimingConfigFile = toml::from_str(&raw)?;
-        let path_buf = p.to_path_buf();
-        cfg.finalize_paths(&path_buf);
-        return Ok((cfg, path_buf));
+        let cfg: TimingConfigFile = toml::from_str(&raw)?;
+        return Ok((cfg, p.to_path_buf()));
     }
     for p in config_search_paths() {
         if p.exists() {
             let raw = std::fs::read_to_string(&p)?;
-            let mut cfg: TimingConfigFile = toml::from_str(&raw)?;
-            cfg.finalize_paths(&p);
+            let cfg: TimingConfigFile = toml::from_str(&raw)?;
             return Ok((cfg, p));
         }
     }
@@ -280,7 +272,5 @@ pub fn load_from_dir(dir: &std::path::Path) -> Result<TimingConfigFile, Box<dyn 
         return Ok(TimingConfigFile::default());
     }
     let raw = std::fs::read_to_string(&p)?;
-    let mut cfg: TimingConfigFile = toml::from_str(&raw)?;
-    cfg.finalize_paths(&p);
-    Ok(cfg)
+    Ok(toml::from_str(&raw)?)
 }

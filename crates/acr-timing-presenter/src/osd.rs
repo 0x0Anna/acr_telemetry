@@ -1,11 +1,14 @@
 ﻿//! Sector line formatting: `S1: +0.423 [0:19.34] [--] ref: 1:31.45 tot: 0:45.32`
 //! With RTSS: `+`/brackets colored red (slower) / green (faster) via `<C=RRGGBB>`.
+//! Upper OSD tape: `[1:32.32 -0.12] [1:21.25 +0.10]` (sector time + sector Δ).
 
 use acr_timing::delta_display::DeltaColorStyle;
 use acr_timing::osd_template::{
-    format_finish_line_templated, format_sector_line_templated, FinishLineCtx, OsdTemplateConfig,
+    format_finish_line_templated, format_live_sector_line_templated,
+    format_sector_line_templated, wrap_rtss_font_scale, FinishLineCtx, OsdTemplateConfig,
     SectorLineCtx, SubSlotCtx,
 };
+use acr_timing_protocol::SectorCompleted;
 
 const MAX_SUB_SLOTS: usize = 8;
 
@@ -26,6 +29,74 @@ pub fn format_duration(sec: f64) -> String {
     }
 }
 
+/// Compact signed Δ for sector tape, e.g. `-0.12` / `+0.10`.
+pub fn format_delta_compact(delta_sec: f64) -> String {
+    if !delta_sec.is_finite() {
+        return "...".to_string();
+    }
+    if delta_sec >= 0.0 {
+        format!("+{:.2}", delta_sec)
+    } else {
+        format!("{:.2}", delta_sec)
+    }
+}
+
+/// One completed sector: `[1:32.32 -0.12]`.
+pub fn format_sector_bracket(
+    tot_sec: f64,
+    delta_sec: f64,
+    rtss_colors: bool,
+    delta_style: &DeltaColorStyle,
+) -> String {
+    let time = format_duration(tot_sec);
+    let dtext = format_delta_compact(delta_sec);
+    let inner = if rtss_colors && delta_sec.is_finite() {
+        format!(
+            "{} {}",
+            time,
+            delta_style.wrap_delta(delta_sec, &dtext)
+        )
+    } else {
+        format!("{time} {dtext}")
+    };
+    format!("[{inner}]")
+}
+
+/// All completed sectors on the upper OSD line.
+pub fn format_sector_tape(
+    completed: &[SectorCompleted],
+    rtss_colors: bool,
+    delta_style: &DeltaColorStyle,
+) -> String {
+    completed
+        .iter()
+        .map(|s| format_sector_bracket(s.tot_sec, s.cum_delta_sec, rtss_colors, delta_style))
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+/// Reference times for the upcoming sector (only before the sector timer runs).
+pub fn format_sector_reference_line(
+    sector_index: u32,
+    reference_tot_sec: Option<f64>,
+    reference_sub_times_sec: &[f64],
+) -> String {
+    let label = format!("S{} ref", sector_index + 1);
+    if let Some(t) = reference_tot_sec.filter(|t| t.is_finite() && *t >= 0.0) {
+        return format!("{label} {}", format_duration(t));
+    }
+    let refs: Vec<String> = reference_sub_times_sec
+        .iter()
+        .filter(|t| t.is_finite() && **t >= 0.0)
+        .map(|t| format_duration(*t))
+        .collect();
+    if refs.is_empty() {
+        label
+    } else {
+        format!("{label} {}", refs.join(" "))
+    }
+}
+
 pub fn format_sector_line(
     sector_index: u32,
     cum_delta_sec: f64,
@@ -37,31 +108,7 @@ pub fn format_sector_line(
     incomplete_mark: bool,
     rtss_colors: bool,
     delta_style: &DeltaColorStyle,
-    templates: Option<&OsdTemplateConfig>,
 ) -> String {
-    if let Some(tpl) = templates {
-        let subs: Vec<SubSlotCtx> = sub_ids
-            .iter()
-            .enumerate()
-            .map(|(i, _)| SubSlotCtx {
-                time_sec: sub_times_sec.get(i).copied().flatten(),
-                delta_sec: sub_delta_sec.get(i).copied().flatten(),
-            })
-            .collect();
-        return format_sector_line_templated(
-            tpl,
-            &SectorLineCtx {
-                sector_index,
-                cum_delta_sec,
-                tot_sec,
-                reference_tot_sec,
-                incomplete: incomplete_mark,
-                subs,
-            },
-            rtss_colors,
-            delta_style,
-        );
-    }
     let prefix = if incomplete_mark {
         format!("S{}~:", sector_index + 1)
     } else {
@@ -105,7 +152,94 @@ pub fn format_sector_line(
     parts.join(" ")
 }
 
-/// After Finish: sum of sector `tot` / reference totals and Σ sector cum Δ.
+/// Active sector while driving (`live_sector_line`; optional RTSS `<S=…>` on live Δ only).
+pub fn format_live_sector_line(
+    sector_index: u32,
+    cum_delta_sec: f64,
+    sub_ids: &[i32],
+    sub_times_sec: &[Option<f64>],
+    sub_delta_sec: &[Option<f64>],
+    reference_tot_sec: Option<f64>,
+    tot_sec: f64,
+    rtss_colors: bool,
+    delta_style: &DeltaColorStyle,
+    templates: Option<&OsdTemplateConfig>,
+) -> String {
+    let line = if let Some(tpl) = templates {
+        let subs: Vec<SubSlotCtx> = sub_ids
+            .iter()
+            .enumerate()
+            .map(|(i, _)| SubSlotCtx {
+                time_sec: sub_times_sec.get(i).copied().flatten(),
+                delta_sec: sub_delta_sec.get(i).copied().flatten(),
+            })
+            .collect();
+        format_live_sector_line_templated(
+            tpl,
+            &SectorLineCtx {
+                sector_index,
+                cum_delta_sec,
+                tot_sec,
+                reference_tot_sec,
+                incomplete: false,
+                subs,
+            },
+            rtss_colors,
+            delta_style,
+        )
+    } else {
+        format_sector_line(
+            sector_index,
+            cum_delta_sec,
+            sub_ids,
+            sub_times_sec,
+            sub_delta_sec,
+            reference_tot_sec,
+            tot_sec,
+            false,
+            rtss_colors,
+            delta_style,
+        )
+    };
+    let scale = templates.map(|t| t.live_delta_font_scale).unwrap_or(0);
+    wrap_rtss_font_scale(&line, scale, rtss_colors)
+}
+
+/// One sector for post-finish carousel (`sector_line` template, normal font).
+pub fn format_carousel_sector_line(
+    s: &SectorCompleted,
+    rtss_colors: bool,
+    delta_style: &DeltaColorStyle,
+    templates: Option<&OsdTemplateConfig>,
+) -> String {
+    if let Some(tpl) = templates {
+        let subs: Vec<SubSlotCtx> = s
+            .sub_ids
+            .iter()
+            .enumerate()
+            .map(|(i, _)| SubSlotCtx {
+                time_sec: s.sub_times_sec.get(i).copied().flatten(),
+                delta_sec: s.sub_delta_sec.get(i).copied().flatten(),
+            })
+            .collect();
+        return format_sector_line_templated(
+            tpl,
+            &SectorLineCtx {
+                sector_index: s.sector_index,
+                cum_delta_sec: s.cum_delta_sec,
+                tot_sec: s.tot_sec,
+                reference_tot_sec: s.reference_tot_sec.is_finite().then_some(s.reference_tot_sec),
+                incomplete: false,
+                subs,
+            },
+            rtss_colors,
+            delta_style,
+        );
+    }
+    format_sector_bracket(s.tot_sec, s.cum_delta_sec, rtss_colors, delta_style)
+}
+
+/// After Finish: sum of sector `tot` / reference totals and Σ sector cum Δ (no enlarged font).
 pub fn format_track_completed_line(
     cum_tot_sec: f64,
     cum_ref_tot_sec: f64,
@@ -172,7 +306,6 @@ mod tests {
             false,
             false,
             &style,
-            Some(&OsdTemplateConfig::default()),
         );
         assert!(line.contains("+0.500"));
         assert!(line.contains("[--]"));
@@ -183,17 +316,10 @@ mod tests {
     #[test]
     fn track_completed_line() {
         let style = DeltaColorStyle::default();
-        let line = format_track_completed_line(
-            272.5,
-            270.0,
-            2.5,
-            true,
-            &style,
-            Some(&OsdTemplateConfig::default()),
-        );
+        let line = format_track_completed_line(272.5, 270.0, 2.5, true, &style, None);
         assert!(line.contains("Track completed"));
-        assert!(line.contains("cum "));
-        assert!(line.contains("+2.500"));
+        assert!(line.contains("cum:"));
+        assert!(line.contains("delta:"));
         assert!(line.contains("<C=ff0000>"));
     }
 

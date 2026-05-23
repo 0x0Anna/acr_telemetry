@@ -78,7 +78,7 @@ impl CumulativeLegState {
         radius_m: f64,
         cross_cooldown: std::time::Duration,
         now: Instant,
-        debug: bool,
+        _debug: bool,
     ) -> Option<CumulativeLegCross> {
         let markers = &self.track.sectors.markers;
         let gates = &self.track.sectors.gates;

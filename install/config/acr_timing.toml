@@ -34,13 +34,14 @@ volume = 0.4
 mode = "best_sector"
 
 [osd_display]
-preset = "default"
+preset = "minimal"
 # sector_line = "S{sector}: {cum_delta_colored} {subs} ref: {ref:time} tot: {tot:time}"
 # sub_slot = "[{time:time}]"
 # finish_line = "Track completed  cum {cum_tot:time}  ref {ref_tot:time}  {delta_colored}"
 
 [delta_display]
-split_feedback = "subsector"
+# subsector | sector | stage (stage = no reset per sector on live Δ)
+delta_scope = "stage"
 sector_recap_sec = 5.0
 neutral_zone_sec = 0.05
 faster_color = "00ff00"
@@ -81,6 +82,10 @@ stillstand_log_interval_sec = 2.0
 
 [stage_timing.ref_stage_sectors]
 hafren_north = "cwmbiga_afon_biga"
+
+[game_clock]
+enabled = false
+sector_splits = false
 
 [timing_quality]
 enabled = true

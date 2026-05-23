@@ -9,8 +9,8 @@ rtss_slot = 3
 
 # RTSS timing OSD position (calibrated with acr_rtss_osd — see docs/RTSS_OVERLAY.md)
 rtss_osd_anchor = "pixel"
-rtss_osd_x = 200
-rtss_osd_y = 55
+rtss_osd_x = 180
+rtss_osd_y = 40
 
 track_lock_after_sec = 10.0
 track_keep_max_dist = 15.0

@@ -8,7 +8,10 @@ use acr_timing::delta_display::{DeltaColorStyle, DeltaDisplayConfig};
 use acr_timing::osd_template::OsdTemplateConfig;
 use acr_timing_protocol::{SectorCompleted, SectorStarted, TimingEvent, TimingEventBody};
 
-use crate::osd::{format_duration, format_sector_line, format_track_completed_line};
+use crate::osd::{
+    format_carousel_sector_line, format_duration, format_live_sector_line,
+    format_track_completed_line,
+};
 
 #[derive(Debug, Default)]
 pub struct PresenterState {
@@ -199,7 +202,7 @@ impl PresenterState {
             .live_sector_started
             .map(|t| Instant::now().duration_since(t).as_secs_f64())
             .unwrap_or(0.0);
-        self.live_line = Some(format_sector_line(
+        self.live_line = Some(format_live_sector_line(
             sector_index,
             self.last_cum_delta_sec,
             &self.live_sub_ids,
@@ -207,7 +210,6 @@ impl PresenterState {
             &self.live_sub_delta_sec,
             self.live_reference_tot_sec,
             tot_sec,
-            false,
             rtss,
             delta_style,
             templates,
@@ -262,20 +264,7 @@ fn format_completed(
     delta_style: &DeltaColorStyle,
     templates: Option<&OsdTemplateConfig>,
 ) -> String {
-    let ref_tot = s.reference_tot_sec;
-    format_sector_line(
-        s.sector_index,
-        s.cum_delta_sec,
-        &s.sub_ids,
-        &s.sub_times_sec,
-        &s.sub_delta_sec,
-        ref_tot.is_finite().then_some(ref_tot),
-        s.tot_sec,
-        false,
-        rtss,
-        delta_style,
-        templates,
-    )
+    format_carousel_sector_line(s, rtss, delta_style, templates)
 }
 
 #[cfg(test)]

@@ -30,6 +30,7 @@ pub struct SectorSession {
     sub_ids_order: Vec<i32>,
     ref_time_by_id: HashMap<i32, f64>,
     reference_tot_sec: f64,
+    #[allow(dead_code)]
     reference_run_id: Option<i64>,
     hit_times: HashMap<i32, f64>,
     cum_delta_sec: f64,

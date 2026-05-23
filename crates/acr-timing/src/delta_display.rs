@@ -1,23 +1,32 @@
-//! Δ display: split-feedback source and RTSS colors (neutral zone, colorblind-friendly).
+//! Δ display: scope (stage / sector / subsector), split-feedback source, RTSS colors.
 
 use crate::rtss_osd::hypertext;
 use serde::Deserialize;
 
-/// Which Δ drives cumulative split WAV/beeps.
+/// Which Δ is shown on RTSS and drives cumulative split WAV/beeps.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum SplitFeedbackDeltaSource {
-    /// Per subsector / gate: `delta_i` (fallback: cumulative Δ in sector).
+pub enum DeltaScope {
+    /// Last sub gate: `delta_i` (fallback: sector cumulative Δ in that gate).
     #[default]
     Subsector,
-    /// Main-sector cumulative Δ (`cum_delta` within the current sector block).
+    /// Cumulative Δ within the current main sector (resets each sector).
     Sector,
+    /// Cumulative Δ for the whole stage (sum of sector Δ, no reset per sector).
+    Stage,
 }
+
+/// Alias for older code / docs.
+pub type SplitFeedbackDeltaSource = DeltaScope;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct DeltaDisplayConfigFile {
-    /// `subsector` | `sector` (aliases: `stage`, `delta_i`, `cum`, `cum_delta`, `tot`).
-    #[serde(default = "default_split_feedback")]
-    pub split_feedback: String,
+    /// `subsector` | `sector` | `stage` (legacy key: `split_feedback`).
+    #[serde(
+        rename = "delta_scope",
+        alias = "split_feedback",
+        default = "default_delta_scope"
+    )]
+    pub delta_scope: String,
     #[serde(default = "default_neutral_zone")]
     pub neutral_zone_sec: f64,
     /// RTSS `<C=RRGGBB>` for negative Δ (faster). No `#` prefix.
@@ -30,7 +39,7 @@ pub struct DeltaDisplayConfigFile {
     pub sector_recap_sec: f64,
 }
 
-fn default_split_feedback() -> String {
+fn default_delta_scope() -> String {
     "subsector".into()
 }
 fn default_neutral_zone() -> f64 {
@@ -49,7 +58,7 @@ fn default_sector_recap_sec() -> f64 {
 impl Default for DeltaDisplayConfigFile {
     fn default() -> Self {
         Self {
-            split_feedback: default_split_feedback(),
+            delta_scope: default_delta_scope(),
             neutral_zone_sec: default_neutral_zone(),
             faster_color: default_faster_color(),
             slower_color: default_slower_color(),
@@ -60,7 +69,7 @@ impl Default for DeltaDisplayConfigFile {
 
 #[derive(Debug, Clone)]
 pub struct DeltaDisplayConfig {
-    pub split_feedback: SplitFeedbackDeltaSource,
+    pub delta_scope: DeltaScope,
     pub colors: DeltaColorStyle,
     pub sector_recap_sec: f64,
 }
@@ -93,7 +102,7 @@ impl DeltaColorStyle {
 impl DeltaDisplayConfigFile {
     pub fn to_runtime(&self) -> DeltaDisplayConfig {
         DeltaDisplayConfig {
-            split_feedback: parse_split_feedback(&self.split_feedback),
+            delta_scope: parse_delta_scope(&self.delta_scope),
             colors: self.colors(),
             sector_recap_sec: self.sector_recap_sec.max(0.0),
         }
@@ -114,6 +123,13 @@ impl Default for DeltaDisplayConfig {
     }
 }
 
+impl DeltaDisplayConfig {
+    /// Back-compat accessor (same as [`delta_scope`](Self::delta_scope)).
+    pub fn split_feedback(&self) -> DeltaScope {
+        self.delta_scope
+    }
+}
+
 fn normalize_rgb(s: &str) -> String {
     s.trim()
         .trim_start_matches('#')
@@ -123,12 +139,12 @@ fn normalize_rgb(s: &str) -> String {
         .collect()
 }
 
-fn parse_split_feedback(s: &str) -> SplitFeedbackDeltaSource {
+pub fn parse_delta_scope(s: &str) -> DeltaScope {
     match s.trim().to_ascii_lowercase().as_str() {
-        "sector" | "stage" | "cum" | "cum_delta" | "tot" | "delta_tot" | "cumulative" => {
-            SplitFeedbackDeltaSource::Sector
-        }
-        _ => SplitFeedbackDeltaSource::Subsector,
+        "sector" | "cum" | "cum_delta" | "main_sector" | "main" => DeltaScope::Sector,
+        "stage" | "tot" | "delta_tot" | "cumulative" | "run" | "overall" => DeltaScope::Stage,
+        "subsector" | "sub" | "gate" | "delta_i" | "leg" | "split" => DeltaScope::Subsector,
+        _ => DeltaScope::Subsector,
     }
 }
 
@@ -137,18 +153,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn parse_split_feedback_aliases() {
-        assert_eq!(
-            parse_split_feedback("sector"),
-            SplitFeedbackDeltaSource::Sector
-        );
-        assert_eq!(
-            parse_split_feedback("stage"),
-            SplitFeedbackDeltaSource::Sector
-        );
-        assert_eq!(
-            parse_split_feedback("delta_i"),
-            SplitFeedbackDeltaSource::Subsector
-        );
+    fn parse_delta_scope_modes() {
+        assert_eq!(parse_delta_scope("sector"), DeltaScope::Sector);
+        assert_eq!(parse_delta_scope("stage"), DeltaScope::Stage);
+        assert_eq!(parse_delta_scope("subsector"), DeltaScope::Subsector);
+        assert_eq!(parse_delta_scope("delta_i"), DeltaScope::Subsector);
+    }
+
+    #[test]
+    fn split_feedback_alias_deserializes() {
+        let cfg: DeltaDisplayConfigFile =
+            toml::from_str(r#"split_feedback = "stage""#).expect("toml");
+        assert_eq!(cfg.to_runtime().delta_scope, DeltaScope::Stage);
     }
 }

@@ -245,7 +245,6 @@ fn ensure_modular_timing(
     cum: &CumulativeTrackSectors,
     reference_track: &str,
     car: &str,
-    reference_mode: acr_timing::ReferenceTimeMode,
 ) {
     if state.modular.is_some() {
         return;
@@ -262,16 +261,13 @@ fn ensure_modular_timing(
         car: car.to_string(),
         stage_slug: cum.slug.clone(),
     };
-    let mut coordinator = RunCoordinator::new(bus.clone(), store, cfg, reference_mode);
+    let mut coordinator = RunCoordinator::new(bus.clone(), store, cfg, acr_timing_store::ReferenceTimeMode::BestSector);
     let labels = cumulative_ordered_labels(cum);
     coordinator.set_route(&labels);
     let n_sectors = sector_boundaries_from_labels(&labels).len();
     eprintln!(
-        "modular timing: {} / {} ({} main-sector blocks, ref={})",
-        reference_track,
-        cum.slug,
-        n_sectors,
-        reference_mode.as_str()
+        "modular timing: {} / {} ({} main-sector blocks)",
+        reference_track, cum.slug, n_sectors
     );
     state.modular = Some(ModularTimingState {
         coordinator,
@@ -348,11 +344,12 @@ fn drain_modular_timing_events(
     for mut event in events {
         if cfg.beep_on_cumulative_split {
             if let TimingEventBody::SubSplit(ref s) = event.body {
-                let delta = match cfg.delta_display.split_feedback {
+                let delta = match cfg.delta_display.split_feedback() {
                     acr_timing::SplitFeedbackDeltaSource::Subsector => {
                         s.delta_i_sec.unwrap_or(s.cum_delta_sec)
                     }
                     acr_timing::SplitFeedbackDeltaSource::Sector => s.cum_delta_sec,
+                    acr_timing::SplitFeedbackDeltaSource::Stage => s.cum_delta_sec,
                 };
                 acr_timing::split_beep::play_split_feedback(delta, &cfg.cumulative_beep);
             }
@@ -442,6 +439,205 @@ fn cumulative_osd_detail_with_flash(
         }
     }
     modular
+}
+
+fn game_race_time_for_osd(cfg: &CliConfig) -> Option<f64> {
+    if !cfg.game_clock.enabled {
+        return None;
+    }
+    acr_timing::game_clock_sync::read_latest_sample(
+        &cfg.game_clock.jsonl_path,
+        cfg.game_clock.max_sample_age_sec,
+    )
+    .and_then(|(s, _)| s.race_time_s)
+}
+
+fn stage_sessions_scope_delta(
+    sessions: &[&acr_timing::stage_sector_timing::StageSectorSession],
+    pb: &acr_timing::timing_pb::TimingPbStore,
+    car_model: &str,
+    scope: acr_timing::delta_display::DeltaScope,
+) -> Option<f64> {
+    let sess = sessions.first()?;
+    let car = if car_model.trim().is_empty() {
+        "unknown_car"
+    } else {
+        car_model.trim()
+    };
+    let refs = acr_timing::stage_sector_timing::reference_sector_secs_from_pb(
+        pb,
+        &sess.markers.stage_slug,
+        car,
+        &sess.markers.markers,
+    );
+    let cur: Vec<f64> = sess
+        .run
+        .sector_secs
+        .iter()
+        .filter_map(|t| *t)
+        .collect();
+    match scope {
+        acr_timing::delta_display::DeltaScope::Stage => {
+            acr_timing::stage_sector_timing::stage_scope_delta_sec(&cur, &refs)
+        }
+        acr_timing::delta_display::DeltaScope::Sector => {
+            if cur.is_empty() {
+                return None;
+            }
+            let i = cur.len() - 1;
+            let r = refs.get(i).copied().flatten()?;
+            if !r.is_finite() || r < 0.05 {
+                return None;
+            }
+            Some(cur[i] - r)
+        }
+        acr_timing::delta_display::DeltaScope::Subsector => None,
+    }
+}
+
+fn minimal_big_delta_line(
+    state: &mut LiveTimingState,
+    cfg: &CliConfig,
+    stage_delta: Option<f64>,
+) -> String {
+    let style = &cfg.delta_display.colors;
+    let scale = cfg.osd_templates.live_delta_font_scale;
+    let delta_opt = stage_delta.or_else(|| {
+        state
+            .modular
+            .as_ref()
+            .filter(|m| m.presenter.last_cum_delta_sec.is_finite())
+            .map(|m| m.presenter.last_cum_delta_sec)
+    });
+    let Some(m) = state.modular.as_mut() else {
+        return acr_timing::minimal_osd::format_minimal_big_delta_opt(
+            delta_opt,
+            cfg.rtss,
+            style,
+            scale,
+        );
+    };
+    m.presenter
+        .refresh_live(cfg.rtss, style, Some(&cfg.osd_templates));
+    acr_timing::minimal_osd::format_minimal_big_delta_opt(delta_opt, cfg.rtss, style, scale)
+}
+
+fn build_rtss_timing_message(
+    ts: &mut LiveTimingState,
+    cfg: &CliConfig,
+    timing_pb: &acr_timing::timing_pb::TimingPbStore,
+    car_osd: &str,
+    now: Instant,
+    game_race_s: Option<f64>,
+    sector_status_line: &Option<(String, Instant)>,
+) -> String {
+    use acr_timing::osd_template::OsdTemplatePreset;
+
+    if cfg.osd_templates.preset != OsdTemplatePreset::Minimal {
+        let cum_detail = if ts.cumulative.is_some() {
+            cumulative_osd_detail_with_flash(ts, cfg, sector_status_line, now)
+        } else {
+            String::new()
+        };
+        if !ts.stage_sector_sessions.is_empty() {
+            let session_refs: Vec<_> = ts.stage_sector_sessions.iter().collect();
+            let strip = acr_timing::stage_sector_timing::format_multi_stage_sector_line(
+                &session_refs,
+                timing_pb,
+                car_osd,
+                cfg.rtss,
+                now,
+                &cfg.delta_display.colors,
+            );
+            return acr_timing::stage_sector_timing::compose_timing_osd(&strip, &cum_detail);
+        }
+        return if ts.cumulative.is_some() {
+            cum_detail
+        } else {
+            String::new()
+        };
+    }
+
+    let pre_start = {
+        let session_refs: Vec<_> = ts.stage_sector_sessions.iter().collect();
+        !session_refs.is_empty()
+            && acr_timing::minimal_osd::stage_sessions_pre_start(&session_refs)
+            && acr_timing::minimal_osd::pre_start_from_race_time(game_race_s)
+    };
+
+    let mut upper = {
+        let session_refs: Vec<_> = ts.stage_sector_sessions.iter().collect();
+        if session_refs.is_empty() {
+            String::new()
+        } else {
+            acr_timing::minimal_osd::format_minimal_multi_stage_upper(
+                &session_refs,
+                timing_pb,
+                car_osd,
+                now,
+                pre_start,
+                cfg.rtss,
+                &cfg.delta_display.colors,
+                game_race_s,
+            )
+        }
+    };
+
+    if !pre_start && cfg.game_clock.enabled {
+        if let Some((sample, _)) = acr_timing::game_clock_sync::read_latest_sample(
+            &cfg.game_clock.jsonl_path,
+            cfg.game_clock.max_sample_age_sec,
+        ) {
+            if let Some(p) = acr_timing::minimal_osd::penalty_from_sample(&sample) {
+                upper.push_str(&acr_timing::minimal_osd::format_minimal_penalty_suffix(
+                    p, cfg.rtss,
+                ));
+            }
+        }
+    }
+
+    let stage_delta = {
+        let session_refs: Vec<_> = ts.stage_sector_sessions.iter().collect();
+        if session_refs.is_empty() {
+            None
+        } else {
+            stage_sessions_scope_delta(
+                &session_refs,
+                timing_pb,
+                car_osd,
+                cfg.delta_display.delta_scope,
+            )
+        }
+    };
+    let delta_line = minimal_big_delta_line(ts, cfg, stage_delta);
+
+    let mut status = if pre_start {
+        let timer_ready = cfg.game_clock.enabled
+            && acr_timing::minimal_osd::game_clock_timer_ready(
+                &cfg.game_clock.jsonl_path,
+                cfg.game_clock.max_sample_age_sec,
+            );
+        acr_timing::minimal_osd::ready_status_text(timer_ready).to_string()
+    } else {
+        String::new()
+    };
+
+    if !pre_start {
+        if let Some((flash, sts)) = sector_status_line {
+            if sts.elapsed() <= osd_detail_ttl_for_state(ts) {
+                status = flash.clone();
+            }
+        }
+    }
+
+    if upper.is_empty() && delta_line.is_empty() && status.is_empty() {
+        if ts.cumulative.is_some() {
+            return acr_timing::minimal_osd::compose_minimal_timing_osd("", &delta_line, "");
+        }
+        return String::new();
+    }
+
+    acr_timing::minimal_osd::compose_minimal_timing_osd(&upper, &delta_line, &status)
 }
 
 fn osd_detail_ttl_for_state(state: &LiveTimingState) -> Duration {
@@ -770,7 +966,6 @@ fn reset_live_timing_at_grid(
     cum_def: Option<&CumulativeTrackSectors>,
     bus: &EventSender,
     store_path: &Path,
-    reference_mode: acr_timing::ReferenceTimeMode,
 ) {
     state.run_clock = acr_timing::run_timing_clock::RunTimingClock::new(physics_hz);
     state.start_armed = false;
@@ -791,17 +986,8 @@ fn reset_live_timing_at_grid(
             m.presenter = PresenterState::default();
             m.coordinator.reset_run();
             m.coordinator.set_car(car_model);
-            m.coordinator.set_reference_mode(reference_mode);
         } else {
-            ensure_modular_timing(
-                state,
-                bus,
-                store_path,
-                cum,
-                &cum.reference_track,
-                car_model,
-                reference_mode,
-            );
+            ensure_modular_timing(state, bus, store_path, cum, &cum.reference_track, car_model);
             if let Some(m) = state.modular.as_mut() {
                 m.coordinator.reset_run();
             }
@@ -1129,6 +1315,8 @@ struct CliConfig {
     /// `[zeitnahme]` stderr: positions, spielzeit, subsector vs sector sums.
     timing_debug: bool,
     delta_display: acr_timing::DeltaDisplayConfig,
+    game_clock: acr_timing::game_clock_sync::GameClockSyncConfig,
+    game_clock_sector: Option<acr_timing::game_clock_sector_override::GameClockSectorAdopterConfig>,
     reference_times: acr_timing::ReferenceTimesConfig,
     osd_templates: acr_timing::OsdTemplateConfig,
 }
@@ -1136,6 +1324,107 @@ struct CliConfig {
 struct TimingBlameCtx<'a> {
     voice: Option<&'a acr_timing::timing_voice::TimingVoicePlayer>,
     cfg: &'a acr_timing::timing_blame::BlameConfig,
+}
+
+
+#[allow(clippy::too_many_arguments)]
+fn apply_game_clock_finish_all_legs(
+    state: &mut LiveTimingState,
+    si: usize,
+    adopter: &acr_timing::game_clock_sector_override::GameClockSectorAdopter,
+    cfg: &CliConfig,
+    timing_conn: &rusqlite::Connection,
+    timing_pb: &mut acr_timing::timing_pb::TimingPbStore,
+    car_model: &str,
+    blame_ctx: &TimingBlameCtx<'_>,
+    frame_monitor: &mut acr_timing::timing_frame_quality::TimingFrameMonitor,
+    physics: &PhysicsMap,
+    graphics_distance_traveled: f32,
+) {
+    let Some(sample) = adopter.cached_sample() else {
+        return;
+    };
+    let session = &state.stage_sector_sessions[si];
+    let leg_count = session.markers.sector_leg_count;
+    let splits =
+        acr_timing::game_clock_sector_override::all_stage_leg_splits_sec(sample, leg_count);
+    let orders =
+        acr_timing::stage_sector_timing::stage_leg_pb_orders(&session.markers.markers);
+    let slug = session.markers.stage_slug.clone();
+    let label = session.markers.rtss_label().to_string();
+    let mut applied = 0usize;
+    for (leg_ix, split_opt) in splits.iter().enumerate() {
+        let Some(split) = split_opt.as_ref().and_then(|s| {
+            (*s > 0.05 && s.is_finite()).then_some(*s)
+        }) else {
+            continue;
+        };
+        let (from_order, to_order) = orders.get(leg_ix).copied().unwrap_or((0, 0));
+        let unchanged = state.stage_sector_sessions[si].run.sector_secs[leg_ix]
+            .map(|prev| (prev - split).abs() < 0.001)
+            .unwrap_or(false);
+        if unchanged {
+            continue;
+        }
+        if leg_ix < state.stage_sector_sessions[si].run.sector_secs.len() {
+            state.stage_sector_sessions[si].run.sector_secs[leg_ix] = Some(split);
+        }
+        frame_monitor.reset_leg_accumulator();
+        state.stage_sector_sessions[si].run.leg_excess_wall_sec = 0.0;
+        let leg_stats = take_leg_stats(state, physics.speed_kmh);
+        if let Ok((delta, pb)) = acr_timing::stage_sector_timing::persist_stage_leg(
+            timing_conn,
+            timing_pb,
+            &slug,
+            car_model,
+            from_order,
+            to_order,
+            split,
+            leg_stats,
+        ) {
+            eprintln!(
+                "[{label}] game_clock_finish S{}: {}",
+                leg_ix + 1,
+                acr_timing::stage_sector_timing::format_duration(split),
+            );
+            if let Some(pb_sec) = pb {
+                let split_rec = acr_timing::timing_db::SplitRecord {
+                    track_name: &slug,
+                    car_model,
+                    direction: acr_timing::stage_sector_timing::STAGE_TIMING_DIRECTION,
+                    from_sector: from_order,
+                    to_sector: to_order,
+                    duration_sec: split,
+                    distance_m: 0.0,
+                    stats: leg_stats,
+                };
+                maybe_timing_blame(timing_conn, &split_rec, pb_sec, delta, Some(blame_ctx));
+            }
+            let _ = delta;
+        }
+        applied += 1;
+    }
+    if applied > 0 {
+        eprintln!(
+            "[{label}] game_clock_finish: {applied}/{leg_count} legs (n_sectors={})",
+            sample.sectors.len()
+        );
+    }
+}
+
+fn prior_stage_splits(state: &LiveTimingState, session_si: usize, leg_ix: usize) -> Vec<f64> {
+    state
+        .stage_sector_sessions
+        .get(session_si)
+        .map(|sess| {
+            sess.run
+                .sector_secs
+                .iter()
+                .take(leg_ix)
+                .filter_map(|t| *t)
+                .collect()
+        })
+        .unwrap_or_default()
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -1157,11 +1446,43 @@ fn process_stage_sector_sessions_on_step(
     frame_monitor: &mut acr_timing::timing_frame_quality::TimingFrameMonitor,
     stage_sector_html_run_counter: &mut usize,
     speed_kmh_now: f64,
+    game_clock_sector: &mut Option<acr_timing::game_clock_sector_override::GameClockSectorAdopter>,
 ) {
     if state.stage_sector_sessions.is_empty() {
         return;
     }
     let now_inst = Instant::now();
+    if let Some(adopter) = game_clock_sector.as_mut() {
+        let commits = adopter.drain_commit_ready(now_inst, &state.stage_sector_sessions);
+        for c in commits {
+            if c.via == "game_clock" && (c.duration_sec - c.gate_dt).abs() > 0.001 {
+                eprintln!(
+                    "[{}] game_clock S{}: gate {:.3}s -> game {:.3}s (delayed)",
+                    c.label,
+                    c.leg_ix + 1,
+                    c.gate_dt,
+                    c.duration_sec,
+                );
+            }
+            if c.leg_ix < state.stage_sector_sessions[c.session_si].run.sector_secs.len() {
+                state.stage_sector_sessions[c.session_si].run.sector_secs[c.leg_ix] =
+                    Some(c.duration_sec);
+            }
+            frame_monitor.reset_leg_accumulator();
+            state.stage_sector_sessions[c.session_si].run.leg_excess_wall_sec = 0.0;
+            let leg_stats = take_leg_stats(state, physics.speed_kmh);
+            let _ = acr_timing::stage_sector_timing::persist_stage_leg(
+                &timing_conn,
+                timing_pb,
+                &c.slug,
+                car_model,
+                c.from_order,
+                c.to_order,
+                c.duration_sec,
+                leg_stats,
+            );
+        }
+    }
     let stage_radius = cfg.stage_timing.stage_sector_radius_m();
     let session_count = state.stage_sector_sessions.len();
     for si in 0..session_count {
@@ -1247,9 +1568,53 @@ fn process_stage_sector_sessions_on_step(
         if leg_recorded.is_some() {
             let dt_raw = leg_recorded.unwrap();
             if let Some(leg_ix) = outcome.leg_index {
+                let prior = acr_timing::game_clock_sector_override::prior_splits_from_sessions(
+                    &state.stage_sector_sessions,
+                    si,
+                    leg_ix,
+                );
                 let session = &mut state.stage_sector_sessions[si];
+                let mut adopt_dt = leg_dt;
+                if let Some(adopter) = game_clock_sector.as_mut() {
+                    adopter.poll_force();
+                    if adopter.is_live() {
+                        if let Some(split) = adopter.split_for_leg_checked(leg_ix, &prior) {
+                            if (split - leg_dt).abs() > 0.001 {
+                                eprintln!(
+                                    "[{label}] game_clock S{}: gate {:.3}s -> game {:.3}s",
+                                    leg_ix + 1,
+                                    leg_dt,
+                                    split,
+                                );
+                            }
+                            adopt_dt = split;
+                        } else {
+                            let poll_iv =
+                                Duration::from_secs_f64(adopter.cfg.poll_interval_sec);
+                            let window =
+                                Duration::from_secs_f64(adopter.cfg.adopt_window_sec);
+                            adopter.enqueue(
+                                acr_timing::game_clock_sector_override::PendingSectorAdopt {
+                                    session_si: si,
+                                    leg_ix,
+                                    gate_dt: leg_dt,
+                                    dt_raw,
+                                    leg_excess: 0.0,
+                                    from_order: outcome.from_order,
+                                    to_order: outcome.to_order,
+                                    slug: slug.clone(),
+                                    label: label.clone(),
+                                    pass_method: outcome.pass_method,
+                                    created: now_inst,
+                                    next_poll: now_inst + poll_iv,
+                                    deadline: now_inst + window,
+                                },
+                            );
+                        }
+                    }
+                }
                 if leg_ix < session.run.sector_secs.len() {
-                    session.run.sector_secs[leg_ix] = Some(leg_dt);
+                    session.run.sector_secs[leg_ix] = Some(adopt_dt);
                 }
             }
             if let Some(summary) = frame_monitor.leg_close_summary(
@@ -1275,7 +1640,12 @@ fn process_stage_sector_sessions_on_step(
                 car_model,
                 outcome.from_order,
                 outcome.to_order,
-                leg_dt,
+                state.stage_sector_sessions[si]
+                    .run
+                    .sector_secs
+                    .get(outcome.leg_index.unwrap_or(0))
+                    .and_then(|t| *t)
+                    .unwrap_or(leg_dt),
                 leg_stats,
             ) {
                 Ok((delta, pb)) => {
@@ -1347,6 +1717,25 @@ fn process_stage_sector_sessions_on_step(
             }
         }
         if run_completed {
+            if let Some(adopter) = game_clock_sector.as_mut() {
+                adopter.poll_force();
+                if adopter.is_live() {
+                    apply_game_clock_finish_all_legs(
+                        state,
+                        si,
+                        adopter,
+                        cfg,
+                        timing_conn,
+                        timing_pb,
+                        car_model,
+                        blame_ctx,
+                        frame_monitor,
+                        physics,
+                        graphics_distance_traveled,
+                    );
+                    adopter.clear_pending();
+                }
+            }
             let session = &mut state.stage_sector_sessions[si];
             flush_one_stage_sector_session(session, cfg, car_model, stage_sector_html_run_counter);
         }
@@ -1533,8 +1922,6 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
     let timing_voice = timing.timing_voice.clone();
     let timing_quality = timing.timing_quality.to_runtime();
     let delta_display = timing.delta_display.to_runtime();
-    let reference_times = timing.reference_times.to_runtime();
-    let osd_templates = timing.osd_display.to_runtime();
     let mut timing_debug = timing.timing_debug;
 
     let mut i = 1;
@@ -1851,9 +2238,11 @@ fn parse_args(args: Vec<String>) -> Result<CliConfig, Box<dyn std::error::Error>
         timing_quality,
         debug_physics_1hz,
         timing_debug,
+        game_clock: timing.game_clock.to_runtime(),
+        game_clock_sector: timing.game_clock.sector_adopter_config(),
+        reference_times: timing.reference_times.to_runtime(),
+        osd_templates: timing.osd_display.to_runtime(),
         delta_display,
-        reference_times,
-        osd_templates,
     })
 }
 
@@ -1936,6 +2325,11 @@ fn log_loaded_configs(loaded: &app_config::LoadedAppConfig) {
         );
         eprintln!("rtss_osd: placement {}", p.describe());
     }
+    let osd_rt = loaded.timing.osd_display.to_runtime();
+    eprintln!(
+        "osd_display: preset={:?} live_delta_font_scale={}",
+        osd_rt.preset, osd_rt.live_delta_font_scale
+    );
     match &loaded.pacenotes_path {
         Some(p) => eprintln!("acr_pacenotes: loaded {}", p.display()),
         None => eprintln!(
@@ -2381,6 +2775,16 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
     let mut stillstand_log_state = acr_timing::physics_wheel::StillstandLogState::default();
     let mut frame_monitor =
         acr_timing::timing_frame_quality::TimingFrameMonitor::new(cfg.timing_quality.clone());
+    let mut game_clock_sector = cfg
+        .game_clock_sector
+        .clone()
+        .map(acr_timing::game_clock_sector_override::GameClockSectorAdopter::new);
+    if let Some(a) = game_clock_sector.as_ref() {
+        eprintln!(
+            "game_clock sector_splits: enabled, jsonl={}",
+            a.cfg.jsonl_path.display()
+        );
+    }
     let mut copilot_crash_voice = acr_timing::timing_voice::CopilotCrashVoiceState::default();
     let _ = std::fs::create_dir_all(&cfg.stage_timing.html_dir());
     // After Ctrl+Enter on the first-anchor picker, suppress reopening the menu while the same
@@ -2593,7 +2997,6 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                 cum_def,
                                 &timing_event_bus,
                                 &cfg.timing_reference_store_path,
-                                cfg.reference_times.mode,
                             );
                             grid_timing_reset_still_since = None;
                             latest_timing_line = None;
@@ -3301,7 +3704,6 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                     cum_def,
                                     track_name,
                                     car_model_live,
-                                    cfg.reference_times.mode,
                                 );
                             }
                             ensure_stage_timing_sectors(
@@ -3516,6 +3918,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         &mut frame_monitor,
                                         &mut stage_sector_html_run_counter,
                                         speed_kmh_now,
+                                        &mut game_clock_sector,
                                     );
                                 }
                             }
@@ -3783,6 +4186,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         &mut frame_monitor,
                                         &mut stage_sector_html_run_counter,
                                         speed_kmh_now,
+                                        &mut game_clock_sector,
                                     );
                                 }
                             }
@@ -4279,42 +4683,27 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                         last_sector_wait_log = Instant::now();
                     }
                     let now_osd = Instant::now();
+                    let game_race_s = game_race_time_for_osd(cfg);
                     let msg = if let Some(ts) = timing_state.as_mut() {
-                        let cum_detail = if ts.cumulative.is_some() {
-                            cumulative_osd_detail_with_flash(ts, cfg, &sector_status_line, now_osd)
-                        } else {
-                            String::new()
-                        };
-                        if !ts.stage_sector_sessions.is_empty() {
-                            let session_refs: Vec<_> =
-                                ts.stage_sector_sessions.iter().collect();
-                            let car_osd = locked_car_model
-                                .as_deref()
-                                .filter(|s| !s.is_empty())
-                                .unwrap_or_else(|| {
-                                    if car_model_now.is_empty() {
-                                        "unknown_car"
-                                    } else {
-                                        car_model_now.as_str()
-                                    }
-                                });
-                            let strip =
-                                acr_timing::stage_sector_timing::format_multi_stage_sector_line(
-                                    &session_refs,
-                                    &timing_pb,
-                                    car_osd,
-                                    cfg.rtss,
-                                    now_osd,
-                                    &cfg.delta_display.colors,
-                                );
-                            acr_timing::stage_sector_timing::compose_timing_osd(
-                                &strip, &cum_detail,
-                            )
-                        } else if ts.cumulative.is_some() {
-                            cum_detail
-                        } else {
-                            String::new()
-                        }
+                        let car_osd = locked_car_model
+                            .as_deref()
+                            .filter(|s| !s.is_empty())
+                            .unwrap_or_else(|| {
+                                if car_model_now.is_empty() {
+                                    "unknown_car"
+                                } else {
+                                    car_model_now.as_str()
+                                }
+                            });
+                        build_rtss_timing_message(
+                            ts,
+                            cfg,
+                            &timing_pb,
+                            car_osd,
+                            now_osd,
+                            game_race_s,
+                            &sector_status_line,
+                        )
                     } else {
                         String::new()
                     };

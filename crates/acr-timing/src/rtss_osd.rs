@@ -453,6 +453,16 @@ pub mod hypertext {
         format!("<L{}>", layer_id)
     }
 
+    /// Font size in percent (e.g. 150). Pair with [`reset_font_size`] at end of line/layer.
+    pub fn font_scale(percent: u32) -> String {
+        format!("<S={percent}>")
+    }
+
+    /// Reset font size to layer default (RTSS hypertext; not `<S=>`).
+    pub fn reset_font_size() -> &'static str {
+        "<S>"
+    }
+
     /// Sticky screen center + layer 0 (SDK pattern; not `<P=4>` — that renders as literal text).
     pub fn sticky_center_layer0() -> String {
         format!("{}{}", sticky_position(4), layer(0))

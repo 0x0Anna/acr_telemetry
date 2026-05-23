@@ -164,6 +164,29 @@ pub fn stage_leg_pb_orders(markers: &[TimingSectorMarker]) -> Vec<(i32, i32)> {
     legs
 }
 
+/// Stage-scope Δ: sum of completed sector times minus PB sum for those same legs only.
+///
+/// Returns `None` if no sector is finished yet, or any completed leg lacks a finite PB (≥ 0.05 s).
+pub fn stage_scope_delta_sec(
+    current_sector_secs: &[f64],
+    reference_sector_secs: &[Option<f64>],
+) -> Option<f64> {
+    if current_sector_secs.is_empty() {
+        return None;
+    }
+    let n = current_sector_secs.len();
+    let mut ref_sum = 0.0f64;
+    for i in 0..n {
+        let r = reference_sector_secs.get(i).copied().flatten()?;
+        if !r.is_finite() || r < 0.05 {
+            return None;
+        }
+        ref_sum += r;
+    }
+    let cur_sum: f64 = current_sector_secs.iter().sum();
+    Some(cur_sum - ref_sum)
+}
+
 /// Personal-best leg times from `timing_pb.toml` (one entry per stage sector leg).
 pub fn reference_sector_secs_from_pb(
     pb: &TimingPbStore,
@@ -892,5 +915,24 @@ duration_sec = 90.5
         assert!((refs[0].unwrap() - 90.5).abs() < 0.01);
         assert!(refs[1].is_none());
         let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn stage_scope_delta_uses_only_completed_sector_refs() {
+        let cur = [95.0];
+        let refs = [Some(95.28), Some(106.82)];
+        let d = stage_scope_delta_sec(&cur, &refs).unwrap();
+        assert!((d - (-0.28)).abs() < 0.01);
+
+        assert!(stage_scope_delta_sec(&cur, &[None, Some(106.82)]).is_none());
+        assert!(stage_scope_delta_sec(&[], &refs).is_none());
+    }
+
+    #[test]
+    fn stage_scope_delta_sums_all_completed_sectors() {
+        let cur = [95.0, 110.0];
+        let refs = [Some(95.0), Some(110.0)];
+        let d = stage_scope_delta_sec(&cur, &refs).unwrap();
+        assert!(d.abs() < 0.01);
     }
 }

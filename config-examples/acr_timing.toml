@@ -1,5 +1,4 @@
-# Sector timing, start grid, split beeps, cumulative GeoJSON subsectors.
-# Copy next to acr_track_match.exe or run from repo root.
+# Sector timing + start grid + split beeps + calibrated stage sectors.
 
 sectors_shp = "timing/sectors_filtered.shp"
 sectors_coord_space = "game"
@@ -15,70 +14,26 @@ grid_start_trigger_radius_m = 2.0
 grid_start_list_radius_initial_m = 2.0
 grid_start_wide_after_sec = 10.0
 grid_start_list_radius_wide_m = 100.0
-
 beep_on_split = true
-beep_on_cumulative_split = true
-timing_debug = false
-sector_cooldown_ms = 500
-sector_radius = 25.0
 
 [beep]
-mode = "sine"
-faster_freq_hz = 1318.0
+mode = "sine"   # sine | wav | both
+faster_freq_hz = 1700.0
 faster_duration_ms = 45
-slower_freq_hz = 440.0
+slower_freq_hz = 950.0
 slower_duration_ms = 140
 gap_ms = 200
-volume = 0.4
-
-[reference_times]
-mode = "best_sector"
-
-[osd_display]
-preset = "default"
-
-[delta_display]
-split_feedback = "subsector"
-sector_recap_sec = 5.0
-neutral_zone_sec = 0.05
-faster_color = "00ff00"
-slower_color = "ff0000"
-
-[cumulative_beep]
-mode = "wav"
-faster_freq_hz = 660.0
-faster_duration_ms = 50
-slower_freq_hz = 330.0
-slower_duration_ms = 160
-gap_ms = 220
-volume = 1.0
-faster_wav_1 = "assets/split_sounds/good.wav"
-faster_wav_2 = "assets/split_sounds/good2.wav"
-faster_wav_3 = "assets/split_sounds/good3.wav"
-slower_wav_1 = "assets/split_sounds/bad.wav"
-slower_wav_2 = "assets/split_sounds/bad2.wav"
-slower_wav_3 = "assets/split_sounds/bad3.wav"
-
-[cumulative_timing]
-sectors_dir = "timing/cumulative_sectors"
-gate_radius_m = 40.0
-
-[cumulative_timing.ref_track_sectors]
-hafren_north = "hafren_north"
-
-[subsection_html]
-enabled = true
+volume = 0.5
+# faster_wav = "assets/split_sounds/fast.wav"
+# slower_wav = "assets/split_sounds/slow.wav"
 
 [stage_timing]
 timing_sectors_html_dir = "timing/runs"
 sectors_dir = "timing/timing_sectors"
-stage_sector_radius_m = 40.0
 
 [stage_timing.ref_stage_sectors]
-hafren_north = "cwmbiga_afon_biga"
+# hafren_north = "cwmbiga_afon_biga"
 
-[timing_quality]
-enabled = true
-log_suspect_ticks = false
-apply_leg_excess_correction = false
-physics_hz = 333
+[game_clock]
+enabled = false
+sector_splits = false

@@ -49,15 +49,20 @@ mode = "best_sector"
 
 # RTSS sector lines: template + variables (literal RTSS tags OK, e.g. <P4><L0>).
 [osd_display]
-preset = "default"
-# sector_line = "S{sector}: {cum_delta_colored} {subs} ref: {ref:time} tot: {tot:time}"
-# sub_slot = "[{time:time}]"
-# finish_line = "Track completed  cum {cum_tot:time}  ref {ref_tot:time}  {delta_colored}"
+preset = "minimal"
+# minimal RTSS (3 lines):
+#   pre-start:  [PB S1] [PB S2] … | big Δ 0 | "Timer ready" (fresh acr_game_clock.jsonl) or "Timing ready"
+#   in-run:     [time ±Δ] … (+ red penalty if jsonl) | big stage Δ | status empty (flashes only)
+# live_sector_line = "{cum_delta_colored}"
+live_delta_font_scale = 150
+# sector_line = "S{sector} {cum_delta_colored} tot: {tot:time}"
+# finish_line = "{delta_colored}"
 
 [delta_display]
-# Split feedback: subsector = delta_i per gate; sector = cumulative Δ in main sector (tot).
-# (alias: stage — same meaning, deprecated name)
-split_feedback = "subsector"
+# Δ scope for RTSS + split WAVs: subsector | sector | stage
+# subsector = last gate Δ; sector = cum Δ per main sector (resets each sector); stage = cum Δ whole run
+delta_scope = "stage"
+# legacy key: split_feedback = "subsector"
 # After Finish: upper OSD line cycles each completed sector (sub splits + tot); 0 = last only.
 sector_recap_sec = 5.0
 neutral_zone_sec = 0.05
@@ -104,6 +109,16 @@ stage_sector_radius_m = 40.0
 stillstand_position_log = true
 stillstand_max_speed_kmh = 2.0
 stillstand_log_interval_sec = 2.0
+
+# UE4SS AcrGameClockMod → acr_game_clock.jsonl (optional official sector splits).
+[game_clock]
+enabled = true
+sector_splits = true
+# jsonl_path = "%APPDATA%/acr_telemetry/acr_game_clock.jsonl"
+max_sample_age_sec = 1.25
+jsonl_poll_interval_sec = 0.5
+sector_poll_interval_sec = 1.0
+sector_adopt_window_sec = 2.5
 
 # Physics tick plausibility (wall Δt vs local_velocity vs wheel displacement). No game clock.
 [timing_quality]

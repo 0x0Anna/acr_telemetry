@@ -93,23 +93,58 @@ You do **not** need hardcoded `type1`/`type2` only — use a **format string** w
 |----------|---------|
 | `{sector}` | Main sector number (1-based) |
 | `{cum_delta}` / `{cum_delta:+.3}` | Sector cumulative Δ |
-| `{cum_delta_colored}` | Δ with RTSS color (uses `[delta_display]` colors) |
+| `{cum_delta_colored}` | Δ with RTSS color (scope from `[delta_display]` `delta_scope`) |
 | `{subs}` | Expands `sub_slot` for each sub gate (last `max_sub_slots`) |
 | `{time:time}` / `{delta:+.3}` | Inside `sub_slot`: leg time / Δ |
 | `{ref:time}` `{tot:time}` | Reference / sector total |
 | `{cum_tot:time}` `{ref_tot:time}` `{delta_colored}` | On finish line |
 
-Presets (used when `sector_line` is omitted): `default`, `compact` (aliases: `type2`, `minimal`). Set `preset = "custom"` and define `sector_line` / `finish_line` yourself.
+| Preset | Live (driving) | Completed sector | Finish |
+|--------|----------------|------------------|--------|
+| `default` | Full line + subs | Full detail | Track completed + cum/ref/Δ |
+| `compact` / `type2` | S# + Δ + subs | Shorter | Done + times |
+| `minimal` / `type1` | **`{cum_delta_colored}` only** (150% font while driving) | S# + Δ + tot (carousel after finish) | Δ only |
+| `custom` | `live_sector_line` (required for live) | `sector_line` | `finish_line` |
 
-Example (sticky center + compact sector line):
+Override any line explicitly:
+
+```toml
+[osd_display]
+preset = "minimal"
+# live_sector_line = "{cum_delta_colored}"
+```
+
+Example (sticky center + custom live):
 
 ```toml
 [osd_display]
 preset = "custom"
-sector_line = "<P4><L0>S{sector} {cum_delta_colored} {subs}"
-sub_slot = "[{time:time}]"
+live_sector_line = "<P4><L0>{cum_delta_colored}"
+sector_line = "S{sector} {cum_delta_colored} tot: {tot:time}"
 finish_line = "Done {cum_tot:time} {delta_colored}"
 ```
+
+### Δ scope (`[delta_display]`)
+
+| `delta_scope` | Live `{cum_delta_colored}` | Resets |
+|---------------|----------------------------|--------|
+| `subsector` | last gate `delta_i` | each sub gate |
+| `sector` | cumulative Δ in current main sector | each main sector |
+| `stage` | sum of sector Δ over the whole run | only at run start |
+
+Minimal preset + stage-wide Δ:
+
+```toml
+[osd_display]
+preset = "minimal"
+live_delta_font_scale = 150   # RTSS <S=150>…<S> on live Δ only; 0 = normal
+
+[delta_display]
+delta_scope = "stage"
+sector_recap_sec = 5.0        # after finish: upper line cycles S1..Sn
+```
+
+While driving: upper = `[time Δ]` tape (+ `S# ref` before first sub in sector). Lower = enlarged Δ only.
 
 ## Binaries
 

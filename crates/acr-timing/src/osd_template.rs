@@ -7,13 +7,16 @@ use crate::delta_display::DeltaColorStyle;
 pub enum OsdTemplatePreset {
     Default,
     Compact,
+    /// Live line: delta only; completed sector line stays readable.
+    Minimal,
     Custom,
 }
 
 impl OsdTemplatePreset {
     pub fn parse(s: &str) -> Self {
         match s.trim().to_ascii_lowercase().as_str() {
-            "compact" | "type2" | "minimal" => Self::Compact,
+            "compact" | "type2" => Self::Compact,
+            "minimal" | "type1" => Self::Minimal,
             "custom" => Self::Custom,
             _ => Self::Default,
         }
@@ -23,10 +26,15 @@ impl OsdTemplatePreset {
 #[derive(Debug, Clone)]
 pub struct OsdTemplateConfig {
     pub preset: OsdTemplatePreset,
+    /// Completed sector (upper OSD line / carousel).
     pub sector_line: String,
+    /// Active sector while driving (lower OSD line).
+    pub live_sector_line: String,
     pub sub_slot: String,
     pub finish_line: String,
     pub max_sub_slots: usize,
+    /// RTSS `<S=…>` font scale (percent) for live Δ line only; 0 = default size.
+    pub live_delta_font_scale: u32,
 }
 
 impl Default for OsdTemplateConfig {
@@ -40,14 +48,18 @@ pub struct OsdTemplateConfigFile {
     /// `default` | `compact` | `custom` (ignored if `sector_line` is set).
     #[serde(default = "default_preset")]
     pub preset: String,
-    /// Main-sector line (completed or live). Variables below.
+    /// Completed main-sector line (detail / carousel).
     pub sector_line: Option<String>,
+    /// Active sector while timing runs; defaults from `preset` if omitted.
+    pub live_sector_line: Option<String>,
     /// One sub gate; repeated for `{subs}` (last `max_sub_slots` only).
     #[serde(default = "default_sub_slot")]
     pub sub_slot: String,
     pub finish_line: Option<String>,
     #[serde(default = "default_max_sub_slots")]
     pub max_sub_slots: usize,
+    /// Live Δ font size for RTSS (`S=` percent, e.g. 150). 0 = normal (also after finish).
+    pub live_delta_font_scale: Option<u32>,
 }
 
 fn default_preset() -> String {
@@ -65,16 +77,35 @@ impl Default for OsdTemplateConfigFile {
         Self {
             preset: default_preset(),
             sector_line: None,
+            live_sector_line: None,
             sub_slot: default_sub_slot(),
             finish_line: None,
             max_sub_slots: default_max_sub_slots(),
+            live_delta_font_scale: None,
         }
     }
+}
+
+/// Wrap OSD text in RTSS font scale tags (percent, e.g. 150). No-op when `scale_percent` is 0 or not RTSS.
+///
+/// RTSS syntax: `<S=150>…<S>` — reset is `<S>`, not `<S=>` (see guru3D / OverlayEditor hypertext).
+pub fn wrap_rtss_font_scale(text: &str, scale_percent: u32, rtss: bool) -> String {
+    if !rtss || scale_percent == 0 || text.is_empty() {
+        return text.to_string();
+    }
+    format!("<S={scale_percent}>{text}<S>")
 }
 
 impl OsdTemplateConfigFile {
     pub fn to_runtime(&self) -> OsdTemplateConfig {
         let preset = OsdTemplatePreset::parse(&self.preset);
+        let live_sector_line = self
+            .live_sector_line
+            .clone()
+            .unwrap_or_else(|| match preset {
+                OsdTemplatePreset::Minimal => minimal_live_sector_line(),
+                _ => default_live_sector_line(),
+            });
         let (sector_line, finish_line) = match preset {
             OsdTemplatePreset::Custom if self.sector_line.is_some() => (
                 self.sector_line.clone().unwrap(),
@@ -88,6 +119,14 @@ impl OsdTemplateConfigFile {
                     .clone()
                     .unwrap_or_else(compact_finish_line),
             ),
+            OsdTemplatePreset::Minimal => (
+                self.sector_line
+                    .clone()
+                    .unwrap_or_else(minimal_completed_sector_line),
+                self.finish_line
+                    .clone()
+                    .unwrap_or_else(minimal_finish_line),
+            ),
             _ => (
                 self.sector_line
                     .clone()
@@ -97,12 +136,18 @@ impl OsdTemplateConfigFile {
                     .unwrap_or_else(default_finish_line),
             ),
         };
+        let live_delta_font_scale = self.live_delta_font_scale.unwrap_or_else(|| match preset {
+            OsdTemplatePreset::Minimal => 150,
+            _ => 0,
+        });
         OsdTemplateConfig {
             preset,
             sector_line,
+            live_sector_line,
             sub_slot: self.sub_slot.clone(),
             finish_line,
             max_sub_slots: self.max_sub_slots.max(1),
+            live_delta_font_scale,
         }
     }
 }
@@ -113,6 +158,24 @@ pub fn default_sector_line() -> String {
 
 pub fn compact_sector_line() -> String {
     "S{sector} {cum_delta_colored} {subs}".into()
+}
+
+/// While driving: only sector cumulative Δ (no S#, subs, ref, tot).
+pub fn minimal_live_sector_line() -> String {
+    "{cum_delta_colored}".into()
+}
+
+pub fn default_live_sector_line() -> String {
+    "S{sector}: {cum_delta_colored} {subs} ref: {ref:time} tot: {tot:time}".into()
+}
+
+/// After a sector ends (carousel / upper line): sector label + Δ + total.
+pub fn minimal_completed_sector_line() -> String {
+    "S{sector} {cum_delta_colored} tot: {tot:time}".into()
+}
+
+pub fn minimal_finish_line() -> String {
+    "{delta_colored}".into()
 }
 
 pub fn default_finish_line() -> String {
@@ -315,8 +378,27 @@ pub fn format_sector_line_templated(
     rtss: bool,
     delta_style: &DeltaColorStyle,
 ) -> String {
-    let mut line = render_template(&cfg.sector_line, ctx, cfg, rtss, delta_style);
-    if ctx.incomplete && !cfg.sector_line.contains("{incomplete}") {
+    format_line_templated(&cfg.sector_line, ctx, cfg, rtss, delta_style)
+}
+
+pub fn format_live_sector_line_templated(
+    cfg: &OsdTemplateConfig,
+    ctx: &SectorLineCtx,
+    rtss: bool,
+    delta_style: &DeltaColorStyle,
+) -> String {
+    format_line_templated(&cfg.live_sector_line, ctx, cfg, rtss, delta_style)
+}
+
+fn format_line_templated(
+    template: &str,
+    ctx: &SectorLineCtx,
+    cfg: &OsdTemplateConfig,
+    rtss: bool,
+    delta_style: &DeltaColorStyle,
+) -> String {
+    let mut line = render_template(template, ctx, cfg, rtss, delta_style);
+    if ctx.incomplete && !template.contains("{incomplete}") {
         line = format!("{line}~");
     }
     line
@@ -398,9 +480,41 @@ mod tests {
     }
 
     #[test]
+    fn minimal_live_is_delta_only() {
+        let cfg = OsdTemplateConfigFile {
+            preset: "minimal".into(),
+            ..Default::default()
+        }
+        .to_runtime();
+        assert_eq!(cfg.live_sector_line, "{cum_delta_colored}");
+        let ctx = SectorLineCtx {
+            sector_index: 2,
+            cum_delta_sec: 1.25,
+            tot_sec: 40.0,
+            reference_tot_sec: Some(39.0),
+            incomplete: false,
+            subs: vec![],
+        };
+        let line = format_live_sector_line_templated(&cfg, &ctx, true, &DeltaColorStyle::default());
+        assert!(!line.contains('S'));
+        assert!(!line.contains("tot"));
+        assert!(line.contains("<C="));
+        assert!(line.contains("1.250") || line.contains("+1.25"));
+    }
+
+    #[test]
+    fn wrap_rtss_font_scale_uses_s_reset_not_s_equals() {
+        let s = wrap_rtss_font_scale("<C=00ff00>+0.12<C>", 150, true);
+        assert!(s.starts_with("<S=150>"));
+        assert!(s.ends_with("<S>"));
+        assert!(!s.contains("<S=>"));
+    }
+
+    #[test]
     fn rtss_markup_passthrough() {
         let cfg = OsdTemplateConfig {
             sector_line: "<P4><L0>S{sector}: {cum_delta_colored}".into(),
+            live_delta_font_scale: 0,
             ..Default::default()
         };
         let ctx = SectorLineCtx {
