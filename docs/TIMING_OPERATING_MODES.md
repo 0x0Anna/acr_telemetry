@@ -124,7 +124,7 @@ Einstellung in `acr_timing.toml`: `[delta_display] delta_scope = "stage" | "sect
 
 - Erst wieder normal anzeigen, wenn die **korrigierte Spielzeit** **zweimal hintereinander** um weniger als **1,0 s** von der vorherigen Anzeige abweicht (Zeit läuft wieder).
 
-**Status:** Regression in `0b4cf4f` (Wall-/Live-Zeit tickt bei Pause weiter); Soll laut diesem Abschnitt.
+**Status:** Implementiert in `acc-stage-timing` — Replik/Spielzeit-Sync + `--` auf der mittleren Zeile bei Pause.
 
 ---
 
@@ -161,7 +161,7 @@ Vor Merge / nach Änderung an Timing/RTSS:
 | `ref:` + `tot:` Pre-Start | ja | teils (ohne `ref:`/`tot:`-Prefix) |
 | UE4SS Sektor → Klammer *i* | ja | Adopt-Pfad vorhanden, Grenzfälle prüfen |
 | Kumuliertes Δ bei Sektor-Korrektur mitziehen | ja | **prüfen / vervollständigen** |
-| Pause → `--` | ja | **offen** |
+| Pause → `--` | ja | ja (Replik-Sync + `PauseOsdState`) |
 | `Game Data available` vor Lock | ja | ggf. noch alte Texte |
 
 ---

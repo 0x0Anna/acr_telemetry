@@ -441,17 +441,9 @@ fn cumulative_osd_detail_with_flash(
     modular
 }
 
-fn game_race_time_for_osd(cfg: &CliConfig) -> Option<f64> {
-    if !cfg.game_clock.enabled {
-        return None;
-    }
-    acr_timing::game_clock_sync::read_latest_sample(
-        &cfg.game_clock.jsonl_path,
-        cfg.game_clock.max_sample_age_sec,
-    )
-    .and_then(|(s, _)| s.race_time_s)
-}
 
+/// Completed main-sector legs only (no live-leg extrapolation). Live cumulative Δ comes from
+/// modular/subsector timing (`presenter.last_cum_delta_sec`) per `TIMING_OPERATING_MODES.md`.
 fn stage_sessions_scope_delta(
     sessions: &[&acr_timing::stage_sector_timing::StageSectorSession],
     pb: &acr_timing::timing_pb::TimingPbStore,
@@ -499,6 +491,8 @@ fn minimal_big_delta_line(
     state: &mut LiveTimingState,
     cfg: &CliConfig,
     stage_delta: Option<f64>,
+    pause_dash: bool,
+    pause_osd: &mut acr_timing::game_clock_sync::PauseOsdState,
 ) -> String {
     let style = &cfg.delta_display.colors;
     let scale = cfg.osd_templates.live_delta_font_scale;
@@ -509,6 +503,20 @@ fn minimal_big_delta_line(
             .filter(|m| m.presenter.last_cum_delta_sec.is_finite())
             .map(|m| m.presenter.last_cum_delta_sec)
     });
+
+    if pause_dash {
+        if pause_osd.frozen_cum_delta_sec.is_none() {
+            pause_osd.frozen_cum_delta_sec = delta_opt;
+        }
+        return acr_timing::minimal_osd::format_minimal_big_delta_opt(
+            pause_osd.frozen_cum_delta_sec,
+            cfg.rtss,
+            style,
+            scale,
+        );
+    }
+    pause_osd.frozen_cum_delta_sec = None;
+
     let Some(m) = state.modular.as_mut() else {
         return acr_timing::minimal_osd::format_minimal_big_delta_opt(
             delta_opt,
@@ -522,6 +530,20 @@ fn minimal_big_delta_line(
     acr_timing::minimal_osd::format_minimal_big_delta_opt(delta_opt, cfg.rtss, style, scale)
 }
 
+fn build_rtss_pre_lock_message(cfg: &CliConfig) -> String {
+    use acr_timing::osd_template::OsdTemplatePreset;
+
+    if !cfg.rtss || cfg.osd_templates.preset != OsdTemplatePreset::Minimal {
+        return String::new();
+    }
+    let game_data_available = cfg.game_clock.enabled
+        && acr_timing::minimal_osd::game_clock_timer_ready(
+            &cfg.game_clock.jsonl_path,
+            cfg.game_clock.max_sample_age_sec,
+        );
+    acr_timing::minimal_osd::compose_minimal_pre_lock_osd(game_data_available)
+}
+
 fn build_rtss_timing_message(
     ts: &mut LiveTimingState,
     cfg: &CliConfig,
@@ -529,6 +551,8 @@ fn build_rtss_timing_message(
     car_osd: &str,
     now: Instant,
     game_race_s: Option<f64>,
+    pause_dash: bool,
+    pause_osd: &mut acr_timing::game_clock_sync::PauseOsdState,
     sector_status_line: &Option<(String, Instant)>,
 ) -> String {
     use acr_timing::osd_template::OsdTemplatePreset;
@@ -576,6 +600,7 @@ fn build_rtss_timing_message(
                 car_osd,
                 now,
                 pre_start,
+                pause_dash,
                 cfg.rtss,
                 &cfg.delta_display.colors,
                 game_race_s,
@@ -596,20 +621,28 @@ fn build_rtss_timing_message(
         }
     }
 
-    let stage_delta = {
-        let session_refs: Vec<_> = ts.stage_sector_sessions.iter().collect();
-        if session_refs.is_empty() {
-            None
-        } else {
-            stage_sessions_scope_delta(
-                &session_refs,
-                timing_pb,
-                car_osd,
-                cfg.delta_display.delta_scope,
-            )
-        }
+    let delta_line = if pre_start {
+        acr_timing::minimal_osd::format_minimal_pre_start_big_delta(
+            cfg.rtss,
+            &cfg.delta_display.colors,
+            cfg.osd_templates.live_delta_font_scale,
+        )
+    } else {
+        let stage_delta = {
+            let session_refs: Vec<_> = ts.stage_sector_sessions.iter().collect();
+            if session_refs.is_empty() {
+                None
+            } else {
+                stage_sessions_scope_delta(
+                    &session_refs,
+                    timing_pb,
+                    car_osd,
+                    cfg.delta_display.delta_scope,
+                )
+            }
+        };
+        minimal_big_delta_line(ts, cfg, stage_delta, pause_dash, pause_osd)
     };
-    let delta_line = minimal_big_delta_line(ts, cfg, stage_delta);
 
     let mut status = if pre_start {
         let timer_ready = cfg.game_clock.enabled
@@ -900,8 +933,14 @@ fn subsection_timing_active(state: &LiveTimingState) -> bool {
 fn timing_anchor_now(
     packet_id: i32,
     distance_traveled_m: f64,
+    game_race_sec: Option<f64>,
 ) -> acr_timing::run_timing_clock::TimingAnchor {
-    acr_timing::run_timing_clock::TimingAnchor::new(packet_id, Instant::now(), distance_traveled_m)
+    acr_timing::run_timing_clock::TimingAnchor::new(
+        packet_id,
+        Instant::now(),
+        distance_traveled_m,
+        game_race_sec,
+    )
 }
 
 fn compute_subsection_leg_dt(
@@ -909,7 +948,21 @@ fn compute_subsection_leg_dt(
     packet_id: i32,
     now: Instant,
     cfg: &acr_timing::timing_frame_quality::TimingQualityConfig,
+    game_clock: &acr_timing::game_clock_sync::GameClockCorrector,
 ) -> Option<(f64, f64)> {
+    if game_clock.enabled() {
+        if let (Some(hud), Some(anchor)) = (
+            game_clock.game_race_hud_sec(),
+            state.run_clock.leg_anchor()?.game_race_sec,
+        ) {
+            let sim = (hud - anchor).max(0.0);
+            if sim > 0.05 {
+                let dt = finalize_subsection_split_dt(state, sim, cfg);
+                return Some((dt, sim));
+            }
+            return None;
+        }
+    }
     let (sim, _wall) = state.run_clock.leg_duration_sim_and_wall(packet_id, now)?;
     if sim <= 0.05 {
         return None;
@@ -1447,11 +1500,16 @@ fn process_stage_sector_sessions_on_step(
     stage_sector_html_run_counter: &mut usize,
     speed_kmh_now: f64,
     game_clock_sector: &mut Option<acr_timing::game_clock_sector_override::GameClockSectorAdopter>,
+    game_clock: &mut acr_timing::game_clock_sync::GameClockCorrector,
 ) {
     if state.stage_sector_sessions.is_empty() {
         return;
     }
     let now_inst = Instant::now();
+    if game_clock.enabled() {
+        game_clock.poll_now(Some(graphics_distance_traveled as f64));
+    }
+    let game_race_hud = game_clock.game_race_hud_sec();
     if let Some(adopter) = game_clock_sector.as_mut() {
         let commits = adopter.drain_commit_ready(now_inst, &state.stage_sector_sessions);
         for c in commits {
@@ -1496,6 +1554,7 @@ fn process_stage_sector_sessions_on_step(
                 packet_id,
                 physics_hz,
                 now_inst,
+                game_race_hud,
             )
         };
         let Some(outcome) = outcome else {
@@ -2775,6 +2834,15 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
     let mut stillstand_log_state = acr_timing::physics_wheel::StillstandLogState::default();
     let mut frame_monitor =
         acr_timing::timing_frame_quality::TimingFrameMonitor::new(cfg.timing_quality.clone());
+    let mut game_clock = acr_timing::game_clock_sync::GameClockCorrector::new(cfg.game_clock.clone());
+    let mut pause_osd = acr_timing::game_clock_sync::PauseOsdState::default();
+    let mut last_physics_packet_id: Option<i32> = None;
+    if game_clock.enabled() {
+        eprintln!(
+            "game_clock sync: enabled, jsonl={}",
+            cfg.game_clock.jsonl_path.display()
+        );
+    }
     let mut game_clock_sector = cfg
         .game_clock_sector
         .clone()
@@ -2827,8 +2895,20 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                     data.physics.packet_id, data.physics
                 );
             }
+            let pkt = data.physics.packet_id;
+            let dt_sim = match last_physics_packet_id {
+                Some(prev) if pkt >= prev => (pkt - prev) as f64 / cfg.timing_quality.physics_hz,
+                _ => 0.0,
+            };
+            last_physics_packet_id = Some(pkt);
+            if dt_sim > 0.0 {
+                game_clock.tick(
+                    dt_sim,
+                    Some(data.graphics.distance_traveled as f64),
+                );
+            }
             let tick_stall_excess = frame_monitor.tick_timing_excess(&data.physics);
-            if tick_stall_excess > 0.0 {
+            if tick_stall_excess > 0.0 && !game_clock.timing_frozen() {
                 if let Some(state) = timing_state.as_mut() {
                     for session in &mut state.stage_sector_sessions {
                         if session.run.armed && !session.run.completed {
@@ -2885,6 +2965,8 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                     stable_selected = None;
                     active_track_name = None;
                     timing_state = None;
+                    game_clock.reset();
+                    pause_osd.reset();
                     active_timing_stage_slug = None;
                     latest_timing_line = None;
                     sector_status_line = Some((
@@ -2944,7 +3026,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                         .map(|m| m.label.as_str());
                     (
                         sess.run.armed,
-                        sess.run.live_leg_elapsed_sec(now),
+                        sess.run.live_leg_elapsed_sec(now, game_clock.game_race_hud_sec()),
                         next,
                     )
                 })
@@ -2998,6 +3080,8 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                 &timing_event_bus,
                                 &cfg.timing_reference_store_path,
                             );
+                            game_clock.reset();
+                            pause_osd.reset();
                             grid_timing_reset_still_since = None;
                             latest_timing_line = None;
                             sector_status_line = Some((
@@ -3743,6 +3827,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         pkt,
                                         now_inst,
                                         &cfg.timing_quality,
+                                        &game_clock,
                                     ) {
                                         let car_model =
                                             data.statics.car_model.trim();
@@ -3870,7 +3955,11 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 ));
                                             }
                                         }
-                                        state.run_clock.commit_leg(timing_anchor_now(pkt, odo_m));
+                                        state.run_clock.commit_leg(timing_anchor_now(
+                                            pkt,
+                                            odo_m,
+                                            game_clock.game_race_hud_sec(),
+                                        ));
                                         reset_subsection_leg_timing_accumulators(state);
                                         state.leg_stats.reset();
                                         set_leg_entry_speed(state, exit_speed);
@@ -3885,6 +3974,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         state.run_clock.arm_run(timing_anchor_now(
                                             data.physics.packet_id,
                                             odo_m,
+                                            game_clock.game_race_hud_sec(),
                                         ));
                                         eprintln!("cumulative: timer anchored at Start (packet_id)");
                                         arm_modular_timing_run(state, cfg, car_model_live);
@@ -3919,6 +4009,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         &mut stage_sector_html_run_counter,
                                         speed_kmh_now,
                                         &mut game_clock_sector,
+                                        &mut game_clock,
                                     );
                                 }
                             }
@@ -3999,6 +4090,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 state.run_clock.arm_run(timing_anchor_now(
                                                     data.physics.packet_id,
                                                     data.graphics.distance_traveled as f64,
+                                                    game_clock.game_race_hud_sec(),
                                                 ));
                                                 let car_model = if car_model_now.is_empty() {
                                                     "unknown_car"
@@ -4048,6 +4140,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                     state.run_clock.arm_run(timing_anchor_now(
                                         data.physics.packet_id,
                                         data.graphics.distance_traveled as f64,
+                                        game_clock.game_race_hud_sec(),
                                     ));
                                     set_leg_entry_speed(state, data.physics.speed_kmh);
                                 }
@@ -4187,6 +4280,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         &mut stage_sector_html_run_counter,
                                         speed_kmh_now,
                                         &mut game_clock_sector,
+                                        &mut game_clock,
                                     );
                                 }
                             }
@@ -4234,6 +4328,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                                 pkt,
                                                                 now_inst,
                                                                 &cfg.timing_quality,
+                                                                &game_clock,
                                                             )
                                                         {
                                                             let _ = dt_raw;
@@ -4299,6 +4394,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 state.run_clock.commit_leg(timing_anchor_now(
                                                     data.physics.packet_id,
                                                     data.graphics.distance_traveled as f64,
+                                                    game_clock.game_race_hud_sec(),
                                                 ));
                                                 state.last_sector_idx = Some(sector);
                                                 state.leg_stats.reset();
@@ -4325,6 +4421,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                             pkt,
                                                             now_inst,
                                                             &cfg.timing_quality,
+                                                            &game_clock,
                                                         )
                                                     {
                                                         let dist_m =
@@ -4393,7 +4490,9 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                         Some((passed_line.clone(), Instant::now()));
                                                 }
                                                 state.run_clock.commit_leg(timing_anchor_now(
-                                                    pkt, odo_m,
+                                                    pkt,
+                                                    odo_m,
+                                                    game_clock.game_race_hud_sec(),
                                                 ));
                                                 state.last_sector_idx = Some(to);
                                                 set_leg_entry_speed(state, data.physics.speed_kmh);
@@ -4416,6 +4515,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                     state.run_clock.commit_leg(timing_anchor_now(
                                                         data.physics.packet_id,
                                                         data.graphics.distance_traveled as f64,
+                                                        game_clock.game_race_hud_sec(),
                                                     ));
                                                     state.leg_stats.reset();
                                                     set_leg_entry_speed(state, data.physics.speed_kmh);
@@ -4683,7 +4783,8 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                         last_sector_wait_log = Instant::now();
                     }
                     let now_osd = Instant::now();
-                    let game_race_s = game_race_time_for_osd(cfg);
+                    let game_race_s = game_clock.game_race_hud_sec();
+                    let pause_dash = game_clock.osd_show_pause_dash(&mut pause_osd);
                     let msg = if let Some(ts) = timing_state.as_mut() {
                         let car_osd = locked_car_model
                             .as_deref()
@@ -4702,6 +4803,8 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                             car_osd,
                             now_osd,
                             game_race_s,
+                            pause_dash,
+                            &mut pause_osd,
                             &sector_status_line,
                         )
                     } else {
@@ -4986,6 +5089,21 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                 push_rtss_osd(cfg, &msg)?;
                 last_rtss_msg = msg;
                 last_rtss_push = Instant::now();
+            } else if locked_track.is_none() {
+                let msg = build_rtss_pre_lock_message(cfg);
+                if !msg.is_empty()
+                    && (msg != last_rtss_msg || last_rtss_push.elapsed() >= Duration::from_secs(2))
+                {
+                    push_rtss_osd(cfg, &msg)?;
+                    last_rtss_msg = msg;
+                    last_rtss_push = Instant::now();
+                } else if msg.is_empty()
+                    && last_rtss_msg == acr_timing::minimal_osd::GAME_DATA_AVAILABLE_TEXT
+                {
+                    let _ = push_rtss_osd(cfg, "");
+                    last_rtss_msg.clear();
+                    last_rtss_push = Instant::now();
+                }
             }
         } else {
             if no_data_since.is_none() {

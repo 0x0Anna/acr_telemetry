@@ -365,6 +365,100 @@ impl GameClockCorrector {
         self.last_sample_read = None;
         self.last_our_distance_m = None;
     }
+
+    /// JSONL considered live for pause OSD (see `TIMING_OPERATING_MODES.md` §6).
+    pub fn jsonl_fresh_for_pause_osd(&self) -> bool {
+        const MAX_AGE_SEC: f64 = 2.0;
+        self.last_sample_read
+            .map(|t| t.elapsed().as_secs_f64() < MAX_AGE_SEC)
+            .unwrap_or(false)
+    }
+
+    /// Do not advance subsection/stage timing or stall-excess while game HUD time is frozen.
+    pub fn timing_frozen(&self) -> bool {
+        if !self.cfg.enabled || !self.initialized || !self.jsonl_fresh_for_pause_osd() {
+            return false;
+        }
+        let live = self.game_race_live_sec();
+        let diverged = match (self.replica_race_time_sec(), live) {
+            (Some(rep), Some(game)) => (rep - game).abs() > OSD_PAUSE_DIVERGE_SEC,
+            _ => false,
+        };
+        !self.race_time_running() || diverged
+    }
+}
+
+/// Pause handling for the middle cumulative-Δ RTSS line (`--` until resume).
+#[derive(Debug, Default)]
+pub struct PauseOsdState {
+    latched: bool,
+    last_hud_sec: Option<f64>,
+    resume_ticks: u8,
+    /// Cumulative Δ frozen when pause OSD latches (display only).
+    pub frozen_cum_delta_sec: Option<f64>,
+}
+
+impl PauseOsdState {
+    pub fn reset(&mut self) {
+        *self = Self::default();
+    }
+}
+
+const OSD_PAUSE_DIVERGE_SEC: f64 = 1.0;
+const OSD_RESUME_MAX_STEP_SEC: f64 = 1.0;
+
+impl GameClockCorrector {
+    /// Whether the big cumulative-Δ line should show `--` (pause / replica vs game diverged).
+    pub fn osd_show_pause_dash(&self, pause: &mut PauseOsdState) -> bool {
+        if !self.cfg.enabled || !self.initialized {
+            pause.reset();
+            return false;
+        }
+        if !self.jsonl_fresh_for_pause_osd() {
+            pause.reset();
+            return false;
+        }
+
+        let hud = self.game_race_hud_sec();
+        let live = self.game_race_live_sec();
+        let diverged = match (self.replica_race_time_sec(), live) {
+            (Some(rep), Some(game)) => (rep - game).abs() > OSD_PAUSE_DIVERGE_SEC,
+            _ => false,
+        };
+        let paused_now = !self.race_time_running() || diverged;
+
+        if paused_now {
+            pause.latched = true;
+            pause.resume_ticks = 0;
+            pause.last_hud_sec = hud;
+            return true;
+        }
+
+        if !pause.latched {
+            pause.last_hud_sec = hud;
+            return false;
+        }
+
+        if let (Some(prev), Some(cur)) = (pause.last_hud_sec, hud) {
+            let dt = cur - prev;
+            if dt > 0.0 && dt < OSD_RESUME_MAX_STEP_SEC {
+                pause.resume_ticks = pause.resume_ticks.saturating_add(1);
+            } else {
+                pause.resume_ticks = 0;
+            }
+        } else if hud.is_some() {
+            pause.resume_ticks = 1;
+        }
+        pause.last_hud_sec = hud;
+
+        if pause.resume_ticks >= 2 {
+            pause.latched = false;
+            pause.resume_ticks = 0;
+            false
+        } else {
+            true
+        }
+    }
 }
 
 /// Last JSON object line + file age (seconds), even when older than `max_sample_age_sec`.
@@ -616,6 +710,26 @@ mod tests {
         c.apply_sample(sample, Instant::now(), Some(356.0));
         assert!((c.rate_time - 1.01).abs() < 0.0001);
         assert!((c.replica_time_sec - 20.2175).abs() < 0.001);
+    }
+
+    #[test]
+    fn osd_pause_dash_while_frozen() {
+        let cfg = GameClockSyncConfig {
+            enabled: true,
+            ..Default::default()
+        };
+        let mut c = GameClockCorrector::new(cfg);
+        let mut pause = PauseOsdState::default();
+        c.apply_sample(
+            GameClockSample {
+                race_time_s: Some(50.0),
+                race_time_valid: false,
+                ..GameClockSample::default_test()
+            },
+            Instant::now(),
+            None,
+        );
+        assert!(c.osd_show_pause_dash(&mut pause));
     }
 
     #[test]

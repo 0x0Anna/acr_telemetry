@@ -1,7 +1,8 @@
 //! Three-line RTSS layout for `[osd_display] preset = "minimal"`.
 //!
-//! Pre-start: sector PB refs | big Δ (`--` or `0`) | `Timer ready` / `Timing ready`
-//! In-run: `[time ±Δ]` tape (+ penalty suffix) | big Δ | status (empty; flashes elsewhere)
+//! Pre-lock: `Game Data available` when JSONL is fresh (optional single line).
+//! Pre-start: `ref: [t1] [t2] … tot: [sum]` | big `0` | `Timer ready` / `Timing ready`
+//! In-run: `[time ±Δ]` … | big Δ | status empty (flashes elsewhere)
 
 use std::path::Path;
 use std::time::Instant;
@@ -16,6 +17,17 @@ use crate::timing_pb::TimingPbStore;
 
 const PRESTART_RACE_TIME_MAX_SEC: f64 = 3.0;
 
+/// Upper-line placeholder for one sector slot while paused.
+pub const MINIMAL_PAUSE_SECTOR_SLOT: &str = "[--]";
+
+/// All sector slots show `--` (pause / game time frozen).
+pub fn format_minimal_pause_sector_tape(sector_count: usize) -> String {
+    let n = sector_count.max(1);
+    std::iter::repeat_n(MINIMAL_PAUSE_SECTOR_SLOT, n)
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
 pub fn ready_status_text(timer_ready: bool) -> &'static str {
     if timer_ready {
         "Timer ready"
@@ -24,8 +36,48 @@ pub fn ready_status_text(timer_ready: bool) -> &'static str {
     }
 }
 
+/// RTSS status before track-lock when UE4SS JSONL is fresh.
+pub const GAME_DATA_AVAILABLE_TEXT: &str = "Game Data available";
+
 pub fn game_clock_timer_ready(path: &Path, max_age_sec: f64) -> bool {
     read_latest_sample(path, max_age_sec).is_some()
+}
+
+/// Single-line RTSS before track-lock (see `TIMING_OPERATING_MODES.md` §3.1).
+pub fn compose_minimal_pre_lock_osd(game_data_available: bool) -> String {
+    if game_data_available {
+        GAME_DATA_AVAILABLE_TEXT.to_string()
+    } else {
+        String::new()
+    }
+}
+
+/// Pre-start upper line: `ref: [1:31.45] … tot: [9:12.34]`.
+pub fn format_minimal_pre_start_reference_line(refs: &[Option<f64>]) -> String {
+    let brackets = format_minimal_reference_tape(refs);
+    if brackets.is_empty() {
+        return String::new();
+    }
+    let tot: f64 = refs
+        .iter()
+        .filter_map(|r| *r)
+        .filter(|t| t.is_finite() && *t >= 0.0)
+        .sum();
+    let tot_part = if tot >= 0.05 {
+        format!(" tot: [{}]", format_duration(tot))
+    } else {
+        String::new()
+    };
+    format!("ref: {brackets}{tot_part}")
+}
+
+/// Pre-start middle line: cumulative Δ fixed at zero.
+pub fn format_minimal_pre_start_big_delta(
+    rtss: bool,
+    delta_style: &DeltaColorStyle,
+    font_scale: u32,
+) -> String {
+    format_minimal_big_delta(0.0, rtss, delta_style, font_scale)
 }
 
 pub fn penalty_from_sample(sample: &GameClockSample) -> Option<f64> {
@@ -203,6 +255,7 @@ pub fn format_minimal_stage_upper(
     car_model: &str,
     now: Instant,
     pre_start: bool,
+    pause_dash: bool,
     rtss: bool,
     delta_style: &DeltaColorStyle,
     game_race_s: Option<f64>,
@@ -216,13 +269,15 @@ pub fn format_minimal_stage_upper(
         &session.markers.markers,
     );
     if pre_start {
-        format_minimal_reference_tape(&refs)
+        format_minimal_pre_start_reference_line(&refs)
+    } else if pause_dash {
+        format_minimal_pause_sector_tape(session.run.sector_secs.len())
     } else {
         format_minimal_run_tape(
             &refs,
             &session.run.sector_secs,
             session.run.highlight_leg_index(),
-            session.run.live_leg_elapsed_sec(now),
+            session.run.live_leg_elapsed_sec(now, game_race_s),
             rtss,
             delta_style,
         )
@@ -235,6 +290,7 @@ pub fn format_minimal_multi_stage_upper(
     car_model: &str,
     now: Instant,
     pre_start: bool,
+    pause_dash: bool,
     rtss: bool,
     delta_style: &DeltaColorStyle,
     game_race_s: Option<f64>,
@@ -245,7 +301,7 @@ pub fn format_minimal_multi_stage_upper(
         .take(crate::stage_timing_config::MAX_PARALLEL_STAGE_TIMINGS)
         .map(|sess| {
             format_minimal_stage_upper(
-                sess, pb, car_model, now, pre_start, rtss, delta_style, game_race_s,
+                sess, pb, car_model, now, pre_start, pause_dash, rtss, delta_style, game_race_s,
             )
         })
         .filter(|s| !s.is_empty())
@@ -287,5 +343,23 @@ mod tests {
     fn ready_status_strings() {
         assert_eq!(ready_status_text(true), "Timer ready");
         assert_eq!(ready_status_text(false), "Timing ready");
+    }
+
+    #[test]
+    fn pre_start_reference_line_has_ref_prefix_and_tot() {
+        let refs = vec![Some(91.5), Some(102.0), Some(61.0), Some(120.0)];
+        let s = format_minimal_pre_start_reference_line(&refs);
+        assert!(s.starts_with("ref: "));
+        assert!(s.contains("tot: ["));
+        assert!(s.contains("6:14")); // 91.5+102+61+120 = 374.5s = 6:14.50
+    }
+
+    #[test]
+    fn pre_lock_osd_only_when_data_available() {
+        assert_eq!(
+            compose_minimal_pre_lock_osd(true),
+            GAME_DATA_AVAILABLE_TEXT
+        );
+        assert!(compose_minimal_pre_lock_osd(false).is_empty());
     }
 }

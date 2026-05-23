@@ -14,14 +14,22 @@ pub struct TimingAnchor {
     pub at: Instant,
     /// `graphics.distance_traveled` (not zero-based; use deltas between anchors).
     pub distance_traveled_m: f64,
+    /// UE4SS rally time at anchor (when `[game_clock]` sync is enabled).
+    pub game_race_sec: Option<f64>,
 }
 
 impl TimingAnchor {
-    pub fn new(packet_id: i32, at: Instant, distance_traveled_m: f64) -> Self {
+    pub fn new(
+        packet_id: i32,
+        at: Instant,
+        distance_traveled_m: f64,
+        game_race_sec: Option<f64>,
+    ) -> Self {
         Self {
             packet_id,
             at,
             distance_traveled_m,
+            game_race_sec: game_race_sec.filter(|t| t.is_finite() && *t >= 0.0),
         }
     }
 }
@@ -148,7 +156,7 @@ mod tests {
     fn leg_sim_from_packet_delta() {
         let t0 = Instant::now();
         let mut clock = RunTimingClock::new(333.0);
-        clock.arm_run(TimingAnchor::new(1000, t0, 5000.0));
+        clock.arm_run(TimingAnchor::new(1000, t0, 5000.0, None));
         let dt = clock.leg_sim_sec(1333).unwrap();
         assert!((dt - 1.0).abs() < 0.01, "dt={dt}");
     }
@@ -156,7 +164,7 @@ mod tests {
     #[test]
     fn distance_is_delta_not_zero_based() {
         let mut clock = RunTimingClock::new(333.0);
-        clock.arm_run(TimingAnchor::new(0, Instant::now(), 12_345.0));
+        clock.arm_run(TimingAnchor::new(0, Instant::now(), 12_345.0, None));
         assert!((clock.leg_distance_m(12_500.0).unwrap() - 155.0).abs() < 0.01);
     }
 }

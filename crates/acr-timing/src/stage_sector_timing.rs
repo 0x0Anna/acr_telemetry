@@ -26,6 +26,8 @@ pub struct StageSectorRun {
     pub next_marker_idx: usize,
     pub anchor_packet_id: Option<i32>,
     pub anchor_instant: Option<Instant>,
+    /// UE4SS rally time at leg anchor (when game clock sync is active).
+    pub anchor_game_race_sec: Option<f64>,
     pub completed: bool,
     /// Σ stall excess (pause / wall without physics steps) for current leg only.
     pub leg_excess_wall_sec: f64,
@@ -41,6 +43,7 @@ impl StageSectorRun {
             next_marker_idx: 0,
             anchor_packet_id: None,
             anchor_instant: None,
+            anchor_game_race_sec: None,
             completed: false,
             leg_excess_wall_sec: 0.0,
             timing_position_reset: false,
@@ -94,9 +97,16 @@ impl StageSectorRun {
         None
     }
 
-    pub fn live_leg_elapsed_sec(&self, now: Instant) -> Option<f64> {
+    pub fn live_leg_elapsed_sec(
+        &self,
+        now: Instant,
+        game_race_hud_sec: Option<f64>,
+    ) -> Option<f64> {
         if self.active_leg_index().is_none() {
             return None;
+        }
+        if let (Some(cur), Some(anchor)) = (game_race_hud_sec, self.anchor_game_race_sec) {
+            return Some((cur - anchor).max(0.0));
         }
         self.anchor_instant
             .map(|t| now.duration_since(t).as_secs_f64())
@@ -185,6 +195,38 @@ pub fn stage_scope_delta_sec(
     }
     let cur_sum: f64 = current_sector_secs.iter().sum();
     Some(cur_sum - ref_sum)
+}
+
+/// Leg duration at a main-sector gate: prefer UE4SS game time, else Δpacket_id / wall.
+pub fn leg_duration_at_cross(
+    anchor_packet_id: Option<i32>,
+    anchor_game_race_sec: Option<f64>,
+    game_race_hud_sec: Option<f64>,
+    anchor_instant: Option<Instant>,
+    packet_id: i32,
+    physics_hz: f64,
+    now: Instant,
+) -> Option<f64> {
+    if let (Some(hud), Some(start)) = (game_race_hud_sec, anchor_game_race_sec) {
+        let dt = (hud - start).max(0.0);
+        if dt > 0.05 {
+            return Some(dt);
+        }
+        return None;
+    }
+    let from = anchor_packet_id?;
+    let dt = if packet_id >= from {
+        (packet_id - from) as f64 / physics_hz.max(1.0)
+    } else {
+        anchor_instant
+            .map(|t| now.duration_since(t).as_secs_f64())
+            .unwrap_or(0.0)
+    };
+    if dt > 0.05 {
+        Some(dt)
+    } else {
+        None
+    }
 }
 
 /// Personal-best leg times from `timing_pb.toml` (one entry per stage sector leg).
@@ -380,7 +422,7 @@ pub fn format_multi_stage_sector_line(
                 &refs,
                 &sess.run.sector_secs,
                 sess.run.highlight_leg_index(),
-                sess.run.live_leg_elapsed_sec(now),
+                sess.run.live_leg_elapsed_sec(now, None),
                 rtss_safe,
                 rtss_safe,
                 delta_style,
@@ -610,6 +652,7 @@ pub fn observe_stage_crossing(
     packet_id: i32,
     physics_hz: f64,
     now: Instant,
+    game_race_hud_sec: Option<f64>,
 ) -> Option<StageCrossOutcome> {
     if session.run.completed {
         return None;
@@ -624,6 +667,7 @@ pub fn observe_stage_crossing(
                 session.run.armed = true;
                 session.run.anchor_packet_id = Some(packet_id);
                 session.run.anchor_instant = Some(now);
+                session.run.anchor_game_race_sec = game_race_hud_sec;
                 session.run.next_marker_idx = 1;
                 return Some(StageCrossOutcome {
                     leg_index: None,
@@ -661,6 +705,7 @@ pub fn observe_stage_crossing(
             session.run.armed = true;
             session.run.anchor_packet_id = Some(packet_id);
             session.run.anchor_instant = Some(now);
+            session.run.anchor_game_race_sec = game_race_hud_sec;
             session.run.next_marker_idx = next_idx + 1;
             Some(StageCrossOutcome {
                 leg_index: None,
@@ -677,22 +722,21 @@ pub fn observe_stage_crossing(
                 return None;
             }
             let prev_order = session.markers.markers.get(next_idx.saturating_sub(1)).map(|m| m.order).unwrap_or(0);
-            let hz = physics_hz.max(1.0);
-            let dt = session.run.anchor_packet_id.map(|from| {
-                if packet_id >= from {
-                    (packet_id - from) as f64 / hz
-                } else {
-                    session
-                        .run
-                        .anchor_instant
-                        .map(|t| now.duration_since(t).as_secs_f64())
-                        .unwrap_or(0.0)
+            let dt = match leg_duration_at_cross(
+                session.run.anchor_packet_id,
+                session.run.anchor_game_race_sec,
+                game_race_hud_sec,
+                session.run.anchor_instant,
+                packet_id,
+                physics_hz,
+                now,
+            ) {
+                Some(dt) => dt,
+                None => {
+                    session.run.next_marker_idx = next_idx + 1;
+                    return None;
                 }
-            })?;
-            if dt <= 0.05 {
-                session.run.next_marker_idx = next_idx + 1;
-                return None;
-            }
+            };
             // Leg index: 0 = start→S1, 1 = S1→S2, … (markers after timing_start).
             let leg_index = next_idx.saturating_sub(1);
             if leg_index < session.run.sector_secs.len() {
@@ -701,6 +745,7 @@ pub fn observe_stage_crossing(
             let finished = marker.role == TimingSectorRole::Finish;
             session.run.anchor_packet_id = Some(packet_id);
             session.run.anchor_instant = Some(now);
+            session.run.anchor_game_race_sec = game_race_hud_sec;
             session.run.next_marker_idx = next_idx + 1;
             if finished {
                 session.run.completed = true;
@@ -926,6 +971,21 @@ duration_sec = 90.5
 
         assert!(stage_scope_delta_sec(&cur, &[None, Some(106.82)]).is_none());
         assert!(stage_scope_delta_sec(&[], &refs).is_none());
+    }
+
+    #[test]
+    fn leg_duration_at_cross_prefers_game_time() {
+        let dt = leg_duration_at_cross(
+            Some(1000),
+            Some(10.0),
+            Some(42.5),
+            None,
+            2000,
+            333.0,
+            Instant::now(),
+        )
+        .unwrap();
+        assert!((dt - 32.5).abs() < 1e-6);
     }
 
     #[test]
