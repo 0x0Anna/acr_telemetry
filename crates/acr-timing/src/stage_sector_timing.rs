@@ -26,8 +26,8 @@ pub struct StageSectorRun {
     pub next_marker_idx: usize,
     pub anchor_packet_id: Option<i32>,
     pub anchor_instant: Option<Instant>,
-    /// UE4SS rally time at leg anchor (when game clock sync is active).
-    pub anchor_game_race_sec: Option<f64>,
+    /// `race_time_s` from UE4SS at timing start (stage-relative HUD for legs).
+    pub game_race_anchor_sec: Option<f64>,
     pub completed: bool,
     /// Σ stall excess (pause / wall without physics steps) for current leg only.
     pub leg_excess_wall_sec: f64,
@@ -43,7 +43,7 @@ impl StageSectorRun {
             next_marker_idx: 0,
             anchor_packet_id: None,
             anchor_instant: None,
-            anchor_game_race_sec: None,
+            game_race_anchor_sec: None,
             completed: false,
             leg_excess_wall_sec: 0.0,
             timing_position_reset: false,
@@ -97,6 +97,7 @@ impl StageSectorRun {
         None
     }
 
+    /// Live time in the current main-sector bracket: `race_time_s` (sync-corrected) − Σ finished sectors.
     pub fn live_leg_elapsed_sec(
         &self,
         now: Instant,
@@ -105,8 +106,10 @@ impl StageSectorRun {
         if self.active_leg_index().is_none() {
             return None;
         }
-        if let (Some(cur), Some(anchor)) = (game_race_hud_sec, self.anchor_game_race_sec) {
-            return Some((cur - anchor).max(0.0));
+        if let Some(hud) = game_race_hud_sec.filter(|t| t.is_finite()) {
+            let rel = (hud - self.game_race_anchor_sec.unwrap_or(0.0)).max(0.0);
+            let completed_sum: f64 = self.sector_secs.iter().filter_map(|t| *t).sum();
+            return Some((rel - completed_sum).max(0.0));
         }
         self.anchor_instant
             .map(|t| now.duration_since(t).as_secs_f64())
@@ -197,20 +200,28 @@ pub fn stage_scope_delta_sec(
     Some(cur_sum - ref_sum)
 }
 
-/// Leg duration at a main-sector gate: prefer UE4SS game time, else Δpacket_id / wall.
+/// Leg duration at a main-sector gate: `(hud − race_anchor) − Σ prior legs`, else packet/wall.
 pub fn leg_duration_at_cross(
-    anchor_packet_id: Option<i32>,
-    anchor_game_race_sec: Option<f64>,
+    sector_secs: &[Option<f64>],
+    leg_index: usize,
     game_race_hud_sec: Option<f64>,
+    game_race_anchor_sec: Option<f64>,
+    anchor_packet_id: Option<i32>,
     anchor_instant: Option<Instant>,
     packet_id: i32,
     physics_hz: f64,
     now: Instant,
 ) -> Option<f64> {
-    if let (Some(hud), Some(start)) = (game_race_hud_sec, anchor_game_race_sec) {
-        let dt = (hud - start).max(0.0);
+    if let Some(hud) = game_race_hud_sec.filter(|t| t.is_finite()) {
+        let rel = (hud - game_race_anchor_sec.unwrap_or(0.0)).max(0.0);
+        let prior: f64 = sector_secs
+            .iter()
+            .take(leg_index)
+            .filter_map(|t| *t)
+            .sum();
+        let dt = rel - prior;
         if dt > 0.05 {
-            return Some(dt);
+            return Some(dt.max(0.0));
         }
         return None;
     }
@@ -667,7 +678,7 @@ pub fn observe_stage_crossing(
                 session.run.armed = true;
                 session.run.anchor_packet_id = Some(packet_id);
                 session.run.anchor_instant = Some(now);
-                session.run.anchor_game_race_sec = game_race_hud_sec;
+                session.run.game_race_anchor_sec = game_race_hud_sec;
                 session.run.next_marker_idx = 1;
                 return Some(StageCrossOutcome {
                     leg_index: None,
@@ -705,7 +716,7 @@ pub fn observe_stage_crossing(
             session.run.armed = true;
             session.run.anchor_packet_id = Some(packet_id);
             session.run.anchor_instant = Some(now);
-            session.run.anchor_game_race_sec = game_race_hud_sec;
+            session.run.game_race_anchor_sec = game_race_hud_sec;
             session.run.next_marker_idx = next_idx + 1;
             Some(StageCrossOutcome {
                 leg_index: None,
@@ -722,10 +733,13 @@ pub fn observe_stage_crossing(
                 return None;
             }
             let prev_order = session.markers.markers.get(next_idx.saturating_sub(1)).map(|m| m.order).unwrap_or(0);
+            let leg_index = next_idx.saturating_sub(1);
             let dt = match leg_duration_at_cross(
-                session.run.anchor_packet_id,
-                session.run.anchor_game_race_sec,
+                &session.run.sector_secs,
+                leg_index,
                 game_race_hud_sec,
+                session.run.game_race_anchor_sec,
+                session.run.anchor_packet_id,
                 session.run.anchor_instant,
                 packet_id,
                 physics_hz,
@@ -737,15 +751,12 @@ pub fn observe_stage_crossing(
                     return None;
                 }
             };
-            // Leg index: 0 = start→S1, 1 = S1→S2, … (markers after timing_start).
-            let leg_index = next_idx.saturating_sub(1);
             if leg_index < session.run.sector_secs.len() {
                 session.run.sector_secs[leg_index] = Some(dt);
             }
             let finished = marker.role == TimingSectorRole::Finish;
             session.run.anchor_packet_id = Some(packet_id);
             session.run.anchor_instant = Some(now);
-            session.run.anchor_game_race_sec = game_race_hud_sec;
             session.run.next_marker_idx = next_idx + 1;
             if finished {
                 session.run.completed = true;
@@ -975,17 +986,33 @@ duration_sec = 90.5
 
     #[test]
     fn leg_duration_at_cross_prefers_game_time() {
+        let secs = [Some(12.0), None, None, None];
         let dt = leg_duration_at_cross(
-            Some(1000),
-            Some(10.0),
+            &secs,
+            1,
             Some(42.5),
+            None,
+            Some(1000),
             None,
             2000,
             333.0,
             Instant::now(),
         )
         .unwrap();
-        assert!((dt - 32.5).abs() < 1e-6);
+        assert!((dt - 30.5).abs() < 1e-6);
+    }
+
+    #[test]
+    fn live_leg_is_hud_minus_completed_sectors() {
+        let mut run = StageSectorRun::new(4);
+        run.armed = true;
+        run.game_race_anchor_sec = Some(68.0);
+        run.sector_secs[0] = Some(90.23);
+        run.sector_secs[1] = Some(83.45);
+        let live = run
+            .live_leg_elapsed_sec(Instant::now(), Some(275.34))
+            .unwrap();
+        assert!((live - 33.66).abs() < 0.01);
     }
 
     #[test]

@@ -7,8 +7,9 @@
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
-use std::time::{Instant, SystemTime};
+use std::time::{Duration, Instant, SystemTime};
 
+use chrono::{Local, TimeZone};
 use serde::Deserialize;
 
 #[derive(Debug, Clone, Deserialize)]
@@ -61,6 +62,9 @@ pub struct GameClockSample {
     pub game_z: Option<f64>,
     #[serde(default)]
     pub t_process_ms: Option<u64>,
+    /// UE4SS mod wall clock (unix seconds) when the line was written.
+    #[serde(default)]
+    pub t_wall_s: Option<i64>,
     /// `"light"` = race time only; `"full"` includes sectors/ghost (UE4SS mod).
     #[serde(rename = "sample", default)]
     pub sample_kind: Option<String>,
@@ -101,6 +105,36 @@ impl Default for GameClockSyncConfig {
             time_soft_snap_blend: 0.35,
         }
     }
+}
+
+fn is_light_sample(s: &GameClockSample) -> bool {
+    s.sample_kind.as_deref() == Some("light")
+}
+
+/// Keep sector/ghost from the last full UE4SS line when a light tick omits them.
+pub fn merge_game_clock_sample(prev: Option<GameClockSample>, mut new: GameClockSample) -> GameClockSample {
+    let Some(p) = prev else {
+        return new;
+    };
+    if !is_light_sample(&new) {
+        return new;
+    }
+    if new.sectors.is_empty() {
+        new.sectors = p.sectors;
+        if new.sectors_source.is_none() {
+            new.sectors_source = p.sectors_source;
+        }
+        if new.sectors_debug.is_none() {
+            new.sectors_debug = p.sectors_debug;
+        }
+        if new.next_sector_index.is_none() {
+            new.next_sector_index = p.next_sector_index;
+        }
+    }
+    if new.ghost_ref.is_none() {
+        new.ghost_ref = p.ghost_ref;
+    }
+    new
 }
 
 pub fn default_jsonl_path() -> PathBuf {
@@ -169,6 +203,12 @@ pub struct GameClockCorrector {
     last_file_poll: Instant,
     last_our_distance_m: Option<f64>,
     initialized: bool,
+    last_sync_debug_log: Instant,
+    /// Wall clock when [`apply_sample`] last ingested JSONL.
+    last_apply_wall: Option<SystemTime>,
+    last_apply_game_t: Option<f64>,
+    last_apply_replica_before: Option<f64>,
+    last_apply_err_sec: Option<f64>,
 }
 
 impl GameClockCorrector {
@@ -184,6 +224,13 @@ impl GameClockCorrector {
             last_file_poll: Instant::now(),
             last_our_distance_m: None,
             initialized: false,
+            last_sync_debug_log: Instant::now()
+                .checked_sub(Duration::from_secs(3600))
+                .unwrap_or_else(Instant::now),
+            last_apply_wall: None,
+            last_apply_game_t: None,
+            last_apply_replica_before: None,
+            last_apply_err_sec: None,
         }
     }
 
@@ -310,20 +357,27 @@ impl GameClockCorrector {
                 self.replica_time_sec = game_t;
                 self.rate_time = 0.0;
             } else {
-                let err = game_t - self.replica_time_sec;
-                if err.abs() > self.cfg.time_snap_threshold_sec.max(0.05) {
+                // 1-Hz-Zeitkorrektur: Replik läuft weiter (physics tick), JSONL zieht nach.
+                let replica_before = self.replica_time_sec;
+                let err = game_t - replica_before;
+                self.last_apply_wall = Some(SystemTime::now());
+                self.last_apply_game_t = Some(game_t);
+                self.last_apply_replica_before = Some(replica_before);
+                self.last_apply_err_sec = Some(err);
+                let snap = self.cfg.time_snap_threshold_sec.max(0.05);
+                if err.abs() > snap {
                     self.replica_time_sec = game_t;
                     self.rate_time = 1.0;
                 } else if err.abs() > 1e-4 {
                     let horizon = self.cfg.expected_tick_sec.max(0.25);
-                    self.rate_time = (1.0 + err / horizon).clamp(
-                        1.0 - self.cfg.max_rate_adjust,
-                        1.0 + self.cfg.max_rate_adjust,
-                    );
                     let blend = self.cfg.time_soft_snap_blend.clamp(0.0, 1.0);
                     if blend > 0.0 {
                         self.replica_time_sec += err * blend;
                     }
+                    self.rate_time = (1.0 + err / horizon).clamp(
+                        1.0 - self.cfg.max_rate_adjust,
+                        1.0 + self.cfg.max_rate_adjust,
+                    );
                 } else {
                     self.rate_time = 1.0;
                 }
@@ -350,7 +404,8 @@ impl GameClockCorrector {
             }
         }
 
-        self.last_sample = Some(sample);
+        let merged = merge_game_clock_sample(self.last_sample.take(), sample);
+        self.last_sample = Some(merged);
         self.last_sample_read = Some(read_at);
     }
 
@@ -364,6 +419,17 @@ impl GameClockCorrector {
         self.last_sample = None;
         self.last_sample_read = None;
         self.last_our_distance_m = None;
+        self.last_apply_wall = None;
+        self.last_apply_game_t = None;
+        self.last_apply_replica_before = None;
+        self.last_apply_err_sec = None;
+    }
+
+    /// JSONL sample still within `[game_clock] max_sample_age_sec`.
+    pub fn jsonl_fresh_for_display(&self) -> bool {
+        self.last_sample_read
+            .map(|t| t.elapsed().as_secs_f64() < self.cfg.max_sample_age_sec)
+            .unwrap_or(false)
     }
 
     /// JSONL considered live for pause OSD (see `TIMING_OPERATING_MODES.md` §6).
@@ -372,6 +438,129 @@ impl GameClockCorrector {
         self.last_sample_read
             .map(|t| t.elapsed().as_secs_f64() < MAX_AGE_SEC)
             .unwrap_or(false)
+    }
+
+    /// Replik-Spielzeit für Live-Sektor und Gate-Math (läuft zwischen JSONL-Samples weiter).
+    ///
+    /// JSONL korrigiert die Replik via [`tick`] / [`apply_sample`] (1-Hz-Zeitkorrektur), ersetzt
+    /// die Anzeige nicht im Poll-Takt.
+    pub fn game_race_for_sector_display(&self) -> Option<f64> {
+        if !self.cfg.enabled || !self.initialized || !self.jsonl_fresh_for_display() {
+            return None;
+        }
+        self.game_race_hud_sec()
+    }
+
+    /// `race_time_s − replica` (positiv = Replik hinter Spiel-HUD).
+    pub fn replica_lag_vs_game_sec(&self) -> Option<f64> {
+        match (self.game_race_live_sec(), self.replica_race_time_sec()) {
+            (Some(game), Some(rep)) => Some(game - rep),
+            _ => None,
+        }
+    }
+
+    fn jsonl_file_age_sec(&self) -> Option<f64> {
+        let modified = std::fs::metadata(&self.cfg.jsonl_path).ok()?.modified().ok()?;
+        SystemTime::now().duration_since(modified).ok().map(|d| d.as_secs_f64())
+    }
+
+    fn fmt_wall(t: SystemTime) -> String {
+        match t.duration_since(SystemTime::UNIX_EPOCH) {
+            Ok(d) => Local
+                .timestamp_opt(d.as_secs() as i64, d.subsec_nanos())
+                .single()
+                .map(|dt| dt.format("%Y-%m-%d %H:%M:%S%.3f").to_string())
+                .unwrap_or_else(|| "?".into()),
+            Err(_) => "?".into(),
+        }
+    }
+
+    /// 1 Hz stderr line for `timing_debug`: system clock, last JSONL ingest, game vs replica.
+    pub fn maybe_log_sync_debug(&mut self, stage_anchor_sec: Option<f64>) {
+        if !self.cfg.enabled || !self.initialized {
+            return;
+        }
+        if self.last_sync_debug_log.elapsed() < Duration::from_secs(1) {
+            return;
+        }
+        self.last_sync_debug_log = Instant::now();
+
+        let wall_now = SystemTime::now();
+        let wall_s = Self::fmt_wall(wall_now);
+
+        let jsonl_read_ago = self
+            .last_sample_read
+            .map(|t| t.elapsed().as_secs_f64());
+        let jsonl_file_age = self.jsonl_file_age_sec();
+        let sample = self.last_sample.as_ref();
+        let jsonl_race = sample.and_then(|s| s.race_time_s);
+        let sample_kind = sample
+            .and_then(|s| s.sample_kind.as_deref())
+            .unwrap_or("-");
+        let valid = sample.map(|s| s.race_time_valid).unwrap_or(false);
+        let mod_wall = sample.and_then(|s| s.t_wall_s);
+
+        let hud = self.game_race_hud_sec();
+        let lag = self.replica_lag_vs_game_sec();
+        let rel_hud = stage_anchor_sec.and_then(|a| hud.map(|h| (h - a).max(0.0)));
+
+        let sync_wall = self
+            .last_apply_wall
+            .map(Self::fmt_wall)
+            .unwrap_or_else(|| "-".into());
+        let sync_ago = self
+            .last_apply_wall
+            .and_then(|w| wall_now.duration_since(w).ok())
+            .map(|d| d.as_secs_f64());
+        let sync_ago_s = sync_ago
+            .map(|a| format!("{a:.1}"))
+            .unwrap_or_else(|| "-".into());
+        let mod_wall_s = mod_wall
+            .map(|t| format!("{t}"))
+            .unwrap_or_else(|| "-".into());
+        let corr = match (
+            self.last_apply_err_sec,
+            self.last_apply_game_t,
+            self.last_apply_replica_before,
+        ) {
+            (Some(err), Some(g), Some(r0)) => format!(
+                "game−repl_vor={err:+.3}s (game={g:.3}s repl_vor={r0:.3}s)"
+            ),
+            _ => "keine Korrektur seit Start".into(),
+        };
+
+        eprintln!(
+            "[game_clock_sync] Aktuelle Systemzeit: {wall_s} | \
+letzte JSONL-Synchro (System): {sync_wall} vor {sync_ago_s}s | \
+JSONL-Inhalt: race_time_s={} sample={sample_kind} valid={valid} mod_t_wall_s={mod_wall_s} file_age={}s read_ago={}s sectors={} | \
+Spielzeit: JSONL_race_t={} Replik/HUD={} lag(JSONL−repl)={} rate={:.4} poll_iv={:.2}s | \
+stage_rel_hud={} (anchor={}) | letzte Korrektur: {corr}",
+            jsonl_race
+                .map(|t| format!("{t:.3}"))
+                .unwrap_or_else(|| "-".into()),
+            jsonl_file_age
+                .map(|a| format!("{a:.2}"))
+                .unwrap_or_else(|| "-".into()),
+            jsonl_read_ago
+                .map(|a| format!("{a:.2}"))
+                .unwrap_or_else(|| "-".into()),
+            sample.map(|s| s.sectors.len()).unwrap_or(0),
+            jsonl_race
+                .map(|t| format!("{t:.3}"))
+                .unwrap_or_else(|| "-".into()),
+            hud.map(|t| format!("{t:.3}"))
+                .unwrap_or_else(|| "-".into()),
+            lag.map(|l| format!("{l:+.3}s"))
+                .unwrap_or_else(|| "-".into()),
+            self.rate_time,
+            self.cfg.jsonl_poll_interval_sec,
+            rel_hud
+                .map(|t| format!("{t:.3}s"))
+                .unwrap_or_else(|| "-".into()),
+            stage_anchor_sec
+                .map(|a| format!("{a:.3}"))
+                .unwrap_or_else(|| "-".into()),
+        );
     }
 
     /// Do not advance subsection/stage timing or stall-excess while game HUD time is frozen.
@@ -666,6 +855,30 @@ mod tests {
     use super::*;
 
     #[test]
+    fn merge_light_sample_keeps_sectors() {
+        let full = GameClockSample {
+            race_time_s: Some(114.0),
+            sectors: vec![GameClockSectorRecord {
+                id: Some(0),
+                time_s: Some(114.0),
+                split_s: Some(114.0),
+            }],
+            sample_kind: Some("full".into()),
+            ..GameClockSample::default_test()
+        };
+        let light = GameClockSample {
+            race_time_s: Some(114.5),
+            sectors: vec![],
+            sample_kind: Some("light".into()),
+            ..GameClockSample::default_test()
+        };
+        let merged = merge_game_clock_sample(Some(full), light);
+        assert_eq!(merged.race_time_s, Some(114.5));
+        assert_eq!(merged.sectors.len(), 1);
+        assert_eq!(merged.sectors[0].split_s, Some(114.0));
+    }
+
+    #[test]
     fn parse_extended_sample() {
         let line = r#"{"race_time_s":20.25,"distance_m":353.1,"diff_time_s":-1.2,"position":1,"sectors":[{"id":0,"time_s":45.2,"split_s":12.1}],"ghost_ref":{"source":"ghost","diff_time_s":0.5,"sectors":[{"id":0,"time_s":44.7,"split_s":11.8}]}}"#;
         let s: GameClockSample = serde_json::from_str(line).unwrap();
@@ -703,6 +916,7 @@ mod tests {
             game_x: None,
             game_z: None,
             t_process_ms: None,
+            t_wall_s: None,
             sample_kind: None,
         };
         c.apply_sample(sample.clone(), Instant::now(), Some(356.0));
@@ -783,6 +997,7 @@ impl GameClockSample {
             game_x: None,
             game_z: None,
             t_process_ms: None,
+            t_wall_s: None,
             sample_kind: None,
         }
     }

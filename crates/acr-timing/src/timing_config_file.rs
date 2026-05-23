@@ -166,11 +166,11 @@ impl GameClockConfigFile {
                 .unwrap_or_else(default_jsonl_path),
             max_sample_age_sec: self.max_sample_age_sec.unwrap_or(1.25),
             expected_tick_sec: 0.5,
-            max_rate_adjust: 0.02,
+            max_rate_adjust: 0.05,
             correct_distance: true,
             jsonl_poll_interval_sec: self.jsonl_poll_interval_sec.unwrap_or(0.5).max(0.2),
-            time_snap_threshold_sec: self.time_snap_threshold_sec.unwrap_or(0.4).max(0.05),
-            time_soft_snap_blend: self.time_soft_snap_blend.unwrap_or(0.35).clamp(0.0, 1.0),
+            time_snap_threshold_sec: self.time_snap_threshold_sec.unwrap_or(0.15).max(0.05),
+            time_soft_snap_blend: self.time_soft_snap_blend.unwrap_or(0.5).clamp(0.0, 1.0),
         }
     }
 

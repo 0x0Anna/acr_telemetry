@@ -952,7 +952,7 @@ fn compute_subsection_leg_dt(
 ) -> Option<(f64, f64)> {
     if game_clock.enabled() {
         if let (Some(hud), Some(anchor)) = (
-            game_clock.game_race_hud_sec(),
+            game_clock.game_race_for_sector_display(),
             state.run_clock.leg_anchor()?.game_race_sec,
         ) {
             let sim = (hud - anchor).max(0.0);
@@ -1406,10 +1406,12 @@ fn apply_game_clock_finish_all_legs(
     let slug = session.markers.stage_slug.clone();
     let label = session.markers.rtss_label().to_string();
     let mut applied = 0usize;
+    let mut missing_legs: Vec<usize> = Vec::new();
     for (leg_ix, split_opt) in splits.iter().enumerate() {
         let Some(split) = split_opt.as_ref().and_then(|s| {
             (*s > 0.05 && s.is_finite()).then_some(*s)
         }) else {
+            missing_legs.push(leg_ix + 1);
             continue;
         };
         let (from_order, to_order) = orders.get(leg_ix).copied().unwrap_or((0, 0));
@@ -1459,7 +1461,13 @@ fn apply_game_clock_finish_all_legs(
     }
     if applied > 0 {
         eprintln!(
-            "[{label}] game_clock_finish: {applied}/{leg_count} legs (n_sectors={})",
+            "[{label}] Sektor-Übernahme Finish: {applied}/{leg_count} Sektoren aus UE4SS übernommen (sectors={})",
+            sample.sectors.len()
+        );
+    }
+    if !missing_legs.is_empty() && cfg.game_clock_sector.is_some() {
+        eprintln!(
+            "[{label}] Sektor-Übernahme Finish: Sektor-Zeit (UE4SS) fehlt für S{missing_legs:?} (jsonl sectors={})",
             sample.sectors.len()
         );
     }
@@ -1509,15 +1517,22 @@ fn process_stage_sector_sessions_on_step(
     if game_clock.enabled() {
         game_clock.poll_now(Some(graphics_distance_traveled as f64));
     }
-    let game_race_hud = game_clock.game_race_hud_sec();
+    let game_race_hud = game_clock.game_race_for_sector_display();
     if let Some(adopter) = game_clock_sector.as_mut() {
         let commits = adopter.drain_commit_ready(now_inst, &state.stage_sector_sessions);
         for c in commits {
-            if c.via == "game_clock" && (c.duration_sec - c.gate_dt).abs() > 0.001 {
+            let s = c.leg_ix + 1;
+            if c.via == "gate" {
                 eprintln!(
-                    "[{}] game_clock S{}: gate {:.3}s -> game {:.3}s (delayed)",
+                    "[{}] Sektor-Übernahme S{s}: FEHLGESCHLAGEN — Sektor-{s}-Zeit (UE4SS) nach {:.1}s nicht verfügbar; Gate-Zeit {:.3}s bleibt",
                     c.label,
-                    c.leg_ix + 1,
+                    adopter.cfg.adopt_window_sec,
+                    c.duration_sec,
+                );
+            } else if c.via == "game_clock" && (c.duration_sec - c.gate_dt).abs() > 0.001 {
+                eprintln!(
+                    "[{}] Sektor-Übernahme S{s}: Gate {:.3}s → Sektor-{s}-Zeit (UE4SS) {:.3}s (verzögert)",
+                    c.label,
                     c.gate_dt,
                     c.duration_sec,
                 );
@@ -1634,24 +1649,74 @@ fn process_stage_sector_sessions_on_step(
                 );
                 let session = &mut state.stage_sector_sessions[si];
                 let mut adopt_dt = leg_dt;
-                if let Some(adopter) = game_clock_sector.as_mut() {
-                    adopter.poll_force();
-                    if adopter.is_live() {
-                        if let Some(split) = adopter.split_for_leg_checked(leg_ix, &prior) {
+                let s_num = leg_ix + 1;
+                if cfg.game_clock_sector.is_some() {
+                    if !game_clock.jsonl_fresh_for_display() {
+                        eprintln!(
+                            "[{label}] Sektor-Übernahme S{s_num}: keine frische acr_game_clock.jsonl — Sektor-{s_num}-Zeit (UE4SS) nicht verfügbar; vorläufig Gate-Zeit {leg_dt:.3}s"
+                        );
+                    } else if let Some(adopter) = game_clock_sector.as_mut() {
+                        adopter.poll_force();
+                        if let Some(split) =
+                            acr_timing::game_clock_sector_override::try_ue4ss_leg_split_sec(
+                                game_clock,
+                                Some(adopter),
+                                leg_ix,
+                                &prior,
+                            )
+                        {
                             if (split - leg_dt).abs() > 0.001 {
                                 eprintln!(
-                                    "[{label}] game_clock S{}: gate {:.3}s -> game {:.3}s",
-                                    leg_ix + 1,
-                                    leg_dt,
-                                    split,
+                                    "[{label}] Sektor-Übernahme S{s_num}: Gate {leg_dt:.3}s → Sektor-{s_num}-Zeit (UE4SS) {split:.3}s"
                                 );
                             }
                             adopt_dt = split;
-                        } else {
+                        } else if adopter.is_live() {
                             let poll_iv =
                                 Duration::from_secs_f64(adopter.cfg.poll_interval_sec);
                             let window =
                                 Duration::from_secs_f64(adopter.cfg.adopt_window_sec);
+                            let reason = game_clock
+                                .last_game_sample()
+                                .map(|sample| {
+                                    let dbg = sample
+                                        .sectors_debug
+                                        .as_ref()
+                                        .map(|d| {
+                                            format!(
+                                                "sectors_debug array_num={:?} parsed={:?} first_err={:?}",
+                                                d.array_num, d.parsed, d.first_err
+                                            )
+                                        })
+                                        .unwrap_or_default();
+                                    if sample.sectors.is_empty() {
+                                        if dbg.is_empty() {
+                                            "sectors[] leer (evtl. nur light-Sample ohne Merge)".to_string()
+                                        } else {
+                                            format!("sectors[] leer; {dbg}")
+                                        }
+                                    } else if !acr_timing::game_clock_sector_override::leg_ready_in_sample(
+                                        sample, leg_ix,
+                                    ) {
+                                        format!(
+                                            "nur {} sector-Einträge, next_sector_index={:?}{}",
+                                            sample.sectors.len(),
+                                            sample.next_sector_index,
+                                            if dbg.is_empty() {
+                                                String::new()
+                                            } else {
+                                                format!("; {dbg}")
+                                            }
+                                        )
+                                    } else {
+                                        format!("split_s/time_s fehlt oder ungültig{dbg}")
+                                    }
+                                })
+                                .unwrap_or_else(|| "kein jsonl-Sample".to_string());
+                            eprintln!(
+                                "[{label}] Sektor-Übernahme S{s_num}: Sektor-{s_num}-Zeit (UE4SS) noch nicht da ({reason}) — warte bis {:.1}s, vorläufig Gate {leg_dt:.3}s",
+                                adopter.cfg.adopt_window_sec
+                            );
                             adopter.enqueue(
                                 acr_timing::game_clock_sector_override::PendingSectorAdopt {
                                     session_si: si,
@@ -1668,6 +1733,10 @@ fn process_stage_sector_sessions_on_step(
                                     next_poll: now_inst + poll_iv,
                                     deadline: now_inst + window,
                                 },
+                            );
+                        } else {
+                            eprintln!(
+                                "[{label}] Sektor-Übernahme S{s_num}: jsonl nicht lesbar — Sektor-{s_num}-Zeit (UE4SS) nicht verfügbar; vorläufig Gate-Zeit {leg_dt:.3}s"
                             );
                         }
                     }
@@ -2839,7 +2908,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
     let mut last_physics_packet_id: Option<i32> = None;
     if game_clock.enabled() {
         eprintln!(
-            "game_clock sync: enabled, jsonl={}",
+            "game_clock: 1-Hz-Zeitkorrektur (Replik-Spielzeit), jsonl={}",
             cfg.game_clock.jsonl_path.display()
         );
     }
@@ -2847,10 +2916,13 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
         .game_clock_sector
         .clone()
         .map(acr_timing::game_clock_sector_override::GameClockSectorAdopter::new);
-    if let Some(a) = game_clock_sector.as_ref() {
+    if game_clock_sector.is_some() {
         eprintln!(
-            "game_clock sector_splits: enabled, jsonl={}",
-            a.cfg.jsonl_path.display()
+            "game_clock: Sektor-Übernahme aktiv (sector_splits=true) — Sektor-i-Zeit (UE4SS) an S1/S2/S3/Finish"
+        );
+    } else if game_clock.enabled() {
+        eprintln!(
+            "game_clock: Sektor-Übernahme AUS (sector_splits=false) — Live-Sektor nur via Replik"
         );
     }
     let mut copilot_crash_voice = acr_timing::timing_voice::CopilotCrashVoiceState::default();
@@ -2906,6 +2978,15 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                     dt_sim,
                     Some(data.graphics.distance_traveled as f64),
                 );
+            }
+            if cfg.timing_debug && game_clock.enabled() {
+                let stage_anchor = timing_state.as_ref().and_then(|s| {
+                    s.stage_sector_sessions
+                        .iter()
+                        .find(|sess| sess.run.armed && !sess.run.completed)
+                        .and_then(|sess| sess.run.game_race_anchor_sec)
+                });
+                game_clock.maybe_log_sync_debug(stage_anchor);
             }
             let tick_stall_excess = frame_monitor.tick_timing_excess(&data.physics);
             if tick_stall_excess > 0.0 && !game_clock.timing_frozen() {
@@ -3026,7 +3107,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                         .map(|m| m.label.as_str());
                     (
                         sess.run.armed,
-                        sess.run.live_leg_elapsed_sec(now, game_clock.game_race_hud_sec()),
+                        sess.run.live_leg_elapsed_sec(now, game_clock.game_race_for_sector_display()),
                         next,
                     )
                 })
@@ -3958,7 +4039,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         state.run_clock.commit_leg(timing_anchor_now(
                                             pkt,
                                             odo_m,
-                                            game_clock.game_race_hud_sec(),
+                                            game_clock.game_race_for_sector_display(),
                                         ));
                                         reset_subsection_leg_timing_accumulators(state);
                                         state.leg_stats.reset();
@@ -3974,7 +4055,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         state.run_clock.arm_run(timing_anchor_now(
                                             data.physics.packet_id,
                                             odo_m,
-                                            game_clock.game_race_hud_sec(),
+                                            game_clock.game_race_for_sector_display(),
                                         ));
                                         eprintln!("cumulative: timer anchored at Start (packet_id)");
                                         arm_modular_timing_run(state, cfg, car_model_live);
@@ -4090,7 +4171,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 state.run_clock.arm_run(timing_anchor_now(
                                                     data.physics.packet_id,
                                                     data.graphics.distance_traveled as f64,
-                                                    game_clock.game_race_hud_sec(),
+                                                    game_clock.game_race_for_sector_display(),
                                                 ));
                                                 let car_model = if car_model_now.is_empty() {
                                                     "unknown_car"
@@ -4140,7 +4221,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                     state.run_clock.arm_run(timing_anchor_now(
                                         data.physics.packet_id,
                                         data.graphics.distance_traveled as f64,
-                                        game_clock.game_race_hud_sec(),
+                                        game_clock.game_race_for_sector_display(),
                                     ));
                                     set_leg_entry_speed(state, data.physics.speed_kmh);
                                 }
@@ -4394,7 +4475,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 state.run_clock.commit_leg(timing_anchor_now(
                                                     data.physics.packet_id,
                                                     data.graphics.distance_traveled as f64,
-                                                    game_clock.game_race_hud_sec(),
+                                                    game_clock.game_race_for_sector_display(),
                                                 ));
                                                 state.last_sector_idx = Some(sector);
                                                 state.leg_stats.reset();
@@ -4492,7 +4573,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 state.run_clock.commit_leg(timing_anchor_now(
                                                     pkt,
                                                     odo_m,
-                                                    game_clock.game_race_hud_sec(),
+                                                    game_clock.game_race_for_sector_display(),
                                                 ));
                                                 state.last_sector_idx = Some(to);
                                                 set_leg_entry_speed(state, data.physics.speed_kmh);
@@ -4515,7 +4596,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                     state.run_clock.commit_leg(timing_anchor_now(
                                                         data.physics.packet_id,
                                                         data.graphics.distance_traveled as f64,
-                                                        game_clock.game_race_hud_sec(),
+                                                        game_clock.game_race_for_sector_display(),
                                                     ));
                                                     state.leg_stats.reset();
                                                     set_leg_entry_speed(state, data.physics.speed_kmh);
@@ -4783,7 +4864,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                         last_sector_wait_log = Instant::now();
                     }
                     let now_osd = Instant::now();
-                    let game_race_s = game_clock.game_race_hud_sec();
+                    let game_race_s = game_clock.game_race_for_sector_display();
                     let pause_dash = game_clock.osd_show_pause_dash(&mut pause_osd);
                     let msg = if let Some(ts) = timing_state.as_mut() {
                         let car_osd = locked_car_model

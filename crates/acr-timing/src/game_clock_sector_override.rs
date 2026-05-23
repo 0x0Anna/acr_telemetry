@@ -7,7 +7,7 @@
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
-use crate::game_clock_sync::{read_latest_sample, GameClockSample};
+use crate::game_clock_sync::{merge_game_clock_sample, read_latest_sample, GameClockSample};
 use crate::stage_sector_timing::StageSectorSession;
 use crate::timing_sectors::GatePassMethod;
 
@@ -200,36 +200,6 @@ impl GameClockSectorAdopter {
     }
 }
 
-fn is_light_sample(s: &GameClockSample) -> bool {
-    s.sample_kind.as_deref() == Some("light")
-}
-
-/// Keep sector/ghost arrays from the last full scrape when the mod writes a light line.
-fn merge_game_clock_sample(prev: Option<GameClockSample>, mut new: GameClockSample) -> GameClockSample {
-    let Some(p) = prev else {
-        return new;
-    };
-    if !is_light_sample(&new) {
-        return new;
-    }
-    if new.sectors.is_empty() {
-        new.sectors = p.sectors;
-        if new.sectors_source.is_none() {
-            new.sectors_source = p.sectors_source;
-        }
-        if new.sectors_debug.is_none() {
-            new.sectors_debug = p.sectors_debug;
-        }
-        if new.next_sector_index.is_none() {
-            new.next_sector_index = p.next_sector_index;
-        }
-    }
-    if new.ghost_ref.is_none() {
-        new.ghost_ref = p.ghost_ref;
-    }
-    new
-}
-
 fn split_from_record(rec: &crate::game_clock_sync::GameClockSectorRecord) -> Option<f64> {
     if let Some(s) = rec.split_s.filter(|v| v.is_finite() && *v > 0.05) {
         return Some(s);
@@ -237,17 +207,66 @@ fn split_from_record(rec: &crate::game_clock_sync::GameClockSectorRecord) -> Opt
     None
 }
 
-fn leg_time_delta(sample: &GameClockSample, leg_ix: usize) -> Option<f64> {
-    let cur = sample.sectors.get(leg_ix)?;
-    let cur_t = cur.time_s.filter(|v| v.is_finite())?;
-    let prev_t = if leg_ix == 0 {
+fn record_adoptable(rec: &crate::game_clock_sync::GameClockSectorRecord) -> bool {
+    split_from_record(rec).is_some()
+        || rec
+            .time_s
+            .filter(|t| t.is_finite() && *t > 0.05)
+            .is_some()
+}
+
+fn sector_id_matches_leg(rec: &crate::game_clock_sync::GameClockSectorRecord, leg_ix: usize) -> bool {
+    match rec.id {
+        None => true,
+        Some(0) if leg_ix == 0 => true,
+        Some(id) => id == leg_ix as i32 + 1,
+    }
+}
+
+/// Map stage leg index (0 = Start→S1) to the game's `sectors[]` row.
+///
+/// ACR often has `id:0` / `split_s:0` at array index 0 (start line); timed leg *i* uses `id: i+1`.
+fn sector_record_for_leg<'a>(
+    sample: &'a GameClockSample,
+    leg_ix: usize,
+) -> Option<&'a crate::game_clock_sync::GameClockSectorRecord> {
+    if let Some(rec) = sample.sectors.get(leg_ix) {
+        if record_adoptable(rec) && sector_id_matches_leg(rec, leg_ix) {
+            return Some(rec);
+        }
+    }
+    let game_id = leg_ix as i32 + 1;
+    if let Some(rec) = sample.sectors.iter().find(|r| r.id == Some(game_id)) {
+        if record_adoptable(rec) {
+            return Some(rec);
+        }
+    }
+    let mut nth = 0usize;
+    for rec in &sample.sectors {
+        if record_adoptable(rec) {
+            if nth == leg_ix {
+                return Some(rec);
+            }
+            nth += 1;
+        }
+    }
+    None
+}
+
+fn leg_time_delta_for_record(
+    sample: &GameClockSample,
+    rec: &crate::game_clock_sync::GameClockSectorRecord,
+) -> Option<f64> {
+    let cur_t = rec.time_s.filter(|v| v.is_finite())?;
+    let cur_idx = sample.sectors.iter().position(|r| std::ptr::eq(r, rec))?;
+    let prev_t = if cur_idx == 0 {
         0.0
     } else {
-        sample
-            .sectors
-            .get(leg_ix.saturating_sub(1))
-            .and_then(|r| r.time_s)
-            .filter(|v| v.is_finite())?
+        sample.sectors[..cur_idx]
+            .iter()
+            .rev()
+            .find_map(|r| r.time_s.filter(|t| t.is_finite()))
+            .unwrap_or(0.0)
     };
     let delta = cur_t - prev_t;
     (delta > 0.05).then_some(delta)
@@ -271,20 +290,32 @@ pub fn prior_splits_from_sessions(
         .unwrap_or_default()
 }
 
-/// True when the mod has published split data for leg `leg_ix` (0 = start→S1).
+/// True when UE4SS provides an adoptable split for leg `leg_ix` (0 = start→S1).
 pub fn leg_ready_in_sample(sample: &GameClockSample, leg_ix: usize) -> bool {
-    if sample.sectors.len() > leg_ix {
-        return true;
-    }
-    sample
-        .next_sector_index
-        .is_some_and(|n| n.max(0) as usize > leg_ix)
+    sector_leg_split_sec(sample, leg_ix).is_some()
 }
 
-/// Leg split for stage leg index `leg_ix` using `sectors[leg_ix]` (game array order).
+/// UE4SS split for leg `leg_ix` from the corrector's last sample and/or adopter cache.
+pub fn try_ue4ss_leg_split_sec(
+    game_clock: &crate::game_clock_sync::GameClockCorrector,
+    adopter: Option<&GameClockSectorAdopter>,
+    leg_ix: usize,
+    prior: &[f64],
+) -> Option<f64> {
+    if let Some(sample) = game_clock.last_game_sample() {
+        if let Some(split) = sector_leg_split_sec(sample, leg_ix) {
+            if !is_duplicate_of_prior(split, prior) {
+                return Some(split);
+            }
+        }
+    }
+    adopter.and_then(|a| a.split_for_leg_checked(leg_ix, prior))
+}
+
+/// Leg split for stage leg index `leg_ix` (0 = Start→S1), mapped to game `sectors[]` / `id`.
 pub fn sector_leg_split_sec(sample: &GameClockSample, leg_ix: usize) -> Option<f64> {
-    let rec = sample.sectors.get(leg_ix)?;
-    split_from_record(rec).or_else(|| leg_time_delta(sample, leg_ix))
+    let rec = sector_record_for_leg(sample, leg_ix)?;
+    split_from_record(rec).or_else(|| leg_time_delta_for_record(sample, rec))
 }
 
 fn is_duplicate_of_prior(split: f64, prior_splits: &[f64]) -> bool {
@@ -297,7 +328,7 @@ fn is_duplicate_of_prior(split: f64, prior_splits: &[f64]) -> bool {
 pub fn all_stage_leg_splits_sec(sample: &GameClockSample, leg_count: usize) -> Vec<Option<f64>> {
     let mut out = vec![None; leg_count];
     for i in 0..leg_count {
-        out[i] = sector_leg_split_sec(sample, i).or_else(|| leg_time_delta(sample, i));
+        out[i] = sector_leg_split_sec(sample, i);
     }
     out
 }
@@ -366,8 +397,49 @@ mod tests {
             game_x: None,
             game_z: None,
             t_process_ms: None,
+            t_wall_s: None,
             sample_kind: Some("full".into()),
         }
+    }
+
+    #[test]
+    fn hafren_id0_placeholder_leg0_uses_id1() {
+        let sample = GameClockSample {
+            race_time_s: Some(178.0),
+            distance_m: None,
+            race_time_valid: true,
+            diff_time_s: None,
+            position: None,
+            phase: None,
+            sectors: vec![
+                GameClockSectorRecord {
+                    id: Some(0),
+                    time_s: Some(0.0),
+                    split_s: Some(0.0),
+                },
+                GameClockSectorRecord {
+                    id: Some(1),
+                    time_s: Some(109.220009),
+                    split_s: Some(109.220009),
+                },
+            ],
+            next_sector_index: Some(2),
+            race_source: None,
+            travel_track_id: None,
+            travel_track_source: None,
+            penalty_total_s: None,
+            ghost_ref: None,
+            game_x: None,
+            game_z: None,
+            t_process_ms: None,
+            t_wall_s: None,
+            sectors_source: None,
+            sectors_debug: None,
+            sample_kind: Some("full".into()),
+        };
+        let s1 = sector_leg_split_sec(&sample, 0).unwrap();
+        assert!((s1 - 109.220009).abs() < 1e-6);
+        assert!(sector_leg_split_sec(&sample, 1).is_none());
     }
 
     #[test]
@@ -402,6 +474,7 @@ mod tests {
             game_x: None,
             game_z: None,
             t_process_ms: None,
+            t_wall_s: None,
             sample_kind: None,
         };
         assert!(sector_leg_split_sec(&sample, 0).is_some());
@@ -441,6 +514,7 @@ mod tests {
             game_x: None,
             game_z: None,
             t_process_ms: None,
+            t_wall_s: None,
             sample_kind: Some("full".into()),
         };
         let adopter = GameClockSectorAdopter {
