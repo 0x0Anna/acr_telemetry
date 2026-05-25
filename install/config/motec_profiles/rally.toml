@@ -1,0 +1,104 @@
+# Shipped with install; copy of config/motec_profiles/rally.toml — edit in {app}\motec_profiles\
+
+description = "MoTeC Rally Basic / ADL channel names (sim physics)"
+
+[[channels]]
+name = "Time"
+unit = "s"
+source = "time"
+
+[[channels]]
+name = "Engine RPM"
+unit = "rpm"
+source = "rpm"
+
+[[channels]]
+name = "Throttle Pos"
+unit = "%"
+source = "gas"
+scale = 100.0
+
+[[channels]]
+name = "Steered Angle"
+unit = "deg"
+source = "steer_angle"
+
+[[channels]]
+name = "G Force Lat"
+unit = "G"
+source = "g_force_x"
+
+[[channels]]
+name = "G Force Long"
+unit = "G"
+source = "g_force_y"
+
+[[channels]]
+name = "Gear"
+unit = ""
+source = "gear"
+
+[[channels]]
+name = "Brake Status"
+unit = ""
+source = "brake_status"
+
+[[channels]]
+name = "Ground Speed"
+unit = "km/h"
+source = "speed_kmh"
+
+[[channels]]
+name = "Wheel Speed FL"
+unit = "km/h"
+source = "wheel_speed_kmh_fl"
+
+[[channels]]
+name = "Wheel Speed FR"
+unit = "km/h"
+source = "wheel_speed_kmh_fr"
+
+[[channels]]
+name = "Wheel Speed RL"
+unit = "km/h"
+source = "wheel_speed_kmh_rl"
+
+[[channels]]
+name = "Wheel Speed RR"
+unit = "km/h"
+source = "wheel_speed_kmh_rr"
+
+[[channels]]
+name = "Wheel Speed Front"
+unit = "km/h"
+source = "wheel_speed_kmh_front"
+
+[[channels]]
+name = "Wheel Speed Rear"
+unit = "km/h"
+source = "wheel_speed_kmh_rear"
+
+[[channels]]
+name = "Wheel Slip"
+unit = ""
+source = "wheel_slip_max"
+
+[[channels]]
+name = "Damper Pos FL"
+unit = "mm"
+source = "suspension_travel_mm_fl"
+
+[[channels]]
+name = "Damper Pos FR"
+unit = "mm"
+source = "suspension_travel_mm_fr"
+
+[[channels]]
+name = "Damper Pos RL"
+unit = "mm"
+source = "suspension_travel_mm_rl"
+
+[[channels]]
+name = "Damper Pos RR"
+unit = "mm"
+source = "suspension_travel_mm_rr"

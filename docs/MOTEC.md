@@ -7,7 +7,7 @@ MoTeC LD files can be produced in two ways:
 
 The `.ld` file is what you typically open in **MoTeC i2**.
 
-The LD export is currently a **minimal, working implementation** (validated in this project with MoTeC i2 and an RBR MoTeC v105 workspace). Not every channel from an arbitrary workspace is mapped yet; options and batch behaviour are described in **[EXPORT.md](EXPORT.md)**.
+The LD export is a **minimal, working implementation** (validated with MoTeC i2). Channel names are selected via **`[export.motec]`** in `acr_recorder.toml` and TOML files in **`motec_profiles/`** (shipped: `rbr`, `rally`). Batch behaviour: **[EXPORT.md](EXPORT.md)**.
 
 ---
 
@@ -77,7 +77,7 @@ In **batch** mode, a `.rkyv` is skipped if **`<stem>.csv`** already exists (see 
 
 1. Start **MoTeC i2**.
 2. Open the generated **`.ld`** file (wording varies by version: Open, Import, etc.).
-3. Workspace: testing used an **RBR MoTeC v105** workspace; other workspaces may expect different channel names.
+3. Workspace: set `profile = "rbr"` for RBR MoTeC v105-style names, or `profile = "rally"` for **Rally Basic** (ADL names like `Engine RPM`, `Throttle Pos`). Profiles live in `motec_profiles/*.toml` next to the exe (editable without recompiling).
 
 ---
 

@@ -65,6 +65,7 @@ Source: "staging\README.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "staging\batch\*"; DestDir: "{app}\batch"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "staging\docs\*"; DestDir: "{app}\docs"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "staging\config-examples\*"; DestDir: "{app}\config-examples"; Flags: onlyifdoesntexist ignoreversion
+Source: "staging\motec_profiles\*"; DestDir: "{app}\motec_profiles"; Flags: onlyifdoesntexist ignoreversion
 Source: "staging\timing\*"; DestDir: "{app}\timing"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "timing.db,timing.db-wal,timing.db-shm"
 Source: "staging\reference_tracks\*"; DestDir: "{app}\reference_tracks"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "staging\assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recursesubdirs createallsubdirs

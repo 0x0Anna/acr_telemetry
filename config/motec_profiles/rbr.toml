@@ -1,0 +1,294 @@
+# RBR MoTeC v105-style names (previous default export). Use when your i2 workspace
+# expects sim channel ids (speed, steering, LF.suspensionTravel, …).
+
+description = "RBR MoTeC v105 / sim-style channel names"
+
+[[channels]]
+name = "Time"
+unit = "s"
+source = "time"
+
+[[channels]]
+name = "Speed"
+unit = "km/h"
+source = "speed_kmh"
+
+[[channels]]
+name = "RPM"
+unit = "rpm"
+source = "rpm"
+
+[[channels]]
+name = "Throttle"
+unit = "%"
+source = "gas"
+scale = 100.0
+
+[[channels]]
+name = "Brake"
+unit = "%"
+source = "brake"
+scale = 100.0
+
+[[channels]]
+name = "steering"
+unit = ""
+source = "steer_angle"
+
+[[channels]]
+name = "Gear"
+unit = ""
+source = "gear"
+
+[[channels]]
+name = "speed"
+unit = "km/h"
+source = "speed_kmh"
+
+[[channels]]
+name = "throttle"
+unit = ""
+source = "gas"
+
+[[channels]]
+name = "brake"
+unit = ""
+source = "brake"
+
+[[channels]]
+name = "engineRotation"
+unit = "rad/s"
+source = "engine_rotation"
+
+[[channels]]
+name = "gear_ok"
+unit = ""
+source = "gear_ok"
+
+[[channels]]
+name = "vecLinearAccelerationCar.x"
+unit = "g"
+source = "g_force_x"
+
+[[channels]]
+name = "vecLinearAccelerationCar.y"
+unit = "g"
+source = "g_force_y"
+
+[[channels]]
+name = "G ForceTotal"
+unit = "g"
+source = "g_force_total"
+
+[[channels]]
+name = "LF.suspensionTravel"
+unit = "m"
+source = "suspension_travel_fl"
+
+[[channels]]
+name = "RF.suspensionTravel"
+unit = "m"
+source = "suspension_travel_fr"
+
+[[channels]]
+name = "LB.suspensionTravel"
+unit = "m"
+source = "suspension_travel_rl"
+
+[[channels]]
+name = "RB.suspensionTravel"
+unit = "m"
+source = "suspension_travel_rr"
+
+[[channels]]
+name = "LF.deflection"
+unit = "m"
+source = "suspension_travel_fl"
+
+[[channels]]
+name = "RF.deflection"
+unit = "m"
+source = "suspension_travel_fr"
+
+[[channels]]
+name = "LB.deflection"
+unit = "m"
+source = "suspension_travel_rl"
+
+[[channels]]
+name = "RB.deflection"
+unit = "m"
+source = "suspension_travel_rr"
+
+[[channels]]
+name = "car.pos.x"
+unit = "m"
+source = "car_pos_x"
+
+[[channels]]
+name = "car.pos.y"
+unit = "m"
+source = "car_pos_y"
+
+[[channels]]
+name = "car.pos.z"
+unit = "m"
+source = "car_pos_z"
+
+[[channels]]
+name = "LF.wheelPos.x"
+unit = "m"
+source = "tyre_contact_x_fl"
+
+[[channels]]
+name = "LF.wheelPos.y"
+unit = "m"
+source = "tyre_contact_y_fl"
+
+[[channels]]
+name = "LF.wheelPos.z"
+unit = "m"
+source = "tyre_contact_z_fl"
+
+[[channels]]
+name = "RF.wheelPos.x"
+unit = "m"
+source = "tyre_contact_x_fr"
+
+[[channels]]
+name = "RF.wheelPos.y"
+unit = "m"
+source = "tyre_contact_y_fr"
+
+[[channels]]
+name = "RF.wheelPos.z"
+unit = "m"
+source = "tyre_contact_z_fr"
+
+[[channels]]
+name = "LB.wheelPos.x"
+unit = "m"
+source = "tyre_contact_x_rl"
+
+[[channels]]
+name = "LB.wheelPos.y"
+unit = "m"
+source = "tyre_contact_y_rl"
+
+[[channels]]
+name = "LB.wheelPos.z"
+unit = "m"
+source = "tyre_contact_z_rl"
+
+[[channels]]
+name = "RB.wheelPos.x"
+unit = "m"
+source = "tyre_contact_x_rr"
+
+[[channels]]
+name = "RB.wheelPos.y"
+unit = "m"
+source = "tyre_contact_y_rr"
+
+[[channels]]
+name = "RB.wheelPos.z"
+unit = "m"
+source = "tyre_contact_z_rr"
+
+[[channels]]
+name = "LF.tyreTemperature"
+unit = "C"
+source = "tyre_temp_c_fl"
+
+[[channels]]
+name = "RF.tyreTemperature"
+unit = "C"
+source = "tyre_temp_c_fr"
+
+[[channels]]
+name = "LB.tyreTemperature"
+unit = "C"
+source = "tyre_temp_c_rl"
+
+[[channels]]
+name = "RB.tyreTemperature"
+unit = "C"
+source = "tyre_temp_c_rr"
+
+[[channels]]
+name = "LF.pressure"
+unit = "bar"
+source = "wheel_pressure_bar_fl"
+
+[[channels]]
+name = "RF.pressure"
+unit = "bar"
+source = "wheel_pressure_bar_fr"
+
+[[channels]]
+name = "LB.pressure"
+unit = "bar"
+source = "wheel_pressure_bar_rl"
+
+[[channels]]
+name = "RB.pressure"
+unit = "bar"
+source = "wheel_pressure_bar_rr"
+
+[[channels]]
+name = "LF.brakeDiskTempC"
+unit = "C"
+source = "brake_temp_c_fl"
+
+[[channels]]
+name = "RF.brakeDiskTempC"
+unit = "C"
+source = "brake_temp_c_fr"
+
+[[channels]]
+name = "LB.brakeDiskTempC"
+unit = "C"
+source = "brake_temp_c_rl"
+
+[[channels]]
+name = "RB.brakeDiskTempC"
+unit = "C"
+source = "brake_temp_c_rr"
+
+[[channels]]
+name = "LF.tyreWear%"
+unit = "%"
+source = "tyre_wear_pct_fl"
+
+[[channels]]
+name = "RF.tyreWear%"
+unit = "%"
+source = "tyre_wear_pct_fr"
+
+[[channels]]
+name = "LB.tyreWear%"
+unit = "%"
+source = "tyre_wear_pct_rl"
+
+[[channels]]
+name = "RB.tyreWear%"
+unit = "%"
+source = "tyre_wear_pct_rr"
+
+[[channels]]
+name = "position.x"
+unit = "m"
+source = "graphics_pos_x"
+graphics = true
+
+[[channels]]
+name = "position.y"
+unit = "m"
+source = "graphics_pos_y"
+graphics = true
+
+[[channels]]
+name = "position.z"
+unit = "m"
+source = "graphics_pos_z"
+graphics = true

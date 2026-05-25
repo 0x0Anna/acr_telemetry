@@ -348,6 +348,7 @@ fn read_scores_from_sqlite(path: &Path, recording_id: Option<i64>, early_sec: f6
                 fz: acr_recorder::record::WheelsRecord { front_left: 0.0, front_right: 0.0, rear_left: 0.0, rear_right: 0.0 },
                 my: acr_recorder::record::WheelsRecord { front_left: 0.0, front_right: 0.0, rear_left: 0.0, rear_right: 0.0 },
                 kerb_vibration: 0.0, slip_vibration: 0.0, g_vibration: 0.0, abs_vibration: 0.0,
+                capture_time_sec: 0.0,
             })
         })?;
 

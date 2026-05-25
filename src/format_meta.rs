@@ -16,6 +16,7 @@ pub const FORMAT_JSON_VERSION: u16 = 2;
 
 pub const PHYSICS_RECORD_SCHEMA_V1: u32 = 1;
 pub const PHYSICS_RECORD_SCHEMA_V2: u32 = 2;
+pub const PHYSICS_RECORD_SCHEMA_V3: u32 = 3;
 pub const GRAPHICS_RECORD_SCHEMA_V1: u32 = 1;
 pub const GRAPHICS_RECORD_SCHEMA_V2: u32 = 2;
 pub const STATICS_RECORD_SCHEMA_V1: u32 = 1;
@@ -229,7 +230,7 @@ pub fn write_format_metadata(
         format_version: FORMAT_JSON_VERSION,
         binary_file: binary_name,
         binary_file_version: RKYV_BINARY_VERSION_V2,
-        physics_record_schema: PHYSICS_RECORD_SCHEMA_V2,
+        physics_record_schema: PHYSICS_RECORD_SCHEMA_V3,
         graphics_record_schema: GRAPHICS_RECORD_SCHEMA_V2,
         statics_record_schema: STATICS_RECORD_SCHEMA_V2,
         created_at,

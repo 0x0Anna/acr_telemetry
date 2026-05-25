@@ -15,3 +15,8 @@ distance_reset_cooldown_secs = 8
 [export]
 default_method = "sqlite"
 sqlite_db_path = "telemetry.db"
+
+# MoTeC .ld: motec_profiles/<profile>.toml next to install dir (see motec_profiles/)
+[export.motec]
+profile = "rbr"
+# profile = "rally"

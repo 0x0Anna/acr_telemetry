@@ -1,6 +1,7 @@
 //! MoTeC .ld file writer.
 //!
 //! Format ported from Python ldparser (gotzl/ldparser) - reverse-engineered ACC MoTeC export.
+//! Channel names/units come from TOML profiles (`motec_profiles/<profile>.toml`).
 
 use std::fs::File;
 use std::io::{Seek, SeekFrom, Write};
@@ -8,230 +9,126 @@ use std::path::Path;
 
 use crate::record::{GraphicsRecord, PhysicsRecord};
 
-const REC_FREQ: u16 = 333;
+use super::motec_profile::{self, MotecProfile};
 
-/// Write physics records to MoTeC .ld format (compatible with i2).
+/// Write physics records to MoTeC .ld using the configured or default profile.
 pub fn write_ld(
     path: impl AsRef<Path>,
     records: &[PhysicsRecord],
     sample_rate_hz: u32,
 ) -> std::io::Result<()> {
-    write_ld_with_graphics(path, records, sample_rate_hz, None)
+    write_ld_with_profile(path, records, sample_rate_hz, None, None)
 }
 
 /// Write physics records (+ optional graphics sidecar channels) to MoTeC .ld format.
 pub fn write_ld_with_graphics(
     path: impl AsRef<Path>,
     records: &[PhysicsRecord],
-    _sample_rate_hz: u32,
+    sample_rate_hz: u32,
     graphics: Option<(&[GraphicsRecord], u32)>,
 ) -> std::io::Result<()> {
-    let mut f = File::create(path)?;
+    write_ld_with_profile(path, records, sample_rate_hz, graphics, None)
+}
 
-    // Build channels (ACC-style names)
-    let time: Vec<f32> = (0..records.len())
-        .map(|i| i as f32 / REC_FREQ as f32)
-        .collect();
-    let speed: Vec<f32> = records.iter().map(|r| r.speed_kmh).collect();
-    let rpm: Vec<f32> = records.iter().map(|r| r.rpm as f32).collect();
-    let throttle: Vec<f32> = records.iter().map(|r| r.gas * 100.0).collect();
-    let brake: Vec<f32> = records.iter().map(|r| r.brake * 100.0).collect();
-    let steer: Vec<f32> = records.iter().map(|r| r.steer_angle).collect();
-    let gear: Vec<f32> = records.iter().map(|r| r.gear as f32).collect();
-    let g_lat: Vec<f32> = records.iter().map(|r| r.g_force.x).collect();
-    let g_lon: Vec<f32> = records.iter().map(|r| r.g_force.y).collect();
-    let g_total: Vec<f32> = records
-        .iter()
-        .map(|r| (r.g_force.x * r.g_force.x + r.g_force.y * r.g_force.y).sqrt())
-        .collect();
-    let lf_deflection: Vec<f32> = records.iter().map(|r| r.suspension_travel.front_left).collect();
-    let rf_deflection: Vec<f32> = records.iter().map(|r| r.suspension_travel.front_right).collect();
-    let lb_deflection: Vec<f32> = records.iter().map(|r| r.suspension_travel.rear_left).collect();
-    let rb_deflection: Vec<f32> = records.iter().map(|r| r.suspension_travel.rear_right).collect();
-    let (lf_wheel_x, lf_wheel_y, lf_wheel_z) = vec3_from_records(records, |r| {
-        let v = &r.tyre_contact_point.front_left;
-        (v.x, v.y, v.z)
-    });
-    let (rf_wheel_x, rf_wheel_y, rf_wheel_z) = vec3_from_records(records, |r| {
-        let v = &r.tyre_contact_point.front_right;
-        (v.x, v.y, v.z)
-    });
-    let (lb_wheel_x, lb_wheel_y, lb_wheel_z) = vec3_from_records(records, |r| {
-        let v = &r.tyre_contact_point.rear_left;
-        (v.x, v.y, v.z)
-    });
-    let (rb_wheel_x, rb_wheel_y, rb_wheel_z) = vec3_from_records(records, |r| {
-        let v = &r.tyre_contact_point.rear_right;
-        (v.x, v.y, v.z)
-    });
-    let (car_pos_x, car_pos_y, car_pos_z) = vec3_from_records(records, |r| {
-        let p = &r.tyre_contact_point;
-        let x = (p.front_left.x + p.front_right.x + p.rear_left.x + p.rear_right.x) * 0.25;
-        let y = (p.front_left.y + p.front_right.y + p.rear_left.y + p.rear_right.y) * 0.25;
-        let z = (p.front_left.z + p.front_right.z + p.rear_left.z + p.rear_right.z) * 0.25;
-        (x, y, z)
-    });
-    // Workspace-compatible aliases (RBR Motec v105).
-    let speed_alias: Vec<f32> = speed.clone();
-    let throttle_alias: Vec<f32> = records.iter().map(|r| r.gas).collect();
-    let brake_alias: Vec<f32> = records.iter().map(|r| r.brake).collect();
-    let engine_rotation_alias: Vec<f32> = records
-        .iter()
-        .map(|r| r.rpm as f32 * std::f32::consts::TAU / 60.0)
-        .collect();
-    let gear_ok_alias: Vec<f32> = records.iter().map(|r| (r.gear - 1) as f32).collect();
-    let lf_tyre_temp_c: Vec<f32> = records
-        .iter()
-        .map(|r| r.tyre_core_temp.front_left - 273.15)
-        .collect();
-    let rf_tyre_temp_c: Vec<f32> = records
-        .iter()
-        .map(|r| r.tyre_core_temp.front_right - 273.15)
-        .collect();
-    let lb_tyre_temp_c: Vec<f32> = records
-        .iter()
-        .map(|r| r.tyre_core_temp.rear_left - 273.15)
-        .collect();
-    let rb_tyre_temp_c: Vec<f32> = records
-        .iter()
-        .map(|r| r.tyre_core_temp.rear_right - 273.15)
-        .collect();
-    const PSI_TO_BAR: f32 = 0.068_947_57;
-    let lf_pressure_bar: Vec<f32> = records
-        .iter()
-        .map(|r| r.wheel_pressure.front_left * PSI_TO_BAR)
-        .collect();
-    let rf_pressure_bar: Vec<f32> = records
-        .iter()
-        .map(|r| r.wheel_pressure.front_right * PSI_TO_BAR)
-        .collect();
-    let lb_pressure_bar: Vec<f32> = records
-        .iter()
-        .map(|r| r.wheel_pressure.rear_left * PSI_TO_BAR)
-        .collect();
-    let rb_pressure_bar: Vec<f32> = records
-        .iter()
-        .map(|r| r.wheel_pressure.rear_right * PSI_TO_BAR)
-        .collect();
-    let lf_brake_temp_c: Vec<f32> = records.iter().map(|r| r.brake_temp.front_left - 273.15).collect();
-    let rf_brake_temp_c: Vec<f32> = records.iter().map(|r| r.brake_temp.front_right - 273.15).collect();
-    let lb_brake_temp_c: Vec<f32> = records.iter().map(|r| r.brake_temp.rear_left - 273.15).collect();
-    let rb_brake_temp_c: Vec<f32> = records.iter().map(|r| r.brake_temp.rear_right - 273.15).collect();
-    let lf_tyre_wear_pct: Vec<f32> = records.iter().map(|r| r.tyre_wear.front_left * 100.0).collect();
-    let rf_tyre_wear_pct: Vec<f32> = records.iter().map(|r| r.tyre_wear.front_right * 100.0).collect();
-    let lb_tyre_wear_pct: Vec<f32> = records.iter().map(|r| r.tyre_wear.rear_left * 100.0).collect();
-    let rb_tyre_wear_pct: Vec<f32> = records.iter().map(|r| r.tyre_wear.rear_right * 100.0).collect();
+/// Write `.ld` with an explicit MoTeC channel profile (from TOML).
+pub fn write_ld_with_profile(
+    path: impl AsRef<Path>,
+    records: &[PhysicsRecord],
+    sample_rate_hz: u32,
+    graphics: Option<(&[GraphicsRecord], u32)>,
+    profile: Option<&MotecProfile>,
+) -> std::io::Result<()> {
+    let profile = match profile {
+        Some(p) => p.clone(),
+        None => motec_profile::load_profile_from_config(
+            &default_profile_name(),
+            default_profiles_dir().as_deref(),
+        )
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidInput, e))?,
+    };
+    write_ld_profile(path, records, sample_rate_hz, graphics, &profile)
+}
 
-    let mut channels: Vec<(&str, &str, Vec<f32>)> = vec![
-        ("Time", "s", time),
-        ("Speed", "km/h", speed),
-        ("RPM", "rpm", rpm),
-        ("Throttle", "%", throttle),
-        ("Brake", "%", brake),
-        // RBR Motec workspace expects this exact channel id.
-        ("steering", "", steer),
-        ("Gear", "", gear),
-        ("speed", "km/h", speed_alias),
-        ("throttle", "", throttle_alias),
-        ("brake", "", brake_alias),
-        ("engineRotation", "rad/s", engine_rotation_alias),
-        ("gear_ok", "", gear_ok_alias),
-        ("vecLinearAccelerationCar.x", "g", g_lat),
-        ("vecLinearAccelerationCar.y", "g", g_lon),
-        ("G ForceTotal", "g", g_total),
-        ("LF.suspensionTravel", "m", lf_deflection.clone()),
-        ("RF.suspensionTravel", "m", rf_deflection.clone()),
-        ("LB.suspensionTravel", "m", lb_deflection.clone()),
-        ("RB.suspensionTravel", "m", rb_deflection.clone()),
-        ("LF.deflection", "m", lf_deflection),
-        ("RF.deflection", "m", rf_deflection),
-        ("LB.deflection", "m", lb_deflection),
-        ("RB.deflection", "m", rb_deflection),
-        ("car.pos.x", "m", car_pos_x),
-        ("car.pos.y", "m", car_pos_y),
-        ("car.pos.z", "m", car_pos_z),
-        ("LF.wheelPos.x", "m", lf_wheel_x),
-        ("LF.wheelPos.y", "m", lf_wheel_y),
-        ("LF.wheelPos.z", "m", lf_wheel_z),
-        ("RF.wheelPos.x", "m", rf_wheel_x),
-        ("RF.wheelPos.y", "m", rf_wheel_y),
-        ("RF.wheelPos.z", "m", rf_wheel_z),
-        ("LB.wheelPos.x", "m", lb_wheel_x),
-        ("LB.wheelPos.y", "m", lb_wheel_y),
-        ("LB.wheelPos.z", "m", lb_wheel_z),
-        ("RB.wheelPos.x", "m", rb_wheel_x),
-        ("RB.wheelPos.y", "m", rb_wheel_y),
-        ("RB.wheelPos.z", "m", rb_wheel_z),
-        ("LF.tyreTemperature", "C", lf_tyre_temp_c),
-        ("RF.tyreTemperature", "C", rf_tyre_temp_c),
-        ("LB.tyreTemperature", "C", lb_tyre_temp_c),
-        ("RB.tyreTemperature", "C", rb_tyre_temp_c),
-        ("LF.pressure", "bar", lf_pressure_bar),
-        ("RF.pressure", "bar", rf_pressure_bar),
-        ("LB.pressure", "bar", lb_pressure_bar),
-        ("RB.pressure", "bar", rb_pressure_bar),
-        ("LF.brakeDiskTempC", "C", lf_brake_temp_c),
-        ("RF.brakeDiskTempC", "C", rf_brake_temp_c),
-        ("LB.brakeDiskTempC", "C", lb_brake_temp_c),
-        ("RB.brakeDiskTempC", "C", rb_brake_temp_c),
-        ("LF.tyreWear%", "%", lf_tyre_wear_pct),
-        ("RF.tyreWear%", "%", rf_tyre_wear_pct),
-        ("LB.tyreWear%", "%", lb_tyre_wear_pct),
-        ("RB.tyreWear%", "%", rb_tyre_wear_pct),
-    ];
+fn default_profile_name() -> String {
+    crate::config::load_config()
+        .export
+        .motec
+        .profile
+        .clone()
+}
 
-    if let Some((graphics_records, _graphics_hz)) = graphics {
-        if !graphics_records.is_empty() {
-            let gx = resample_graphics_to_len(graphics_records, records.len(), |g| g.car_coordinates_x);
-            let gy = resample_graphics_to_len(graphics_records, records.len(), |g| g.car_coordinates_y);
-            let gz = resample_graphics_to_len(graphics_records, records.len(), |g| g.car_coordinates_z);
-            channels.push(("position.x", "m", gx));
-            channels.push(("position.y", "m", gy));
-            channels.push(("position.z", "m", gz));
-        }
+fn default_profiles_dir() -> Option<String> {
+    let dir = crate::config::load_config().export.motec.profiles_dir.clone();
+    if dir.trim().is_empty() {
+        None
+    } else {
+        Some(dir)
+    }
+}
+
+fn write_ld_profile(
+    path: impl AsRef<Path>,
+    records: &[PhysicsRecord],
+    sample_rate_hz: u32,
+    graphics: Option<(&[GraphicsRecord], u32)>,
+    profile: &MotecProfile,
+) -> std::io::Result<()> {
+    let channels = motec_profile::build_ld_channels(profile, records, sample_rate_hz, graphics)
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidInput, e))?;
+
+    if channels.is_empty() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            format!("MoTeC profile '{}' produced no channels", profile.id),
+        ));
     }
 
-    // Layout (from ldparser)
-    // ldHead: 1762 bytes
+    let mut f = File::create(path)?;
+    let rec_freq: u16 = sample_rate_hz.min(u16::MAX as u32) as u16;
+
     let head_size = 1762u32;
-    // ldEvent: 1154 bytes
-    // Keep a minimal event block to maximize i2 compatibility.
     let event_ptr: u32 = head_size;
     let event_size = 1154u32;
-    let chan_head_size = 124u32; // ldChan struct size from ldparser
+    let chan_head_size = 124u32;
 
     let meta_ptr = head_size + event_size;
     let data_ptr = meta_ptr + channels.len() as u32 * chan_head_size;
 
-    // Calculate data offsets per channel
-    let _n = records.len() as u32;
     let mut data_offsets = Vec::with_capacity(channels.len());
     let mut offset = data_ptr;
     for (_, _, data) in &channels {
         data_offsets.push(offset);
-        offset += data.len() as u32 * 4; // f32 = 4 bytes
+        offset += data.len() as u32 * 4;
     }
 
-    // Write ldHead
-    write_ld_head(&mut f, meta_ptr, data_ptr, event_ptr, channels.len() as u32)?;
+    write_ld_head(
+        &mut f,
+        meta_ptr,
+        data_ptr,
+        event_ptr,
+        channels.len() as u32,
+        &profile.id,
+    )?;
 
-    // Write ldEvent block.
     f.seek(SeekFrom::Start(event_ptr as u64))?;
-    write_ld_event(&mut f)?;
+    write_ld_event(&mut f, &profile.description)?;
 
-    // Seek to meta region and write channel headers
     f.seek(SeekFrom::Start(meta_ptr as u64))?;
-    for (i, ((name, unit, data), &data_off)) in channels.iter().zip(data_offsets.iter()).enumerate() {
-        let prev = if i == 0 { 0u32 } else { meta_ptr + (i - 1) as u32 * chan_head_size };
+    for (i, ((name, unit, data), &data_off)) in channels.iter().zip(data_offsets.iter()).enumerate()
+    {
+        let prev = if i == 0 {
+            0u32
+        } else {
+            meta_ptr + (i - 1) as u32 * chan_head_size
+        };
         let next = if i + 1 < channels.len() {
             meta_ptr + (i + 1) as u32 * chan_head_size
         } else {
             0
         };
-        write_ld_chan(&mut f, prev, next, data_off, data.len() as u32, name, unit, i)?;
+        write_ld_chan(&mut f, prev, next, data_off, data.len() as u32, name, unit, i, rec_freq)?;
     }
 
-    // Write channel data
     for (_, _, data) in &channels {
         for &v in data {
             f.write_all(&v.to_le_bytes())?;
@@ -258,6 +155,7 @@ fn write_ld_head(
     data_ptr: u32,
     event_ptr: u32,
     n_chans: u32,
+    profile_id: &str,
 ) -> std::io::Result<()> {
     use std::time::{SystemTime, UNIX_EPOCH};
     let now = SystemTime::now()
@@ -271,8 +169,9 @@ fn write_ld_head(
     let s = secs % 60;
     let date = format!("{:02}/{:02}/{:04}", d, m, y);
     let time = format!("{:02}:{:02}:{:02}", h, min, s);
+    let comment = format!("acr_recorder export profile={profile_id}");
 
-    f.write_all(&0x40u32.to_le_bytes())?; // ldmarker
+    f.write_all(&0x40u32.to_le_bytes())?;
     pad(f, 4)?;
     f.write_all(&meta_ptr.to_le_bytes())?;
     f.write_all(&data_ptr.to_le_bytes())?;
@@ -300,18 +199,22 @@ fn write_ld_head(
     pad(f, 1024)?;
     f.write_all(&0xc81a4u32.to_le_bytes())?;
     pad(f, 66)?;
-    write_str_fixed(f, "acr_recorder export", 64)?;
+    write_str_fixed(f, &comment, 64)?;
     pad(f, 126)?;
 
     Ok(())
 }
 
-fn write_ld_event(f: &mut File) -> std::io::Result<()> {
-    // ldEvent format in ldparser: <64s64s1024sH
+fn write_ld_event(f: &mut File, description: &str) -> std::io::Result<()> {
+    let comment = if description.is_empty() {
+        "acr_recorder export".to_string()
+    } else {
+        format!("acr_recorder: {description}")
+    };
     write_str_fixed(f, "ACR Session", 64)?;
     write_str_fixed(f, "0", 64)?;
-    write_str_fixed(f, "acr_recorder synthetic/minimal export", 1024)?;
-    f.write_all(&0u16.to_le_bytes())?; // venue_ptr = 0 (no venue block)
+    write_str_fixed(f, &comment, 1024)?;
+    f.write_all(&0u16.to_le_bytes())?;
     Ok(())
 }
 
@@ -338,10 +241,11 @@ fn write_ld_chan(
     name: &str,
     unit: &str,
     idx: usize,
+    rec_freq: u16,
 ) -> std::io::Result<()> {
     let counter = 0x2ee1u16 + idx as u16;
-    let dtype_a: u16 = 0x07; // float
-    let dtype: u16 = 4;     // float32
+    let dtype_a: u16 = 0x07;
+    let dtype: u16 = 4;
     let shift: i16 = 0;
     let mul: i16 = 1;
     let scale: i16 = 1;
@@ -354,7 +258,7 @@ fn write_ld_chan(
     f.write_all(&counter.to_le_bytes())?;
     f.write_all(&dtype_a.to_le_bytes())?;
     f.write_all(&dtype.to_le_bytes())?;
-    f.write_all(&REC_FREQ.to_le_bytes())?;
+    f.write_all(&rec_freq.to_le_bytes())?;
     f.write_all(&shift.to_le_bytes())?;
     f.write_all(&mul.to_le_bytes())?;
     f.write_all(&scale.to_le_bytes())?;
@@ -365,42 +269,4 @@ fn write_ld_chan(
     pad(f, 40)?;
 
     Ok(())
-}
-
-fn vec3_from_records(
-    records: &[PhysicsRecord],
-    getter: impl Fn(&PhysicsRecord) -> (f32, f32, f32),
-) -> (Vec<f32>, Vec<f32>, Vec<f32>) {
-    let mut x = Vec::with_capacity(records.len());
-    let mut y = Vec::with_capacity(records.len());
-    let mut z = Vec::with_capacity(records.len());
-    for r in records {
-        let (vx, vy, vz) = getter(r);
-        x.push(vx);
-        y.push(vy);
-        z.push(vz);
-    }
-    (x, y, z)
-}
-
-fn resample_graphics_to_len(
-    graphics: &[GraphicsRecord],
-    target_len: usize,
-    getter: impl Fn(&GraphicsRecord) -> f32,
-) -> Vec<f32> {
-    if target_len == 0 || graphics.is_empty() {
-        return Vec::new();
-    }
-    if target_len == 1 {
-        return vec![getter(&graphics[0])];
-    }
-    if graphics.len() == 1 {
-        return vec![getter(&graphics[0]); target_len];
-    }
-    (0..target_len)
-        .map(|i| {
-            let src_idx = i * (graphics.len() - 1) / (target_len - 1);
-            getter(&graphics[src_idx])
-        })
-        .collect()
 }

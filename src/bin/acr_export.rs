@@ -761,6 +761,7 @@ fn export_single(
         }
         // LD always with CSV for single-file
         let ld_path = out_dir.join(format!("{}.ld", stem));
+        let motec_profile = config::load_config().export.motec.profile;
         if let Some((graphics_records, graphics_sample_rate)) = ld_graphics.as_ref() {
             acr_recorder::export::motec_ld::write_ld_with_graphics(
                 &ld_path,
@@ -771,7 +772,11 @@ fn export_single(
         } else {
             acr_recorder::export::motec_ld::write_ld(&ld_path, &records, sample_rate)?;
         }
-        eprintln!("Wrote {}", ld_path.display());
+        eprintln!(
+            "Wrote {} (MoTeC profile={})",
+            ld_path.display(),
+            motec_profile
+        );
     }
 
     if do_shp {

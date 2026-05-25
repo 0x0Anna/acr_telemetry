@@ -279,9 +279,12 @@ pub fn write_csv(
     }
 
     // Data rows
+    let mut records_ts = records.to_vec();
+    crate::record::ensure_capture_times(&mut records_ts, sample_rate_hz);
+    let time_secs = PhysicsRecord::motec_time_secs(&records_ts);
     let b = |v: bool| if v { 1.0 } else { 0.0 };
     for (i, r) in records.iter().enumerate() {
-        let time = i as f64 * dt;
+        let time = time_secs.get(i).copied().unwrap_or(0.0) as f64;
         let row = vec![
             format!("{:.6}", time),
             format!("{}", r.packet_id),

@@ -196,6 +196,8 @@ pub struct ExportConfig {
     /// Default path for SQLite database (relative to executable directory or absolute).
     #[serde(default = "default_sqlite_path")]
     pub sqlite_db_path: String,
+    #[serde(default)]
+    pub motec: MotecExportConfig,
 }
 
 impl Default for ExportConfig {
@@ -203,8 +205,33 @@ impl Default for ExportConfig {
         Self {
             default_method: default_export_method(),
             sqlite_db_path: default_sqlite_path(),
+            motec: MotecExportConfig::default(),
         }
     }
+}
+
+/// MoTeC `.ld` export (acr_export, acr_motec, acr_recorder --motec).
+#[derive(Debug, Clone, serde::Deserialize)]
+pub struct MotecExportConfig {
+    /// Profile name: TOML file `motec_profiles/<profile>.toml` (e.g. `rally`, `rbr`).
+    #[serde(default = "default_motec_profile")]
+    pub profile: String,
+    /// Optional directory for profile TOMLs (relative to exe dir). Empty = `motec_profiles/` next to exe.
+    #[serde(default)]
+    pub profiles_dir: String,
+}
+
+impl Default for MotecExportConfig {
+    fn default() -> Self {
+        Self {
+            profile: default_motec_profile(),
+            profiles_dir: String::new(),
+        }
+    }
+}
+
+fn default_motec_profile() -> String {
+    "rbr".into()
 }
 
 fn default_raw_output_dir() -> String {
@@ -306,7 +333,7 @@ pub fn resolve_notes_dir(cfg: &RecorderConfig) -> PathBuf {
 }
 
 /// Base directory for resolving relative config paths: executable directory, or CWD if unavailable.
-fn base_dir() -> Option<PathBuf> {
+pub fn base_dir() -> Option<PathBuf> {
     std::env::current_exe()
         .ok()
         .and_then(|exe| exe.parent().map(Path::to_path_buf))
