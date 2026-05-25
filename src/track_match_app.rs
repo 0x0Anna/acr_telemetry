@@ -1381,10 +1381,11 @@ struct TimingBlameCtx<'a> {
 
 
 #[allow(clippy::too_many_arguments)]
-fn apply_game_clock_finish_all_legs(
+fn apply_game_clock_finish_overrides(
     state: &mut LiveTimingState,
     si: usize,
-    adopter: &acr_timing::game_clock_sector_override::GameClockSectorAdopter,
+    adopter: &mut acr_timing::game_clock_sector_override::GameClockSectorAdopter,
+    game_clock: &mut acr_timing::game_clock_sync::GameClockCorrector,
     cfg: &CliConfig,
     timing_conn: &rusqlite::Connection,
     timing_pb: &mut acr_timing::timing_pb::TimingPbStore,
@@ -1393,37 +1394,38 @@ fn apply_game_clock_finish_all_legs(
     frame_monitor: &mut acr_timing::timing_frame_quality::TimingFrameMonitor,
     physics: &PhysicsMap,
     graphics_distance_traveled: f32,
-) {
-    let Some(sample) = adopter.cached_sample() else {
-        return;
+) -> bool {
+    if cfg.game_clock_sector.is_none() {
+        return true;
+    }
+    adopter.poll_force();
+    if game_clock.enabled() {
+        game_clock.poll_now(Some(graphics_distance_traveled as f64));
+    }
+    let Some(sample) = adopter
+        .cached_sample_owned()
+        .or_else(|| game_clock.last_game_sample().cloned())
+    else {
+        return false;
     };
-    let session = &state.stage_sector_sessions[si];
-    let leg_count = session.markers.sector_leg_count;
-    let splits =
-        acr_timing::game_clock_sector_override::all_stage_leg_splits_sec(sample, leg_count);
+    let leg_count = state.stage_sector_sessions[si].markers.sector_leg_count;
     let orders =
-        acr_timing::stage_sector_timing::stage_leg_pb_orders(&session.markers.markers);
-    let slug = session.markers.stage_slug.clone();
-    let label = session.markers.rtss_label().to_string();
-    let mut applied = 0usize;
-    let mut missing_legs: Vec<usize> = Vec::new();
-    for (leg_ix, split_opt) in splits.iter().enumerate() {
-        let Some(split) = split_opt.as_ref().and_then(|s| {
-            (*s > 0.05 && s.is_finite()).then_some(*s)
-        }) else {
-            missing_legs.push(leg_ix + 1);
-            continue;
-        };
-        let (from_order, to_order) = orders.get(leg_ix).copied().unwrap_or((0, 0));
-        let unchanged = state.stage_sector_sessions[si].run.sector_secs[leg_ix]
-            .map(|prev| (prev - split).abs() < 0.001)
-            .unwrap_or(false);
-        if unchanged {
-            continue;
-        }
-        if leg_ix < state.stage_sector_sessions[si].run.sector_secs.len() {
-            state.stage_sector_sessions[si].run.sector_secs[leg_ix] = Some(split);
-        }
+        acr_timing::stage_sector_timing::stage_leg_pb_orders(&state.stage_sector_sessions[si].markers.markers);
+    let slug = state.stage_sector_sessions[si].markers.stage_slug.clone();
+    let label = state.stage_sector_sessions[si].markers.rtss_label().to_string();
+    let overrides = {
+        let session = &mut state.stage_sector_sessions[si];
+        acr_timing::game_clock_sector_override::apply_finish_sector_overrides(&sample, session, true)
+    };
+    for o in &overrides {
+        let (from_order, to_order) = orders.get(o.leg_ix).copied().unwrap_or((0, 0));
+        eprintln!(
+            "[{label}] Sektor-Übernahme Finish S{}: {:.3}s → Sektor-{}-Zeit (UE4SS) {:.3}s",
+            o.leg_ix + 1,
+            o.prev_sec,
+            o.leg_ix + 1,
+            o.ue4ss_sec,
+        );
         frame_monitor.reset_leg_accumulator();
         state.stage_sector_sessions[si].run.leg_excess_wall_sec = 0.0;
         let leg_stats = take_leg_stats(state, physics.speed_kmh);
@@ -1434,14 +1436,9 @@ fn apply_game_clock_finish_all_legs(
             car_model,
             from_order,
             to_order,
-            split,
+            o.ue4ss_sec,
             leg_stats,
         ) {
-            eprintln!(
-                "[{label}] game_clock_finish S{}: {}",
-                leg_ix + 1,
-                acr_timing::stage_sector_timing::format_duration(split),
-            );
             if let Some(pb_sec) = pb {
                 let split_rec = acr_timing::timing_db::SplitRecord {
                     track_name: &slug,
@@ -1449,7 +1446,7 @@ fn apply_game_clock_finish_all_legs(
                     direction: acr_timing::stage_sector_timing::STAGE_TIMING_DIRECTION,
                     from_sector: from_order,
                     to_sector: to_order,
-                    duration_sec: split,
+                    duration_sec: o.ue4ss_sec,
                     distance_m: 0.0,
                     stats: leg_stats,
                 };
@@ -1457,20 +1454,25 @@ fn apply_game_clock_finish_all_legs(
             }
             let _ = delta;
         }
-        applied += 1;
     }
-    if applied > 0 {
+    if !overrides.is_empty() {
         eprintln!(
-            "[{label}] Sektor-Übernahme Finish: {applied}/{leg_count} Sektoren aus UE4SS übernommen (sectors={})",
+            "[{label}] Sektor-Übernahme Finish: {}/{} Sektoren korrigiert (jsonl sectors={})",
+            overrides.len(),
+            leg_count,
             sample.sectors.len()
         );
     }
-    if !missing_legs.is_empty() && cfg.game_clock_sector.is_some() {
-        eprintln!(
-            "[{label}] Sektor-Übernahme Finish: Sektor-Zeit (UE4SS) fehlt für S{missing_legs:?} (jsonl sectors={})",
-            sample.sectors.len()
-        );
+    let all_present = (0..leg_count).all(|leg_ix| {
+        acr_timing::game_clock_sector_override::sector_leg_split_sec_for_finish(
+            &sample, leg_ix, leg_count,
+        )
+        .is_some()
+    });
+    if !all_present {
+        adopter.enqueue_finish_retry(si, label, slug, leg_count);
     }
+    all_present
 }
 
 fn prior_stage_splits(state: &LiveTimingState, session_si: usize, leg_ix: usize) -> Vec<f64> {
@@ -1519,6 +1521,26 @@ fn process_stage_sector_sessions_on_step(
     }
     let game_race_hud = game_clock.game_race_for_sector_display();
     if let Some(adopter) = game_clock_sector.as_mut() {
+        let finish_overrides =
+            acr_timing::game_clock_sector_override::drain_finish_overrides(
+                adopter,
+                now_inst,
+                &mut state.stage_sector_sessions,
+            );
+        for o in finish_overrides {
+            let label = state
+                .stage_sector_sessions
+                .get(o.session_si)
+                .map(|s| s.markers.rtss_label())
+                .unwrap_or("stage");
+            eprintln!(
+                "[{label}] Sektor-Übernahme Finish S{} (nachgereicht): {:.3}s → Sektor-{}-Zeit (UE4SS) {:.3}s",
+                o.leg_ix + 1,
+                o.prev_sec,
+                o.leg_ix + 1,
+                o.ue4ss_sec,
+            );
+        }
         let commits = adopter.drain_commit_ready(now_inst, &state.stage_sector_sessions);
         for c in commits {
             let s = c.leg_ix + 1;
@@ -1671,7 +1693,7 @@ fn process_stage_sector_sessions_on_step(
                                 );
                             }
                             adopt_dt = split;
-                        } else if adopter.is_live() {
+                        } else if adopter.is_live() && !run_completed {
                             let poll_iv =
                                 Duration::from_secs_f64(adopter.cfg.poll_interval_sec);
                             let window =
@@ -1846,12 +1868,12 @@ fn process_stage_sector_sessions_on_step(
         }
         if run_completed {
             if let Some(adopter) = game_clock_sector.as_mut() {
-                adopter.poll_force();
-                if adopter.is_live() {
-                    apply_game_clock_finish_all_legs(
+                if adopter.is_live() || game_clock.jsonl_fresh_for_display() {
+                    let _ = apply_game_clock_finish_overrides(
                         state,
                         si,
                         adopter,
+                        game_clock,
                         cfg,
                         timing_conn,
                         timing_pb,
@@ -1861,7 +1883,6 @@ fn process_stage_sector_sessions_on_step(
                         physics,
                         graphics_distance_traveled,
                     );
-                    adopter.clear_pending();
                 }
             }
             let session = &mut state.stage_sector_sessions[si];

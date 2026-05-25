@@ -55,12 +55,33 @@ pub struct SectorAdoptCommit {
     pub via: &'static str,
 }
 
+#[derive(Debug, Clone)]
+pub struct PendingFinishAdopt {
+    pub session_si: usize,
+    pub label: String,
+    pub slug: String,
+    pub leg_count: usize,
+    pub next_poll: Instant,
+    pub deadline: Instant,
+}
+
+/// One leg updated from UE4SS after Finish (for logging / DB).
+#[derive(Debug, Clone)]
+pub struct FinishLegOverride {
+    pub session_si: usize,
+    pub leg_ix: usize,
+    pub prev_sec: f64,
+    pub ue4ss_sec: f64,
+}
+
 pub struct GameClockSectorAdopter {
     pub cfg: GameClockSectorAdopterConfig,
     last_poll: Instant,
     cached: Option<GameClockSample>,
     jsonl_live: bool,
     pending: Vec<PendingSectorAdopt>,
+    /// Poll JSONL after Finish until all sector legs have UE4SS times (S4 often lags).
+    finish_pending: Option<PendingFinishAdopt>,
 }
 
 impl GameClockSectorAdopter {
@@ -73,6 +94,7 @@ impl GameClockSectorAdopter {
             cached: None,
             jsonl_live: false,
             pending: Vec::new(),
+            finish_pending: None,
         }
     }
 
@@ -111,6 +133,10 @@ impl GameClockSectorAdopter {
         self.cached.as_ref()
     }
 
+    pub fn cached_sample_owned(&self) -> Option<GameClockSample> {
+        self.cached.clone()
+    }
+
     /// Adopt only when leg `leg_ix` is present in the mod array and not a duplicate of prior legs.
     pub fn split_for_leg_checked(&self, leg_ix: usize, prior_splits: &[f64]) -> Option<f64> {
         let sample = self.cached.as_ref()?;
@@ -130,6 +156,31 @@ impl GameClockSectorAdopter {
 
     pub fn clear_pending(&mut self) {
         self.pending.clear();
+    }
+
+    /// After Finish: keep polling until every main-sector leg has a UE4SS split (esp. S4).
+    pub fn enqueue_finish_retry(
+        &mut self,
+        session_si: usize,
+        label: String,
+        slug: String,
+        leg_count: usize,
+    ) {
+        let poll_iv = Duration::from_secs_f64(self.cfg.poll_interval_sec);
+        let window = Duration::from_secs_f64(self.cfg.adopt_window_sec.max(3.0));
+        let now = Instant::now();
+        self.finish_pending = Some(PendingFinishAdopt {
+            session_si,
+            label,
+            slug,
+            leg_count,
+            next_poll: now + poll_iv,
+            deadline: now + window,
+        });
+    }
+
+    pub fn has_finish_pending(&self) -> bool {
+        self.finish_pending.is_some()
     }
 
     pub fn sectors_summary(&self) -> String {
@@ -235,6 +286,17 @@ fn sector_record_for_leg<'a>(
             return Some(rec);
         }
     }
+    if sample
+        .sectors
+        .first()
+        .is_some_and(|r| !record_adoptable(r) && r.id == Some(0))
+    {
+        if let Some(rec) = sample.sectors.get(leg_ix + 1) {
+            if record_adoptable(rec) {
+                return Some(rec);
+            }
+        }
+    }
     let game_id = leg_ix as i32 + 1;
     if let Some(rec) = sample.sectors.iter().find(|r| r.id == Some(game_id)) {
         if record_adoptable(rec) {
@@ -324,11 +386,134 @@ fn is_duplicate_of_prior(split: f64, prior_splits: &[f64]) -> bool {
         .any(|p| p.is_finite() && (split - p).abs() < 0.001)
 }
 
+/// Leg split at Finish (S4 may appear in JSONL slightly after the gate cross).
+pub fn sector_leg_split_sec_for_finish(
+    sample: &GameClockSample,
+    leg_ix: usize,
+    leg_count: usize,
+) -> Option<f64> {
+    sector_leg_split_sec(sample, leg_ix).or_else(|| {
+        if leg_ix + 1 != leg_count {
+            return None;
+        }
+        let adoptable: Vec<&crate::game_clock_sync::GameClockSectorRecord> = sample
+            .sectors
+            .iter()
+            .filter(|r| record_adoptable(r))
+            .collect();
+        if adoptable.len() >= leg_count {
+            let rec = adoptable.get(leg_ix)?;
+            return split_from_record(rec).or_else(|| leg_time_delta_for_record(sample, rec));
+        }
+        adoptable.last().and_then(|rec| {
+            split_from_record(rec).or_else(|| leg_time_delta_for_record(sample, rec))
+        })
+    })
+}
+
 /// All stage leg splits from a Finish sample (`leg_count` = `sector_leg_count`).
 pub fn all_stage_leg_splits_sec(sample: &GameClockSample, leg_count: usize) -> Vec<Option<f64>> {
     let mut out = vec![None; leg_count];
     for i in 0..leg_count {
-        out[i] = sector_leg_split_sec(sample, i);
+        out[i] = sector_leg_split_sec_for_finish(sample, i, leg_count);
+    }
+    out
+}
+
+/// Apply UE4SS sector times to a completed run; returns legs that changed.
+pub fn apply_finish_sector_overrides(
+    sample: &GameClockSample,
+    session: &mut StageSectorSession,
+    force: bool,
+) -> Vec<FinishLegOverride> {
+    let leg_count = session.markers.sector_leg_count;
+    let mut out = Vec::new();
+    for leg_ix in 0..leg_count {
+        let Some(split) = sector_leg_split_sec_for_finish(sample, leg_ix, leg_count) else {
+            continue;
+        };
+        if !(split.is_finite() && split > 0.05) {
+            continue;
+        }
+        let prev = session.run.sector_secs[leg_ix];
+        let changed = prev
+            .map(|p| (p - split).abs() > 0.001)
+            .unwrap_or(true);
+        if !force && !changed {
+            continue;
+        }
+        if leg_ix < session.run.sector_secs.len() {
+            let prev_sec = prev.unwrap_or(split);
+            session.run.sector_secs[leg_ix] = Some(split);
+            if changed {
+                out.push(FinishLegOverride {
+                    session_si: 0,
+                    leg_ix,
+                    prev_sec,
+                    ue4ss_sec: split,
+                });
+            }
+        }
+    }
+    out
+}
+
+/// Poll JSONL after Finish and patch sector times when UE4SS data arrives.
+pub fn drain_finish_overrides(
+    adopter: &mut GameClockSectorAdopter,
+    now: Instant,
+    sessions: &mut [StageSectorSession],
+) -> Vec<FinishLegOverride> {
+    let Some(fp) = adopter.finish_pending.clone() else {
+        return Vec::new();
+    };
+    if now < fp.next_poll {
+        return Vec::new();
+    }
+    adopter.poll_force();
+    let poll_iv = Duration::from_secs_f64(adopter.cfg.poll_interval_sec);
+    let mut out = Vec::new();
+    if let Some(sample) = adopter.cached.clone() {
+        if let Some(session) = sessions.get_mut(fp.session_si) {
+            let overrides = apply_finish_sector_overrides(&sample, session, true);
+            for mut o in overrides {
+                o.session_si = fp.session_si;
+                out.push(o);
+            }
+            let all_present = (0..fp.leg_count).all(|leg_ix| {
+                sector_leg_split_sec_for_finish(&sample, leg_ix, fp.leg_count).is_some()
+            });
+            if all_present {
+                adopter.finish_pending = None;
+                return out;
+            }
+        }
+    }
+    if now >= fp.deadline {
+        if let Some(session) = sessions.get(fp.session_si) {
+            let missing: Vec<usize> = (0..fp.leg_count)
+                .filter(|&leg_ix| {
+                    adopter
+                        .cached
+                        .as_ref()
+                        .and_then(|s| sector_leg_split_sec_for_finish(s, leg_ix, fp.leg_count))
+                        .is_none()
+                })
+                .map(|i| i + 1)
+                .collect();
+            if !missing.is_empty() {
+                eprintln!(
+                    "[{}] Sektor-Übernahme Finish: Sektor-Zeit (UE4SS) fehlt für S{missing:?} nach {:.1}s",
+                    fp.label,
+                    adopter.cfg.adopt_window_sec.max(3.0)
+                );
+            }
+        }
+        adopter.finish_pending = None;
+        return out;
+    }
+    if let Some(fp) = adopter.finish_pending.as_mut() {
+        fp.next_poll = now + poll_iv;
     }
     out
 }
@@ -400,6 +585,60 @@ mod tests {
             t_wall_s: None,
             sample_kind: Some("full".into()),
         }
+    }
+
+    #[test]
+    fn finish_leg4_from_id4_row() {
+        let sample = GameClockSample {
+            race_time_s: Some(400.0),
+            distance_m: None,
+            race_time_valid: true,
+            diff_time_s: None,
+            position: None,
+            phase: None,
+            sectors: vec![
+                GameClockSectorRecord {
+                    id: Some(0),
+                    time_s: Some(0.0),
+                    split_s: Some(0.0),
+                },
+                GameClockSectorRecord {
+                    id: Some(1),
+                    time_s: Some(95.0),
+                    split_s: Some(95.0),
+                },
+                GameClockSectorRecord {
+                    id: Some(2),
+                    time_s: Some(190.0),
+                    split_s: Some(95.0),
+                },
+                GameClockSectorRecord {
+                    id: Some(3),
+                    time_s: Some(285.0),
+                    split_s: Some(95.0),
+                },
+                GameClockSectorRecord {
+                    id: Some(4),
+                    time_s: Some(380.0),
+                    split_s: Some(95.0),
+                },
+            ],
+            sectors_source: None,
+            sectors_debug: None,
+            next_sector_index: Some(5),
+            race_source: None,
+            travel_track_id: None,
+            travel_track_source: None,
+            penalty_total_s: None,
+            ghost_ref: None,
+            game_x: None,
+            game_z: None,
+            t_process_ms: None,
+            t_wall_s: None,
+            sample_kind: Some("full".into()),
+        };
+        let s4 = sector_leg_split_sec_for_finish(&sample, 3, 4).unwrap();
+        assert!((s4 - 95.0).abs() < 1e-6);
     }
 
     #[test]
@@ -528,6 +767,7 @@ mod tests {
             cached: Some(sample),
             jsonl_live: true,
             pending: Vec::new(),
+            finish_pending: None,
         };
         assert!(adopter.split_for_leg_checked(1, &[95.0]).is_none());
     }
