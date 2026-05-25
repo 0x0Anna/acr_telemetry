@@ -332,8 +332,15 @@ WHERE reference_track = ?1 AND car = ?2 AND stage_slug = ?3 AND sector_index = ?
         )
     }
 
-  /// Insert a sector run; returns new row id. Only complete runs may become reference (caller checks).
-    pub fn insert_sector_run(&self, rec: &SectorRunRecord) -> rusqlite::Result<i64> {
+  /// Insert a sector run; returns new row id.
+    ///
+    /// When `promote_reference` is false, the row is archived only; call [`promote_reference_run`]
+    /// after the full run finishes (so in-run Δ stays against the frozen reference).
+    pub fn insert_sector_run(
+        &self,
+        rec: &SectorRunRecord,
+        promote_reference: bool,
+    ) -> rusqlite::Result<i64> {
         let now = chrono::Utc::now().format("%Y-%m-%dT%H:%M:%SZ").to_string();
         self.conn.execute(
             r#"
@@ -362,10 +369,15 @@ INSERT INTO sector_runs (
             )?;
         }
 
-        if rec.is_complete && !rec.invalidated {
+        if promote_reference && rec.is_complete && !rec.invalidated {
             self.maybe_promote_reference(run_id)?;
         }
         Ok(run_id)
+    }
+
+    /// Promote one archived sector run into `reference_runs` when it beats the current reference.
+    pub fn promote_reference_run(&self, sector_run_id: i64) -> rusqlite::Result<()> {
+        self.maybe_promote_reference(sector_run_id)
     }
 
     fn maybe_promote_reference(&self, sector_run_id: i64) -> rusqlite::Result<()> {
@@ -474,13 +486,13 @@ mod tests {
         let path = dir.join("ref.sqlite");
         let store = ReferenceStore::open(&path).unwrap();
         store
-            .insert_sector_run(&sample_run(0, 100.0, &[(1, 40.0), (2, 60.0)]))
+            .insert_sector_run(&sample_run(0, 100.0, &[(1, 40.0), (2, 60.0)]), true)
             .unwrap();
         store
-            .insert_sector_run(&sample_run(0, 90.0, &[(1, 30.0), (2, 60.0)]))
+            .insert_sector_run(&sample_run(0, 90.0, &[(1, 30.0), (2, 60.0)]), true)
             .unwrap();
         store
-            .insert_sector_run(&sample_run(1, 80.0, &[(3, 80.0)]))
+            .insert_sector_run(&sample_run(1, 80.0, &[(3, 80.0)]), true)
             .unwrap();
         let stage = store
             .best_stage_tot_sec("hafren", "car", "north", 2)
@@ -497,10 +509,10 @@ mod tests {
         let path = dir.join("ref.sqlite");
         let store = ReferenceStore::open(&path).unwrap();
         store
-            .insert_sector_run(&sample_run(0, 100.0, &[(1, 50.0), (2, 50.0)]))
+            .insert_sector_run(&sample_run(0, 100.0, &[(1, 50.0), (2, 50.0)]), true)
             .unwrap();
         store
-            .insert_sector_run(&sample_run(0, 95.0, &[(1, 40.0), (2, 55.0)]))
+            .insert_sector_run(&sample_run(0, 95.0, &[(1, 40.0), (2, 55.0)]), true)
             .unwrap();
         let snap = store
             .resolve_reference(

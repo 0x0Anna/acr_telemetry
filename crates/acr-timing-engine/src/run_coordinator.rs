@@ -20,6 +20,8 @@ pub struct RunCoordinator {
     sector_cursor: usize,
     session: Option<SectorSession>,
     timing_active: bool,
+    /// Sector run ids waiting for [`ReferenceStore::promote_reference_run`] after finish.
+    pending_reference_promotions: Vec<i64>,
 }
 
 impl RunCoordinator {
@@ -39,6 +41,7 @@ impl RunCoordinator {
             sector_cursor: 0,
             session: None,
             timing_active: false,
+            pending_reference_promotions: Vec::new(),
         }
     }
 
@@ -60,6 +63,16 @@ impl RunCoordinator {
         self.timing_active = false;
         self.sector_cursor = 0;
         self.session = None;
+        self.pending_reference_promotions.clear();
+    }
+
+    /// Apply deferred `reference_runs` updates after the run (in-run Δ used frozen snapshots).
+    pub fn flush_pending_reference_promotions(&mut self) {
+        for run_id in self.pending_reference_promotions.drain(..) {
+            if let Err(e) = self.store.promote_reference_run(run_id) {
+                eprintln!("timing_store: promote reference run {run_id}: {e}");
+            }
+        }
     }
 
     pub fn timing_started(&mut self) {
@@ -156,6 +169,7 @@ impl RunCoordinator {
         }
         if sector_label == "Finish" {
             self.timing_active = false;
+            self.flush_pending_reference_promotions();
             self.bus.publish(TimingEvent::new(TimingEventBody::RunFinished(RunFinished {
                 reference_track: self.cfg.reference_track.clone(),
                 stage_slug: self.cfg.stage_slug.clone(),
@@ -202,8 +216,9 @@ impl RunCoordinator {
             );
         }
         self.bus.publish(ev);
-        if let Err(e) = self.store.insert_sector_run(&rec) {
-            eprintln!("timing_store: {e}");
+        match self.store.insert_sector_run(&rec, false) {
+            Ok(run_id) => self.pending_reference_promotions.push(run_id),
+            Err(e) => eprintln!("timing_store: {e}"),
         }
     }
 

@@ -6,6 +6,8 @@ use std::time::Instant;
 
 use rusqlite::Connection;
 
+use acr_timing_store::{ReferenceStore, ReferenceTimeMode};
+
 use crate::delta_display::DeltaColorStyle;
 use crate::timing_db::{self, SplitRecord};
 use crate::timing_pb::TimingPbStore;
@@ -21,6 +23,8 @@ pub const TIMING_POSITION_RESET_WARNING: &str =
 pub struct StageSectorRun {
     /// Timed legs: timing_start→S1, S1→S2, … (length = `sector_leg_count`).
     pub sector_secs: Vec<Option<f64>>,
+    /// Referenz pro Leg, eingefroren beim Timing-Start (nicht während des Laufs ändern).
+    pub reference_secs: Vec<Option<f64>>,
     pub armed: bool,
     /// Index into `markers` for the next expected crossing.
     pub next_marker_idx: usize,
@@ -39,6 +43,7 @@ impl StageSectorRun {
     pub fn new(leg_count: usize) -> Self {
         Self {
             sector_secs: vec![None; leg_count],
+            reference_secs: vec![None; leg_count],
             armed: false,
             next_marker_idx: 0,
             anchor_packet_id: None,
@@ -73,6 +78,22 @@ impl StageSectorRun {
     pub fn reset_run(&mut self) {
         let n = self.sector_secs.len();
         *self = Self::new(n);
+    }
+
+    /// True after [`freeze_reference_secs`] at timing start (use for OSD Δ, not live PB).
+    pub fn references_frozen(&self) -> bool {
+        self.reference_secs.iter().any(|r| r.is_some())
+    }
+
+    /// Snapshot comparison times for this run (`[reference_times]`); call when timing arms.
+    pub fn freeze_reference_secs(&mut self, refs: Vec<Option<f64>>) {
+        let n = self.sector_secs.len();
+        self.reference_secs = align_len(refs, n);
+    }
+
+    /// Leg refs for display / Δ (frozen during run; empty only before timing start).
+    pub fn reference_secs_for_display(&self) -> &[Option<f64>] {
+        &self.reference_secs
     }
 
     /// Index of the leg currently being timed (`None` if not armed or run finished).
@@ -262,6 +283,83 @@ pub fn reference_sector_secs_from_pb(
         .collect()
 }
 
+/// Load per-leg reference times for a new run (before any sector is timed).
+pub fn snapshot_stage_reference_secs(
+    mode: ReferenceTimeMode,
+    pb: &TimingPbStore,
+    store: Option<&ReferenceStore>,
+    reference_track: &str,
+    stage_slug: &str,
+    car_model: &str,
+    markers: &[TimingSectorMarker],
+) -> Vec<Option<f64>> {
+    let leg_count = markers
+        .iter()
+        .filter(|m| m.role != TimingSectorRole::TimingStart)
+        .count()
+        .max(1);
+    match mode {
+        ReferenceTimeMode::BestSector => {
+            reference_sector_secs_from_pb(pb, stage_slug, car_model, markers)
+        }
+        ReferenceTimeMode::BestStage | ReferenceTimeMode::BestSubsector => {
+            let Some(store) = store else {
+                eprintln!(
+                    "timing: reference mode {} needs timing_reference_store — falling back to timing_pb",
+                    mode.as_str()
+                );
+                return reference_sector_secs_from_pb(pb, stage_slug, car_model, markers);
+            };
+            let mut out = vec![None; leg_count];
+            for leg_ix in 0..leg_count {
+                let snap = store
+                    .resolve_reference(
+                        mode,
+                        reference_track,
+                        car_model,
+                        stage_slug,
+                        leg_ix as u32,
+                        &[],
+                    )
+                    .ok()
+                    .flatten();
+                out[leg_ix] = snap
+                    .map(|s| s.tot_sec)
+                    .filter(|t| t.is_finite() && *t >= 0.05);
+            }
+            out
+        }
+    }
+}
+
+fn leg_delta_vs_frozen(
+    leg_ix: usize,
+    duration_sec: f64,
+    frozen_refs: &[Option<f64>],
+    pb: &TimingPbStore,
+    stage_slug: &str,
+    car_model: &str,
+    from_order: i32,
+    to_order: i32,
+) -> (f64, Option<f64>) {
+    if let Some(r) = frozen_refs.get(leg_ix).copied().flatten() {
+        if r.is_finite() && r >= 0.05 {
+            return (duration_sec - r, Some(r));
+        }
+    }
+    let best_before = pb.best_time(
+        stage_slug,
+        car_model,
+        STAGE_TIMING_DIRECTION,
+        from_order,
+        to_order,
+    );
+    let delta = best_before
+        .map(|b| duration_sec - b)
+        .unwrap_or(0.0);
+    (delta, best_before)
+}
+
 fn align_len(mut v: Vec<Option<f64>>, n: usize) -> Vec<Option<f64>> {
     v.truncate(n);
     while v.len() < n {
@@ -422,12 +520,16 @@ pub fn format_multi_stage_sector_line(
         .iter()
         .take(crate::stage_timing_config::MAX_PARALLEL_STAGE_TIMINGS)
         .map(|sess| {
-            let refs = reference_sector_secs_from_pb(
-                pb,
-                &sess.markers.stage_slug,
-                car_model,
-                &sess.markers.markers,
-            );
+            let refs = if sess.run.references_frozen() {
+                sess.run.reference_secs.clone()
+            } else {
+                reference_sector_secs_from_pb(
+                    pb,
+                    &sess.markers.stage_slug,
+                    car_model,
+                    &sess.markers.markers,
+                )
+            };
             format_stage_goal_line(
                 &sess.markers.rtss_label(),
                 &refs,
@@ -778,9 +880,12 @@ pub fn observe_stage_crossing(
     }
 }
 
-pub fn persist_stage_leg(
+/// Archive a completed leg in `timing.db` only; PB stays unchanged until [`commit_stage_run_to_pb`].
+pub fn archive_stage_leg(
     conn: &Connection,
-    pb: &mut crate::timing_pb::TimingPbStore,
+    pb: &TimingPbStore,
+    frozen_refs: &[Option<f64>],
+    leg_ix: usize,
     stage_slug: &str,
     car_model: &str,
     from_order: i32,
@@ -798,11 +903,87 @@ pub fn persist_stage_leg(
         distance_m: 0.0,
         stats,
     };
-    let best_before = pb.best_before_and_maybe_update(&split)?;
     timing_db::insert_split(conn, &split)?;
-    let delta = best_before
-        .map(|b| duration_sec - b)
-        .unwrap_or(0.0);
+    let (delta, ref_before) = leg_delta_vs_frozen(
+        leg_ix,
+        duration_sec,
+        frozen_refs,
+        pb,
+        stage_slug,
+        car_model,
+        from_order,
+        to_order,
+    );
+    Ok((delta, ref_before))
+}
+
+/// After a valid run: promote faster legs into `timing_pb.toml` (reference for the *next* run).
+pub fn commit_stage_run_to_pb(
+    pb: &mut TimingPbStore,
+    session: &StageSectorSession,
+    car_model: &str,
+) -> Result<usize, Box<dyn std::error::Error>> {
+    let orders = stage_leg_pb_orders(&session.markers.markers);
+    let mut improved = 0usize;
+    for (leg_ix, cur) in session.run.sector_secs.iter().enumerate() {
+        let Some(duration_sec) = cur.filter(|t| t.is_finite() && *t > 0.05) else {
+            continue;
+        };
+        let Some((from_order, to_order)) = orders.get(leg_ix).copied() else {
+            continue;
+        };
+        let split = SplitRecord {
+            track_name: &session.markers.stage_slug,
+            car_model,
+            direction: STAGE_TIMING_DIRECTION,
+            from_sector: from_order,
+            to_sector: to_order,
+            duration_sec,
+            distance_m: 0.0,
+            stats: None,
+        };
+        let best_before = pb.best_before_and_maybe_update(&split)?;
+        if best_before.map_or(true, |b| duration_sec < b - 1e-6) {
+            improved += 1;
+        }
+    }
+    Ok(improved)
+}
+
+/// Back-compat: archive + immediate PB update (tests / tools only).
+pub fn persist_stage_leg(
+    conn: &Connection,
+    pb: &mut TimingPbStore,
+    stage_slug: &str,
+    car_model: &str,
+    from_order: i32,
+    to_order: i32,
+    duration_sec: f64,
+    stats: Option<crate::sector_leg_stats::SectorLegStatsSnapshot>,
+) -> Result<(f64, Option<f64>), Box<dyn std::error::Error>> {
+    let (delta, best_before) = archive_stage_leg(
+        conn,
+        pb,
+        &[],
+        0,
+        stage_slug,
+        car_model,
+        from_order,
+        to_order,
+        duration_sec,
+        stats,
+    )?;
+    let split = SplitRecord {
+        track_name: stage_slug,
+        car_model,
+        direction: STAGE_TIMING_DIRECTION,
+        from_sector: from_order,
+        to_sector: to_order,
+        duration_sec,
+        distance_m: 0.0,
+        stats: None,
+    };
+    let _ = pb.best_before_and_maybe_update(&split)?;
     Ok((delta, best_before))
 }
 

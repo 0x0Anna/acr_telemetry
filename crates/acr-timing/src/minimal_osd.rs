@@ -262,12 +262,16 @@ pub fn format_minimal_stage_upper(
 ) -> String {
     let car = car_model.trim();
     let car = if car.is_empty() { "unknown_car" } else { car };
-    let refs = reference_sector_secs_from_pb(
-        pb,
-        &session.markers.stage_slug,
-        car,
-        &session.markers.markers,
-    );
+    let refs = if pre_start || !session.run.references_frozen() {
+        reference_sector_secs_from_pb(
+            pb,
+            &session.markers.stage_slug,
+            car,
+            &session.markers.markers,
+        )
+    } else {
+        session.run.reference_secs.clone()
+    };
     if pre_start {
         format_minimal_pre_start_reference_line(&refs)
     } else if pause_dash {

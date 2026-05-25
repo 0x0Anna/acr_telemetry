@@ -245,6 +245,7 @@ fn ensure_modular_timing(
     cum: &CumulativeTrackSectors,
     reference_track: &str,
     car: &str,
+    reference_mode: acr_timing_store::ReferenceTimeMode,
 ) {
     if state.modular.is_some() {
         return;
@@ -261,7 +262,7 @@ fn ensure_modular_timing(
         car: car.to_string(),
         stage_slug: cum.slug.clone(),
     };
-    let mut coordinator = RunCoordinator::new(bus.clone(), store, cfg, acr_timing_store::ReferenceTimeMode::BestSector);
+    let mut coordinator = RunCoordinator::new(bus.clone(), store, cfg, reference_mode);
     let labels = cumulative_ordered_labels(cum);
     coordinator.set_route(&labels);
     let n_sectors = sector_boundaries_from_labels(&labels).len();
@@ -471,12 +472,16 @@ fn stage_sessions_scope_delta(
     } else {
         car_model.trim()
     };
-    let refs = acr_timing::stage_sector_timing::reference_sector_secs_from_pb(
-        pb,
-        &sess.markers.stage_slug,
-        car,
-        &sess.markers.markers,
-    );
+    let refs = if sess.run.references_frozen() {
+        sess.run.reference_secs.clone()
+    } else {
+        acr_timing::stage_sector_timing::reference_sector_secs_from_pb(
+            pb,
+            &sess.markers.stage_slug,
+            car,
+            &sess.markers.markers,
+        )
+    };
     let cur: Vec<f64> = sess
         .run
         .sector_secs
@@ -849,15 +854,64 @@ fn ensure_stage_timing_sectors(
     }
 }
 
+fn freeze_stage_run_references(
+    session: &mut acr_timing::stage_sector_timing::StageSectorSession,
+    cfg: &CliConfig,
+    pb: &acr_timing::timing_pb::TimingPbStore,
+    store: Option<&ReferenceStore>,
+    reference_track: &str,
+    car_model: &str,
+) {
+    let car = if car_model.trim().is_empty() {
+        "unknown_car"
+    } else {
+        car_model.trim()
+    };
+    let refs = acr_timing::stage_sector_timing::snapshot_stage_reference_secs(
+        cfg.reference_times.mode,
+        pb,
+        store,
+        reference_track,
+        &session.markers.stage_slug,
+        car,
+        &session.markers.markers,
+    );
+    let n = refs.iter().filter(|r| r.is_some()).count();
+    session.run.freeze_reference_secs(refs);
+    eprintln!(
+        "timing: frozen {n}/{total} reference legs for {label} (mode={mode})",
+        n = n,
+        total = session.run.reference_secs.len(),
+        label = session.markers.rtss_label(),
+        mode = cfg.reference_times.mode.as_str(),
+    );
+}
+
 fn flush_one_stage_sector_session(
     session: &mut acr_timing::stage_sector_timing::StageSectorSession,
     cfg: &CliConfig,
+    timing_pb: &mut acr_timing::timing_pb::TimingPbStore,
     car_model: &str,
     run_counter: &mut usize,
 ) {
     if !session.run.any_sector() {
         session.run.reset_run();
         return;
+    }
+    if session.run.references_frozen() {
+        match acr_timing::stage_sector_timing::commit_stage_run_to_pb(timing_pb, session, car_model)
+        {
+            Ok(n) if n > 0 => eprintln!(
+                "timing_pb: [{}] run commit updated {n} leg(s)",
+                session.markers.rtss_label()
+            ),
+            Ok(_) => {}
+            Err(e) => eprintln!(
+                "timing_pb: [{}] run commit failed: {}",
+                session.markers.rtss_label(),
+                e
+            ),
+        }
     }
     match acr_timing::stage_sector_timing::flush_run_to_html(
         session,
@@ -874,11 +928,12 @@ fn flush_one_stage_sector_session(
 fn flush_all_stage_sector_sessions(
     state: &mut LiveTimingState,
     cfg: &CliConfig,
+    timing_pb: &mut acr_timing::timing_pb::TimingPbStore,
     car_model: &str,
     run_counter: &mut usize,
 ) {
     for session in &mut state.stage_sector_sessions {
-        flush_one_stage_sector_session(session, cfg, car_model, run_counter);
+        flush_one_stage_sector_session(session, cfg, timing_pb, car_model, run_counter);
     }
 }
 
@@ -1059,6 +1114,7 @@ fn reset_live_timing_at_grid(
     cum_def: Option<&CumulativeTrackSectors>,
     bus: &EventSender,
     store_path: &Path,
+    reference_mode: acr_timing_store::ReferenceTimeMode,
 ) {
     state.run_clock = acr_timing::run_timing_clock::RunTimingClock::new(physics_hz);
     state.start_armed = false;
@@ -1080,7 +1136,15 @@ fn reset_live_timing_at_grid(
             m.coordinator.reset_run();
             m.coordinator.set_car(car_model);
         } else {
-            ensure_modular_timing(state, bus, store_path, cum, &cum.reference_track, car_model);
+            ensure_modular_timing(
+                state,
+                bus,
+                store_path,
+                cum,
+                &cum.reference_track,
+                car_model,
+                reference_mode,
+            );
             if let Some(m) = state.modular.as_mut() {
                 m.coordinator.reset_run();
             }
@@ -1476,9 +1540,12 @@ fn apply_game_clock_finish_overrides(
         frame_monitor.reset_leg_accumulator();
         state.stage_sector_sessions[si].run.leg_excess_wall_sec = 0.0;
         let leg_stats = take_leg_stats(state, physics.speed_kmh);
-        if let Ok((delta, pb)) = acr_timing::stage_sector_timing::persist_stage_leg(
+        let frozen = state.stage_sector_sessions[si].run.reference_secs_for_display();
+        if let Ok((delta, pb)) = acr_timing::stage_sector_timing::archive_stage_leg(
             timing_conn,
             timing_pb,
+            frozen,
+            o.leg_ix,
             &slug,
             car_model,
             from_order,
@@ -1545,13 +1612,14 @@ fn process_stage_sector_sessions_on_step(
     cfg: &CliConfig,
     timing_conn: &rusqlite::Connection,
     timing_pb: &mut acr_timing::timing_pb::TimingPbStore,
+    timing_reference_store: Option<&ReferenceStore>,
     physics: &PhysicsMap,
     packet_id: i32,
     physics_hz: f64,
     graphics_distance_traveled: f32,
     graphics_current_time_ms: i32,
     car_model: &str,
-    _locked_track: Option<&str>,
+    locked_track: Option<&str>,
     blame_ctx: &TimingBlameCtx<'_>,
     frame_monitor: &mut acr_timing::timing_frame_quality::TimingFrameMonitor,
     stage_sector_html_run_counter: &mut usize,
@@ -1627,9 +1695,14 @@ fn process_stage_sector_sessions_on_step(
             frame_monitor.reset_leg_accumulator();
             state.stage_sector_sessions[c.session_si].run.leg_excess_wall_sec = 0.0;
             let leg_stats = take_leg_stats(state, physics.speed_kmh);
-            let _ = acr_timing::stage_sector_timing::persist_stage_leg(
+            let frozen = state.stage_sector_sessions[c.session_si]
+                .run
+                .reference_secs_for_display();
+            let _ = acr_timing::stage_sector_timing::archive_stage_leg(
                 &timing_conn,
                 timing_pb,
+                frozen,
+                c.leg_ix,
                 &c.slug,
                 car_model,
                 c.from_order,
@@ -1881,19 +1954,24 @@ fn process_stage_sector_sessions_on_step(
             state.stage_sector_sessions[si].run.leg_excess_wall_sec = 0.0;
             let exit_speed = physics.speed_kmh;
             let leg_stats = take_leg_stats(state, exit_speed);
-            match acr_timing::stage_sector_timing::persist_stage_leg(
+            let leg_ix = outcome.leg_index.unwrap_or(0);
+            let duration_sec = state.stage_sector_sessions[si]
+                .run
+                .sector_secs
+                .get(leg_ix)
+                .and_then(|t| *t)
+                .unwrap_or(leg_dt);
+            let frozen = state.stage_sector_sessions[si].run.reference_secs_for_display();
+            match acr_timing::stage_sector_timing::archive_stage_leg(
                 &timing_conn,
                 timing_pb,
+                frozen,
+                leg_ix,
                 &slug,
                 car_model,
                 outcome.from_order,
                 outcome.to_order,
-                state.stage_sector_sessions[si]
-                    .run
-                    .sector_secs
-                    .get(outcome.leg_index.unwrap_or(0))
-                    .and_then(|t| *t)
-                    .unwrap_or(leg_dt),
+                duration_sec,
                 leg_stats,
             ) {
                 Ok((delta, pb)) => {
@@ -1960,6 +2038,15 @@ fn process_stage_sector_sessions_on_step(
             let line = format!("[{label}] {detail}");
             eprintln!("{line}");
             if detail.contains("armed") {
+                let ref_track = locked_track.unwrap_or(slug.as_str());
+                freeze_stage_run_references(
+                    &mut state.stage_sector_sessions[si],
+                    cfg,
+                    timing_pb,
+                    timing_reference_store,
+                    ref_track,
+                    car_model,
+                );
                 state.stage_sector_sessions[si].run.leg_excess_wall_sec = 0.0;
                 frame_monitor.reset_leg_accumulator();
             }
@@ -1984,7 +2071,13 @@ fn process_stage_sector_sessions_on_step(
                 }
             }
             let session = &mut state.stage_sector_sessions[si];
-            flush_one_stage_sector_session(session, cfg, car_model, stage_sector_html_run_counter);
+            flush_one_stage_sector_session(
+                session,
+                cfg,
+                timing_pb,
+                car_model,
+                stage_sector_html_run_counter,
+            );
         }
     }
 }
@@ -2870,6 +2963,23 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
             timing_pb.path().display()
         );
     }
+    let timing_reference_store = match ReferenceStore::open(&cfg.timing_reference_store_path) {
+        Ok(store) => {
+            eprintln!(
+                "timing_reference_store: open {} ([reference_times] mode={})",
+                cfg.timing_reference_store_path.display(),
+                cfg.reference_times.mode.as_str()
+            );
+            Some(store)
+        }
+        Err(e) => {
+            eprintln!(
+                "timing_reference_store: could not open {} ({e})",
+                cfg.timing_reference_store_path.display()
+            );
+            None
+        }
+    };
     let timing_voice = cfg
         .timing_voice
         .voice_dir
@@ -3156,6 +3266,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                         flush_all_stage_sector_sessions(
                             state,
                             &cfg,
+                            &mut timing_pb,
                             &lock_car,
                             &mut stage_sector_html_run_counter,
                         );
@@ -3279,6 +3390,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                 cum_def,
                                 &timing_event_bus,
                                 &cfg.timing_reference_store_path,
+                                cfg.reference_times.mode,
                             );
                             game_clock.reset();
                             pause_osd.reset();
@@ -3364,6 +3476,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                 flush_all_stage_sector_sessions(
                                     state,
                                     &cfg,
+                                    &mut timing_pb,
                                     car_model,
                                     &mut stage_sector_html_run_counter,
                                 );
@@ -3988,6 +4101,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                     cum_def,
                                     track_name,
                                     car_model_live,
+                                    cfg.reference_times.mode,
                                 );
                             }
                             ensure_stage_timing_sectors(
@@ -4208,6 +4322,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         &cfg,
                                         &timing_conn,
                                         &mut timing_pb,
+                                        timing_reference_store.as_ref(),
                                         &data.physics,
                                         data.physics.packet_id,
                                         cfg.timing_quality.physics_hz,
@@ -4479,6 +4594,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                         &cfg,
                                         &timing_conn,
                                         &mut timing_pb,
+                                        timing_reference_store.as_ref(),
                                         &data.physics,
                                         data.physics.packet_id,
                                         cfg.timing_quality.physics_hz,
