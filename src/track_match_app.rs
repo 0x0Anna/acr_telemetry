@@ -289,7 +289,7 @@ fn arm_modular_timing_run(
     m.coordinator.reset_run();
     m.coordinator.set_car(car);
     m.coordinator.timing_started();
-    drain_modular_timing_events(state, cfg, None);
+    drain_modular_timing_events(state, cfg, None, None);
 }
 
 /// Calibrated stage-sector leg time for main sector `sector_index` (S1 → leg 0, …).
@@ -336,6 +336,7 @@ fn drain_modular_timing_events(
     timing_state: &mut LiveTimingState,
     cfg: &CliConfig,
     debug: Option<&TimingDebugFrame<'_>>,
+    sync_brackets: Option<(&acr_timing::timing_pb::TimingPbStore, &str)>,
 ) {
     let events = match timing_state.modular.as_mut() {
         None => return,
@@ -388,6 +389,21 @@ fn drain_modular_timing_events(
         }
         if let Some(m) = timing_state.modular.as_mut() {
             m.presenter.apply(&event);
+        }
+        if let Some((pb, car)) = sync_brackets {
+            if matches!(
+                event.body,
+                TimingEventBody::SectorCompleted(_) | TimingEventBody::SectorStarted(_)
+            ) {
+                let reset_live = matches!(event.body, TimingEventBody::SectorCompleted(_));
+                sync_modular_stage_cum_delta_from_brackets(
+                    timing_state,
+                    pb,
+                    car,
+                    cfg.delta_display.delta_scope,
+                    reset_live,
+                );
+            }
         }
         if let TimingEventBody::RunFinished(_) = event.body {
             if cfg.timing_debug {
@@ -442,8 +458,7 @@ fn cumulative_osd_detail_with_flash(
 }
 
 
-/// Completed main-sector legs only (no live-leg extrapolation). Live cumulative Δ comes from
-/// modular/subsector timing (`presenter.last_cum_delta_sec`) per `TIMING_OPERATING_MODES.md`.
+/// Completed main-sector legs only (fallback when modular timing is not armed).
 fn stage_sessions_scope_delta(
     sessions: &[&acr_timing::stage_sector_timing::StageSectorSession],
     pb: &acr_timing::timing_pb::TimingPbStore,
@@ -487,6 +502,32 @@ fn stage_sessions_scope_delta(
     }
 }
 
+/// `delta_scope = stage`: set `run_cum_delta_sec` from bracket sum; keep `last_cum_delta_sec` for open sector subs unless reset.
+fn sync_modular_stage_cum_delta_from_brackets(
+    state: &mut LiveTimingState,
+    timing_pb: &acr_timing::timing_pb::TimingPbStore,
+    car_model: &str,
+    scope: acr_timing::delta_display::DeltaScope,
+    reset_live_sub_cum: bool,
+) {
+    if scope != acr_timing::delta_display::DeltaScope::Stage {
+        return;
+    }
+    let Some(m) = state.modular.as_mut() else {
+        return;
+    };
+    let session_refs: Vec<_> = state.stage_sector_sessions.iter().collect();
+    if session_refs.is_empty() {
+        return;
+    }
+    let Some(bracket_sum) = stage_sessions_scope_delta(&session_refs, timing_pb, car_model, scope)
+    else {
+        return;
+    };
+    m.presenter
+        .sync_stage_cumulative_from_brackets(bracket_sum, reset_live_sub_cum);
+}
+
 fn minimal_big_delta_line(
     state: &mut LiveTimingState,
     cfg: &CliConfig,
@@ -496,13 +537,12 @@ fn minimal_big_delta_line(
 ) -> String {
     let style = &cfg.delta_display.colors;
     let scale = cfg.osd_templates.live_delta_font_scale;
-    let delta_opt = stage_delta.or_else(|| {
-        state
-            .modular
-            .as_ref()
-            .filter(|m| m.presenter.last_cum_delta_sec.is_finite())
-            .map(|m| m.presenter.last_cum_delta_sec)
-    });
+    let scope = cfg.delta_display.delta_scope;
+    let modular_delta = state
+        .modular
+        .as_ref()
+        .and_then(|m| m.presenter.osd_cumulative_delta_sec(scope));
+    let delta_opt = modular_delta.or(stage_delta);
 
     if pause_dash {
         if pause_osd.frozen_cum_delta_sec.is_none() {
@@ -1426,6 +1466,13 @@ fn apply_game_clock_finish_overrides(
             o.leg_ix + 1,
             o.ue4ss_sec,
         );
+        sync_modular_stage_cum_delta_from_brackets(
+            state,
+            timing_pb,
+            car_model,
+            cfg.delta_display.delta_scope,
+            false,
+        );
         frame_monitor.reset_leg_accumulator();
         state.stage_sector_sessions[si].run.leg_excess_wall_sec = 0.0;
         let leg_stats = take_leg_stats(state, physics.speed_kmh);
@@ -1540,6 +1587,13 @@ fn process_stage_sector_sessions_on_step(
                 o.leg_ix + 1,
                 o.ue4ss_sec,
             );
+            sync_modular_stage_cum_delta_from_brackets(
+                state,
+                timing_pb,
+                car_model,
+                cfg.delta_display.delta_scope,
+                false,
+            );
         }
         let commits = adopter.drain_commit_ready(now_inst, &state.stage_sector_sessions);
         for c in commits {
@@ -1563,6 +1617,13 @@ fn process_stage_sector_sessions_on_step(
                 state.stage_sector_sessions[c.session_si].run.sector_secs[c.leg_ix] =
                     Some(c.duration_sec);
             }
+            sync_modular_stage_cum_delta_from_brackets(
+                state,
+                timing_pb,
+                car_model,
+                cfg.delta_display.delta_scope,
+                false,
+            );
             frame_monitor.reset_leg_accumulator();
             state.stage_sector_sessions[c.session_si].run.leg_excess_wall_sec = 0.0;
             let leg_stats = take_leg_stats(state, physics.speed_kmh);
@@ -1756,9 +1817,39 @@ fn process_stage_sector_sessions_on_step(
                                     deadline: now_inst + window,
                                 },
                             );
+                        } else if run_completed {
+                            let leg_count = session.markers.sector_leg_count;
+                            let finish_split = adopter
+                                .cached_sample()
+                                .or_else(|| game_clock.last_game_sample())
+                                .and_then(|sample| {
+                                    acr_timing::game_clock_sector_override::sector_leg_split_sec_for_finish(
+                                        sample,
+                                        leg_ix,
+                                        leg_count,
+                                    )
+                                });
+                            if let Some(split) = finish_split {
+                                if (split - leg_dt).abs() > 0.001 {
+                                    eprintln!(
+                                        "[{label}] Sektor-Übernahme S{s_num}: Gate {leg_dt:.3}s → Sektor-{s_num}-Zeit (UE4SS) {split:.3}s"
+                                    );
+                                }
+                                adopt_dt = split;
+                            } else {
+                                eprintln!(
+                                    "[{label}] Sektor-Übernahme S{s_num}: Sektor-{s_num}-Zeit (UE4SS) noch nicht in jsonl — vorläufig Gate-Zeit {leg_dt:.3}s (Finish-Nachzug)"
+                                );
+                                adopter.enqueue_finish_retry(
+                                    si,
+                                    label.clone(),
+                                    slug.clone(),
+                                    leg_count,
+                                );
+                            }
                         } else {
                             eprintln!(
-                                "[{label}] Sektor-Übernahme S{s_num}: jsonl nicht lesbar — Sektor-{s_num}-Zeit (UE4SS) nicht verfügbar; vorläufig Gate-Zeit {leg_dt:.3}s"
+                                "[{label}] Sektor-Übernahme S{s_num}: jsonl-Adopter nicht live — Sektor-{s_num}-Zeit (UE4SS) nicht verfügbar; vorläufig Gate-Zeit {leg_dt:.3}s"
                             );
                         }
                     }
@@ -1766,6 +1857,13 @@ fn process_stage_sector_sessions_on_step(
                 if leg_ix < session.run.sector_secs.len() {
                     session.run.sector_secs[leg_ix] = Some(adopt_dt);
                 }
+                sync_modular_stage_cum_delta_from_brackets(
+                    state,
+                    timing_pb,
+                    car_model,
+                    cfg.delta_display.delta_scope,
+                    true,
+                );
             }
             if let Some(summary) = frame_monitor.leg_close_summary(
                 &format!("[{label}]"),
@@ -4033,7 +4131,18 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
                                                 distance_traveled_m: odo_m,
                                                 packet_id: pkt,
                                             };
-                                            drain_modular_timing_events(state, cfg, Some(&dbg));
+                                            let sync_brackets =
+                                                if state.stage_sector_sessions.is_empty() {
+                                                    None
+                                                } else {
+                                                    Some((&timing_pb, car_model_live))
+                                                };
+                                            drain_modular_timing_events(
+                                                state,
+                                                cfg,
+                                                Some(&dbg),
+                                                sync_brackets,
+                                            );
                                         } else if silent_cp {
                                             // Beep only without modular presenter (else drain_modular handles it).
                                             if cfg.beep_on_cumulative_split
@@ -5977,4 +6086,3 @@ fn log_pacenote_enqueue_lead(
         trigger_mode,
     );
 }
-

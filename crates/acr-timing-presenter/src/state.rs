@@ -4,7 +4,7 @@
 
 use std::time::Instant;
 
-use acr_timing::delta_display::{DeltaColorStyle, DeltaDisplayConfig};
+use acr_timing::delta_display::{DeltaColorStyle, DeltaDisplayConfig, DeltaScope};
 use acr_timing::osd_template::OsdTemplateConfig;
 use acr_timing_protocol::{SectorCompleted, SectorStarted, TimingEvent, TimingEventBody};
 
@@ -221,6 +221,49 @@ impl PresenterState {
         self.run_tot_sum_sec
     }
 
+    /// Large RTSS cumulative Δ for minimal preset (updates on every sub gate when armed).
+    pub fn osd_cumulative_delta_sec(&self, scope: DeltaScope) -> Option<f64> {
+        match scope {
+            DeltaScope::Stage => {
+                if !self.last_cum_delta_sec.is_finite() {
+                    return None;
+                }
+                Some(self.run_cum_delta_sec + self.last_cum_delta_sec)
+            }
+            DeltaScope::Sector => self
+                .last_cum_delta_sec
+                .is_finite()
+                .then_some(self.last_cum_delta_sec),
+            DeltaScope::Subsector => self
+                .live_sub_delta_sec
+                .iter()
+                .rev()
+                .find_map(|d| *d)
+                .filter(|d| d.is_finite())
+                .or_else(|| {
+                    self.last_cum_delta_sec
+                        .is_finite()
+                        .then_some(self.last_cum_delta_sec)
+                }),
+        }
+    }
+
+    /// Align `run_cum_delta_sec` (+ optionally reset `last_cum_delta_sec`) to the sum of
+    /// completed main-sector bracket Δ values (UE4SS `sector_secs` − reference).
+    pub fn sync_stage_cumulative_from_brackets(
+        &mut self,
+        completed_bracket_sum: f64,
+        reset_live_sub_cum: bool,
+    ) {
+        if !completed_bracket_sum.is_finite() {
+            return;
+        }
+        self.run_cum_delta_sec = completed_bracket_sum;
+        if reset_live_sub_cum {
+            self.last_cum_delta_sec = 0.0;
+        }
+    }
+
     fn carousel_sector<'a>(
         &'a self,
         recap_sec: f64,
@@ -331,6 +374,38 @@ mod tests {
     }
 
     #[test]
+    fn osd_stage_cumulative_sums_completed_sectors() {
+        let mut p = PresenterState::default();
+        p.run_cum_delta_sec = 0.4;
+        p.last_cum_delta_sec = 0.1;
+        assert_eq!(
+            p.osd_cumulative_delta_sec(DeltaScope::Stage),
+            Some(0.5)
+        );
+    }
+
+    #[test]
+    fn sync_stage_brackets_resets_live_sub_cum() {
+        let mut p = PresenterState::default();
+        p.run_cum_delta_sec = 9.0;
+        p.last_cum_delta_sec = 0.5;
+        p.sync_stage_cumulative_from_brackets(5.781, true);
+        assert_eq!(p.run_cum_delta_sec, 5.781);
+        assert_eq!(p.last_cum_delta_sec, 0.0);
+        assert_eq!(p.osd_cumulative_delta_sec(DeltaScope::Stage), Some(5.781));
+    }
+
+    #[test]
+    fn sync_stage_brackets_preserves_live_sub_cum() {
+        let mut p = PresenterState::default();
+        p.run_cum_delta_sec = 9.0;
+        p.last_cum_delta_sec = 0.12;
+        p.sync_stage_cumulative_from_brackets(5.781, false);
+        assert_eq!(p.run_cum_delta_sec, 5.781);
+        assert_eq!(p.last_cum_delta_sec, 0.12);
+        assert_eq!(p.osd_cumulative_delta_sec(DeltaScope::Stage), Some(5.901));
+    }
+
     fn finish_carousel_cycles_sectors() {
         let mut p = PresenterState::default();
         for (ix, tot) in [(0, 90.0), (1, 80.0), (2, 70.0)] {

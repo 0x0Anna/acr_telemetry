@@ -387,28 +387,15 @@ fn is_duplicate_of_prior(split: f64, prior_splits: &[f64]) -> bool {
 }
 
 /// Leg split at Finish (S4 may appear in JSONL slightly after the gate cross).
+///
+/// Uses the same leg→`id` mapping as [`sector_leg_split_sec`]. No guess from `sectors.last()`:
+/// adopting S3 into the S4 slot was a silent wrong-time bug.
 pub fn sector_leg_split_sec_for_finish(
     sample: &GameClockSample,
     leg_ix: usize,
-    leg_count: usize,
+    _leg_count: usize,
 ) -> Option<f64> {
-    sector_leg_split_sec(sample, leg_ix).or_else(|| {
-        if leg_ix + 1 != leg_count {
-            return None;
-        }
-        let adoptable: Vec<&crate::game_clock_sync::GameClockSectorRecord> = sample
-            .sectors
-            .iter()
-            .filter(|r| record_adoptable(r))
-            .collect();
-        if adoptable.len() >= leg_count {
-            let rec = adoptable.get(leg_ix)?;
-            return split_from_record(rec).or_else(|| leg_time_delta_for_record(sample, rec));
-        }
-        adoptable.last().and_then(|rec| {
-            split_from_record(rec).or_else(|| leg_time_delta_for_record(sample, rec))
-        })
-    })
+    sector_leg_split_sec(sample, leg_ix)
 }
 
 /// All stage leg splits from a Finish sample (`leg_count` = `sector_leg_count`).
@@ -585,6 +572,54 @@ mod tests {
             t_wall_s: None,
             sample_kind: Some("full".into()),
         }
+    }
+
+    #[test]
+    fn finish_leg4_none_when_only_three_game_sectors() {
+        let sample = GameClockSample {
+            race_time_s: Some(300.0),
+            distance_m: None,
+            race_time_valid: true,
+            diff_time_s: None,
+            position: None,
+            phase: None,
+            sectors: vec![
+                GameClockSectorRecord {
+                    id: Some(0),
+                    time_s: Some(0.0),
+                    split_s: Some(0.0),
+                },
+                GameClockSectorRecord {
+                    id: Some(1),
+                    time_s: Some(95.0),
+                    split_s: Some(95.0),
+                },
+                GameClockSectorRecord {
+                    id: Some(2),
+                    time_s: Some(190.0),
+                    split_s: Some(95.0),
+                },
+                GameClockSectorRecord {
+                    id: Some(3),
+                    time_s: Some(285.0),
+                    split_s: Some(95.0),
+                },
+            ],
+            sectors_source: None,
+            sectors_debug: None,
+            next_sector_index: Some(4),
+            race_source: None,
+            travel_track_id: None,
+            travel_track_source: None,
+            penalty_total_s: None,
+            ghost_ref: None,
+            game_x: None,
+            game_z: None,
+            t_process_ms: None,
+            t_wall_s: None,
+            sample_kind: Some("full".into()),
+        };
+        assert!(sector_leg_split_sec_for_finish(&sample, 3, 4).is_none());
     }
 
     #[test]
