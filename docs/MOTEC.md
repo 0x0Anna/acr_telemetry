@@ -77,7 +77,7 @@ In **batch** mode, a `.rkyv` is skipped if **`<stem>.csv`** already exists (see 
 
 1. Start **MoTeC i2**.
 2. Open the generated **`.ld`** file (wording varies by version: Open, Import, etc.).
-3. Workspace: set `profile = "rbr"` for RBR MoTeC v105-style names, or `profile = "rally"` for **Rally Basic** (ADL names like `Engine RPM`, `Throttle Pos`). Profiles live in `motec_profiles/*.toml` next to the exe (editable without recompiling).
+3. Workspace: set `profile = "rbr"` for RBR MoTeC v105-style names, `profile = "rally"` for **Rally Basic** (ADL names like `Engine RPM`, `Throttle Pos`), or `profile = "all_data"` to dump all currently supported MoTeC sources. Profiles live in `motec_profiles/*.toml` next to the exe (editable without recompiling). To create or adapt profiles for your own i2 workspace, see **[MOTEC_PROFILES.md](MOTEC_PROFILES.md)**.
 
 ---
 

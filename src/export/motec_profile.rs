@@ -227,6 +227,7 @@ fn builtin_profile_toml(profile_id: &str) -> Result<&'static str, String> {
     match profile_id {
         "rbr" => Ok(include_str!("../../config/motec_profiles/rbr.toml")),
         "rally" => Ok(include_str!("../../config/motec_profiles/rally.toml")),
+        "all_data" => Ok(include_str!("../../config/motec_profiles/all_data.toml")),
         other => Err(format!(
             "MoTeC profile '{other}' not found in motec_profiles/ and no built-in profile"
         )),
@@ -580,7 +581,7 @@ mod tests {
 
     #[test]
     fn loads_builtin_rally_and_rbr() {
-        for id in ["rally", "rbr"] {
+        for id in ["rally", "rbr", "all_data"] {
             let p = load_profile(id, None).expect(id);
             assert!(!p.channels.is_empty(), "{id}");
         }

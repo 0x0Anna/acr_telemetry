@@ -1,0 +1,316 @@
+# Shipped with install; copy of config/motec_profiles/all_data.toml — edit in {app}\motec_profiles\
+
+description = "All currently supported MoTeC exporter sources"
+
+[[channels]]
+name = "time"
+unit = "s"
+source = "time"
+
+[[channels]]
+name = "speed_kmh"
+unit = "km/h"
+source = "speed_kmh"
+
+[[channels]]
+name = "rpm"
+unit = "rpm"
+source = "rpm"
+
+[[channels]]
+name = "gas"
+unit = ""
+source = "gas"
+
+[[channels]]
+name = "brake"
+unit = ""
+source = "brake"
+
+[[channels]]
+name = "steer_angle"
+unit = ""
+source = "steer_angle"
+
+[[channels]]
+name = "gear"
+unit = ""
+source = "gear"
+
+[[channels]]
+name = "g_force_x"
+unit = "g"
+source = "g_force_x"
+
+[[channels]]
+name = "g_force_y"
+unit = "g"
+source = "g_force_y"
+
+[[channels]]
+name = "g_force_total"
+unit = "g"
+source = "g_force_total"
+
+[[channels]]
+name = "engine_rotation"
+unit = "rad/s"
+source = "engine_rotation"
+
+[[channels]]
+name = "gear_ok"
+unit = ""
+source = "gear_ok"
+
+[[channels]]
+name = "brake_status"
+unit = ""
+source = "brake_status"
+
+[[channels]]
+name = "suspension_travel_fl"
+unit = "m"
+source = "suspension_travel_fl"
+
+[[channels]]
+name = "suspension_travel_fr"
+unit = "m"
+source = "suspension_travel_fr"
+
+[[channels]]
+name = "suspension_travel_rl"
+unit = "m"
+source = "suspension_travel_rl"
+
+[[channels]]
+name = "suspension_travel_rr"
+unit = "m"
+source = "suspension_travel_rr"
+
+[[channels]]
+name = "suspension_travel_mm_fl"
+unit = "mm"
+source = "suspension_travel_mm_fl"
+
+[[channels]]
+name = "suspension_travel_mm_fr"
+unit = "mm"
+source = "suspension_travel_mm_fr"
+
+[[channels]]
+name = "suspension_travel_mm_rl"
+unit = "mm"
+source = "suspension_travel_mm_rl"
+
+[[channels]]
+name = "suspension_travel_mm_rr"
+unit = "mm"
+source = "suspension_travel_mm_rr"
+
+[[channels]]
+name = "car_pos_x"
+unit = "m"
+source = "car_pos_x"
+
+[[channels]]
+name = "car_pos_y"
+unit = "m"
+source = "car_pos_y"
+
+[[channels]]
+name = "car_pos_z"
+unit = "m"
+source = "car_pos_z"
+
+[[channels]]
+name = "tyre_contact_x_fl"
+unit = "m"
+source = "tyre_contact_x_fl"
+
+[[channels]]
+name = "tyre_contact_y_fl"
+unit = "m"
+source = "tyre_contact_y_fl"
+
+[[channels]]
+name = "tyre_contact_z_fl"
+unit = "m"
+source = "tyre_contact_z_fl"
+
+[[channels]]
+name = "tyre_contact_x_fr"
+unit = "m"
+source = "tyre_contact_x_fr"
+
+[[channels]]
+name = "tyre_contact_y_fr"
+unit = "m"
+source = "tyre_contact_y_fr"
+
+[[channels]]
+name = "tyre_contact_z_fr"
+unit = "m"
+source = "tyre_contact_z_fr"
+
+[[channels]]
+name = "tyre_contact_x_rl"
+unit = "m"
+source = "tyre_contact_x_rl"
+
+[[channels]]
+name = "tyre_contact_y_rl"
+unit = "m"
+source = "tyre_contact_y_rl"
+
+[[channels]]
+name = "tyre_contact_z_rl"
+unit = "m"
+source = "tyre_contact_z_rl"
+
+[[channels]]
+name = "tyre_contact_x_rr"
+unit = "m"
+source = "tyre_contact_x_rr"
+
+[[channels]]
+name = "tyre_contact_y_rr"
+unit = "m"
+source = "tyre_contact_y_rr"
+
+[[channels]]
+name = "tyre_contact_z_rr"
+unit = "m"
+source = "tyre_contact_z_rr"
+
+[[channels]]
+name = "tyre_temp_c_fl"
+unit = "C"
+source = "tyre_temp_c_fl"
+
+[[channels]]
+name = "tyre_temp_c_fr"
+unit = "C"
+source = "tyre_temp_c_fr"
+
+[[channels]]
+name = "tyre_temp_c_rl"
+unit = "C"
+source = "tyre_temp_c_rl"
+
+[[channels]]
+name = "tyre_temp_c_rr"
+unit = "C"
+source = "tyre_temp_c_rr"
+
+[[channels]]
+name = "wheel_pressure_bar_fl"
+unit = "bar"
+source = "wheel_pressure_bar_fl"
+
+[[channels]]
+name = "wheel_pressure_bar_fr"
+unit = "bar"
+source = "wheel_pressure_bar_fr"
+
+[[channels]]
+name = "wheel_pressure_bar_rl"
+unit = "bar"
+source = "wheel_pressure_bar_rl"
+
+[[channels]]
+name = "wheel_pressure_bar_rr"
+unit = "bar"
+source = "wheel_pressure_bar_rr"
+
+[[channels]]
+name = "brake_temp_c_fl"
+unit = "C"
+source = "brake_temp_c_fl"
+
+[[channels]]
+name = "brake_temp_c_fr"
+unit = "C"
+source = "brake_temp_c_fr"
+
+[[channels]]
+name = "brake_temp_c_rl"
+unit = "C"
+source = "brake_temp_c_rl"
+
+[[channels]]
+name = "brake_temp_c_rr"
+unit = "C"
+source = "brake_temp_c_rr"
+
+[[channels]]
+name = "tyre_wear_pct_fl"
+unit = "%"
+source = "tyre_wear_pct_fl"
+
+[[channels]]
+name = "tyre_wear_pct_fr"
+unit = "%"
+source = "tyre_wear_pct_fr"
+
+[[channels]]
+name = "tyre_wear_pct_rl"
+unit = "%"
+source = "tyre_wear_pct_rl"
+
+[[channels]]
+name = "tyre_wear_pct_rr"
+unit = "%"
+source = "tyre_wear_pct_rr"
+
+[[channels]]
+name = "wheel_speed_kmh_fl"
+unit = "km/h"
+source = "wheel_speed_kmh_fl"
+
+[[channels]]
+name = "wheel_speed_kmh_fr"
+unit = "km/h"
+source = "wheel_speed_kmh_fr"
+
+[[channels]]
+name = "wheel_speed_kmh_rl"
+unit = "km/h"
+source = "wheel_speed_kmh_rl"
+
+[[channels]]
+name = "wheel_speed_kmh_rr"
+unit = "km/h"
+source = "wheel_speed_kmh_rr"
+
+[[channels]]
+name = "wheel_speed_kmh_front"
+unit = "km/h"
+source = "wheel_speed_kmh_front"
+
+[[channels]]
+name = "wheel_speed_kmh_rear"
+unit = "km/h"
+source = "wheel_speed_kmh_rear"
+
+[[channels]]
+name = "wheel_slip_max"
+unit = ""
+source = "wheel_slip_max"
+
+[[channels]]
+name = "graphics_pos_x"
+unit = "m"
+source = "graphics_pos_x"
+graphics = true
+
+[[channels]]
+name = "graphics_pos_y"
+unit = "m"
+source = "graphics_pos_y"
+graphics = true
+
+[[channels]]
+name = "graphics_pos_z"
+unit = "m"
+source = "graphics_pos_z"
+graphics = true

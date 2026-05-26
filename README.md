@@ -82,6 +82,8 @@ This folder `%APPDATA%\acr_telemetry` will serve as the location for temporary n
 
 
 ## Documentation
+- **[docs/MOTEC.md](docs/MOTEC.md)** – MoTeC `.ld` export (live and post-export).
+- **[docs/MOTEC_PROFILES.md](docs/MOTEC_PROFILES.md)** – TOML profiles: channel names for your MoTeC i2 workspace.
 - **[docs/EXPORT.md](docs/EXPORT.md)** – acr_export: options, batch mode, CSV vs SQLite, sidecars.
 - **[docs/FIELDS.md](docs/FIELDS.md)** – Available telemetry fields (data variables) with short descriptions.
 - **[docs/GRAPHICS_STATICS_FIELDS.md](docs/GRAPHICS_STATICS_FIELDS.md)** – Graphics/statics/physics SQLite columns vs `GraphicsRecord` / `StaticsRecord` / `PhysicsRecord`, migrations, and ACC-only field notes.

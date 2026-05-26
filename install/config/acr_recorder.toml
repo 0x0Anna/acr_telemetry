@@ -20,3 +20,4 @@ sqlite_db_path = "telemetry.db"
 [export.motec]
 profile = "rbr"
 # profile = "rally"
+# profile = "all_data"
