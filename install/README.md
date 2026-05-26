@@ -118,7 +118,7 @@ Default install path: `C:\tools\acr_telemetry` (changeable in wizard). Creating 
 
 Notes/stop files still use `%APPDATA%\acr_telemetry` unless you set `notes_dir` in `acr_recorder.toml`.
 
-
+**External timing provider / game-clock mod:** not included in the installer (no `main.lua`, no optional task). Gate timing and MoTeC recording work without it. Optional JSONL integration is configured via `[game_clock]` in `acr_timing.toml` when you supply your own provider.
 
 ## Layout in this folder
 
