@@ -130,6 +130,12 @@ if (Test-Path $refSrc) {
 }
 Copy-Item (Join-Path $InstallDir 'assets\reference_tracks\README.txt') $refDst -Force
 
+# Never ship external timing provider Lua (main.lua) — not in repo staging paths by design.
+$forbiddenLua = Get-ChildItem $Staging -Recurse -Filter 'main.lua' -ErrorAction SilentlyContinue
+if ($forbiddenLua) {
+    throw "Refusing to package installer: main.lua found in staging ($($forbiddenLua[0].FullName))"
+}
+
 $OutDir = Join-Path $Root 'target\install'
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
