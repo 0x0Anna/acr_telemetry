@@ -4,6 +4,13 @@
 **/target
 install/staging/
 
+# Private AcrGameClockMod Lua (not for public repo — backup under secret/ue4ss_mod_backup/)
+install/ue4ss/Mods/AcrGameClockMod/Scripts/main.lua
+
+# SimHub plugin build output
+simhub/User.AcrGameClock/bin/
+simhub/User.AcrGameClock/obj/
+
 /acr_telemetry_bridge_0.1-bin/
 # User config (paths)
 
