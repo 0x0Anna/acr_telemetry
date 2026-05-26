@@ -30,7 +30,7 @@ pub struct StageSectorRun {
     pub next_marker_idx: usize,
     pub anchor_packet_id: Option<i32>,
     pub anchor_instant: Option<Instant>,
-    /// `race_time_s` from UE4SS at timing start (stage-relative HUD for legs).
+    /// `race_time_s` from external timing provider at timing start (stage-relative HUD for legs).
     pub game_race_anchor_sec: Option<f64>,
     pub completed: bool,
     /// Σ stall excess (pause / wall without physics steps) for current leg only.

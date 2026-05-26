@@ -14,7 +14,7 @@ pub struct TimingAnchor {
     pub at: Instant,
     /// `graphics.distance_traveled` (not zero-based; use deltas between anchors).
     pub distance_traveled_m: f64,
-    /// UE4SS rally time at anchor (when `[game_clock]` sync is enabled).
+    /// external timing provider rally time at anchor (when `[game_clock]` sync is enabled).
     pub game_race_sec: Option<f64>,
 }
 

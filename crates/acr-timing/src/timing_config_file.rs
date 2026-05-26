@@ -122,7 +122,7 @@ pub struct TimingConfigFile {
     pub osd_display: OsdTemplateConfigFile,
     #[serde(default)]
     pub timing_quality: TimingQualityConfigFile,
-    /// UE4SS `acr_game_clock.jsonl` (optional sector split adoption).
+    /// external timing provider `acr_game_clock.jsonl` (optional sector split adoption).
     #[serde(default)]
     pub game_clock: GameClockConfigFile,
     #[serde(default = "default_timing_debug")]
@@ -138,7 +138,7 @@ pub struct GameClockConfigFile {
     /// Master switch: read JSONL when true (required for `sector_splits`).
     #[serde(default)]
     pub enabled: bool,
-    /// After a gate cross, adopt UE4SS `split_s` when JSONL is fresh (default off).
+    /// After a gate cross, adopt external timing provider `split_s` when JSONL is fresh (default off).
     #[serde(default)]
     pub sector_splits: bool,
     /// Empty = `%APPDATA%/acr_telemetry/acr_game_clock.jsonl` (Windows).

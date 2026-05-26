@@ -36,7 +36,7 @@ pub fn ready_status_text(timer_ready: bool) -> &'static str {
     }
 }
 
-/// RTSS status before track-lock when UE4SS JSONL is fresh.
+/// RTSS status before track-lock when external timing provider JSONL is fresh.
 pub const GAME_DATA_AVAILABLE_TEXT: &str = "Game Data available";
 
 pub fn game_clock_timer_ready(path: &Path, max_age_sec: f64) -> bool {

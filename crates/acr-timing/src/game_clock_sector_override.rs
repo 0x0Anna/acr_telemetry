@@ -1,4 +1,4 @@
-//! Optional adoption of UE4SS `acr_game_clock.jsonl` sector splits after gate crossings.
+//! Optional adoption of external timing provider `acr_game_clock.jsonl` sector splits after gate crossings.
 //!
 //! Gate detection stays on calibrated GeoJSON markers. During the run we only adopt a leg
 //! when the mod has published that leg in `sectors[]` (by array index — same order as the game).
@@ -65,13 +65,13 @@ pub struct PendingFinishAdopt {
     pub deadline: Instant,
 }
 
-/// One leg updated from UE4SS after Finish (for logging / DB).
+/// One leg updated from external timing provider after Finish (for logging / DB).
 #[derive(Debug, Clone)]
 pub struct FinishLegOverride {
     pub session_si: usize,
     pub leg_ix: usize,
     pub prev_sec: f64,
-    pub ue4ss_sec: f64,
+    pub provider_sec: f64,
 }
 
 pub struct GameClockSectorAdopter {
@@ -80,7 +80,7 @@ pub struct GameClockSectorAdopter {
     cached: Option<GameClockSample>,
     jsonl_live: bool,
     pending: Vec<PendingSectorAdopt>,
-    /// Poll JSONL after Finish until all sector legs have UE4SS times (S4 often lags).
+    /// Poll JSONL after Finish until all sector legs have external timing provider times (S4 often lags).
     finish_pending: Option<PendingFinishAdopt>,
 }
 
@@ -158,7 +158,7 @@ impl GameClockSectorAdopter {
         self.pending.clear();
     }
 
-    /// After Finish: keep polling until every main-sector leg has a UE4SS split (esp. S4).
+    /// After Finish: keep polling until every main-sector leg has an external timing provider split (esp. S4).
     pub fn enqueue_finish_retry(
         &mut self,
         session_si: usize,
@@ -352,13 +352,13 @@ pub fn prior_splits_from_sessions(
         .unwrap_or_default()
 }
 
-/// True when UE4SS provides an adoptable split for leg `leg_ix` (0 = start→S1).
+/// True when external timing provider provides an adoptable split for leg `leg_ix` (0 = start→S1).
 pub fn leg_ready_in_sample(sample: &GameClockSample, leg_ix: usize) -> bool {
     sector_leg_split_sec(sample, leg_ix).is_some()
 }
 
-/// UE4SS split for leg `leg_ix` from the corrector's last sample and/or adopter cache.
-pub fn try_ue4ss_leg_split_sec(
+/// external timing provider split for leg `leg_ix` from the corrector's last sample and/or adopter cache.
+pub fn try_external_timing_leg_split_sec(
     game_clock: &crate::game_clock_sync::GameClockCorrector,
     adopter: Option<&GameClockSectorAdopter>,
     leg_ix: usize,
@@ -407,7 +407,7 @@ pub fn all_stage_leg_splits_sec(sample: &GameClockSample, leg_count: usize) -> V
     out
 }
 
-/// Apply UE4SS sector times to a completed run; returns legs that changed.
+/// Apply external timing provider sector times to a completed run; returns legs that changed.
 pub fn apply_finish_sector_overrides(
     sample: &GameClockSample,
     session: &mut StageSectorSession,
@@ -437,7 +437,7 @@ pub fn apply_finish_sector_overrides(
                     session_si: 0,
                     leg_ix,
                     prev_sec,
-                    ue4ss_sec: split,
+                    provider_sec: split,
                 });
             }
         }
@@ -445,7 +445,7 @@ pub fn apply_finish_sector_overrides(
     out
 }
 
-/// Poll JSONL after Finish and patch sector times when UE4SS data arrives.
+/// Poll JSONL after Finish and patch sector times when external timing provider data arrives.
 pub fn drain_finish_overrides(
     adopter: &mut GameClockSectorAdopter,
     now: Instant,
@@ -490,7 +490,7 @@ pub fn drain_finish_overrides(
                 .collect();
             if !missing.is_empty() {
                 eprintln!(
-                    "[{}] Sektor-Übernahme Finish: Sektor-Zeit (UE4SS) fehlt für S{missing:?} nach {:.1}s",
+                    "[{}] Sektor-Übernahme Finish: Sektor-Zeit (external timing provider) fehlt für S{missing:?} nach {:.1}s",
                     fp.label,
                     adopter.cfg.adopt_window_sec.max(3.0)
                 );

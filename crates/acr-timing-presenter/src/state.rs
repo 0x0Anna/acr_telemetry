@@ -249,7 +249,7 @@ impl PresenterState {
     }
 
     /// Align `run_cum_delta_sec` (+ optionally reset `last_cum_delta_sec`) to the sum of
-    /// completed main-sector bracket Δ values (UE4SS `sector_secs` − reference).
+    /// completed main-sector bracket Δ values (external timing provider `sector_secs` − reference).
     pub fn sync_stage_cumulative_from_brackets(
         &mut self,
         completed_bracket_sum: f64,

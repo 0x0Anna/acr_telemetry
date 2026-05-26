@@ -1,4 +1,4 @@
-//! Map UE4SS `travel_track_id` → `reference_tracks` stem; used to lock track without spline correlation.
+//! Map external timing provider `travel_track_id` → `reference_tracks` stem; used to lock track without spline correlation.
 
 use std::collections::BTreeMap;
 
