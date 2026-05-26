@@ -110,7 +110,7 @@ stillstand_position_log = true
 stillstand_max_speed_kmh = 2.0
 stillstand_log_interval_sec = 2.0
 
-# UE4SS AcrGameClockMod → acr_game_clock.jsonl (optional official sector splits).
+# External timing provider → acr_game_clock.jsonl (optional official sector splits).
 [game_clock]
 enabled = true
 sector_splits = true

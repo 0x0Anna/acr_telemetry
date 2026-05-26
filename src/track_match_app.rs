@@ -1524,11 +1524,11 @@ fn apply_game_clock_finish_overrides(
     for o in &overrides {
         let (from_order, to_order) = orders.get(o.leg_ix).copied().unwrap_or((0, 0));
         eprintln!(
-            "[{label}] Sektor-Übernahme Finish S{}: {:.3}s → Sektor-{}-Zeit (UE4SS) {:.3}s",
+            "[{label}] Sektor-Übernahme Finish S{}: {:.3}s → Sektor-{}-Zeit (external timing provider) {:.3}s",
             o.leg_ix + 1,
             o.prev_sec,
             o.leg_ix + 1,
-            o.ue4ss_sec,
+            o.provider_sec,
         );
         sync_modular_stage_cum_delta_from_brackets(
             state,
@@ -1550,7 +1550,7 @@ fn apply_game_clock_finish_overrides(
             car_model,
             from_order,
             to_order,
-            o.ue4ss_sec,
+            o.provider_sec,
             leg_stats,
         ) {
             if let Some(pb_sec) = pb {
@@ -1560,7 +1560,7 @@ fn apply_game_clock_finish_overrides(
                     direction: acr_timing::stage_sector_timing::STAGE_TIMING_DIRECTION,
                     from_sector: from_order,
                     to_sector: to_order,
-                    duration_sec: o.ue4ss_sec,
+                    duration_sec: o.provider_sec,
                     distance_m: 0.0,
                     stats: leg_stats,
                 };
@@ -1649,11 +1649,11 @@ fn process_stage_sector_sessions_on_step(
                 .map(|s| s.markers.rtss_label())
                 .unwrap_or("stage");
             eprintln!(
-                "[{label}] Sektor-Übernahme Finish S{} (nachgereicht): {:.3}s → Sektor-{}-Zeit (UE4SS) {:.3}s",
+                "[{label}] Sektor-Übernahme Finish S{} (nachgereicht): {:.3}s → Sektor-{}-Zeit (external timing provider) {:.3}s",
                 o.leg_ix + 1,
                 o.prev_sec,
                 o.leg_ix + 1,
-                o.ue4ss_sec,
+                o.provider_sec,
             );
             sync_modular_stage_cum_delta_from_brackets(
                 state,
@@ -1668,14 +1668,14 @@ fn process_stage_sector_sessions_on_step(
             let s = c.leg_ix + 1;
             if c.via == "gate" {
                 eprintln!(
-                    "[{}] Sektor-Übernahme S{s}: FEHLGESCHLAGEN — Sektor-{s}-Zeit (UE4SS) nach {:.1}s nicht verfügbar; Gate-Zeit {:.3}s bleibt",
+                    "[{}] Sektor-Übernahme S{s}: FEHLGESCHLAGEN — Sektor-{s}-Zeit (external timing provider) nach {:.1}s nicht verfügbar; Gate-Zeit {:.3}s bleibt",
                     c.label,
                     adopter.cfg.adopt_window_sec,
                     c.duration_sec,
                 );
             } else if c.via == "game_clock" && (c.duration_sec - c.gate_dt).abs() > 0.001 {
                 eprintln!(
-                    "[{}] Sektor-Übernahme S{s}: Gate {:.3}s → Sektor-{s}-Zeit (UE4SS) {:.3}s (verzögert)",
+                    "[{}] Sektor-Übernahme S{s}: Gate {:.3}s → Sektor-{s}-Zeit (external timing provider) {:.3}s (verzögert)",
                     c.label,
                     c.gate_dt,
                     c.duration_sec,
@@ -1809,12 +1809,12 @@ fn process_stage_sector_sessions_on_step(
                 if cfg.game_clock_sector.is_some() {
                     if !game_clock.jsonl_fresh_for_display() {
                         eprintln!(
-                            "[{label}] Sektor-Übernahme S{s_num}: keine frische acr_game_clock.jsonl — Sektor-{s_num}-Zeit (UE4SS) nicht verfügbar; vorläufig Gate-Zeit {leg_dt:.3}s"
+                            "[{label}] Sektor-Übernahme S{s_num}: keine frische acr_game_clock.jsonl — Sektor-{s_num}-Zeit (external timing provider) nicht verfügbar; vorläufig Gate-Zeit {leg_dt:.3}s"
                         );
                     } else if let Some(adopter) = game_clock_sector.as_mut() {
                         adopter.poll_force();
                         if let Some(split) =
-                            acr_timing::game_clock_sector_override::try_ue4ss_leg_split_sec(
+                            acr_timing::game_clock_sector_override::try_external_timing_leg_split_sec(
                                 game_clock,
                                 Some(adopter),
                                 leg_ix,
@@ -1823,7 +1823,7 @@ fn process_stage_sector_sessions_on_step(
                         {
                             if (split - leg_dt).abs() > 0.001 {
                                 eprintln!(
-                                    "[{label}] Sektor-Übernahme S{s_num}: Gate {leg_dt:.3}s → Sektor-{s_num}-Zeit (UE4SS) {split:.3}s"
+                                    "[{label}] Sektor-Übernahme S{s_num}: Gate {leg_dt:.3}s → Sektor-{s_num}-Zeit (external timing provider) {split:.3}s"
                                 );
                             }
                             adopt_dt = split;
@@ -1870,7 +1870,7 @@ fn process_stage_sector_sessions_on_step(
                                 })
                                 .unwrap_or_else(|| "kein jsonl-Sample".to_string());
                             eprintln!(
-                                "[{label}] Sektor-Übernahme S{s_num}: Sektor-{s_num}-Zeit (UE4SS) noch nicht da ({reason}) — warte bis {:.1}s, vorläufig Gate {leg_dt:.3}s",
+                                "[{label}] Sektor-Übernahme S{s_num}: Sektor-{s_num}-Zeit (external timing provider) noch nicht da ({reason}) — warte bis {:.1}s, vorläufig Gate {leg_dt:.3}s",
                                 adopter.cfg.adopt_window_sec
                             );
                             adopter.enqueue(
@@ -1905,13 +1905,13 @@ fn process_stage_sector_sessions_on_step(
                             if let Some(split) = finish_split {
                                 if (split - leg_dt).abs() > 0.001 {
                                     eprintln!(
-                                        "[{label}] Sektor-Übernahme S{s_num}: Gate {leg_dt:.3}s → Sektor-{s_num}-Zeit (UE4SS) {split:.3}s"
+                                        "[{label}] Sektor-Übernahme S{s_num}: Gate {leg_dt:.3}s → Sektor-{s_num}-Zeit (external timing provider) {split:.3}s"
                                     );
                                 }
                                 adopt_dt = split;
                             } else {
                                 eprintln!(
-                                    "[{label}] Sektor-Übernahme S{s_num}: Sektor-{s_num}-Zeit (UE4SS) noch nicht in jsonl — vorläufig Gate-Zeit {leg_dt:.3}s (Finish-Nachzug)"
+                                    "[{label}] Sektor-Übernahme S{s_num}: Sektor-{s_num}-Zeit (external timing provider) noch nicht in jsonl — vorläufig Gate-Zeit {leg_dt:.3}s (Finish-Nachzug)"
                                 );
                                 adopter.enqueue_finish_retry(
                                     si,
@@ -1922,7 +1922,7 @@ fn process_stage_sector_sessions_on_step(
                             }
                         } else {
                             eprintln!(
-                                "[{label}] Sektor-Übernahme S{s_num}: jsonl-Adopter nicht live — Sektor-{s_num}-Zeit (UE4SS) nicht verfügbar; vorläufig Gate-Zeit {leg_dt:.3}s"
+                                "[{label}] Sektor-Übernahme S{s_num}: jsonl-Adopter nicht live — Sektor-{s_num}-Zeit (external timing provider) nicht verfügbar; vorläufig Gate-Zeit {leg_dt:.3}s"
                             );
                         }
                     }
@@ -3147,7 +3147,7 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
         .map(acr_timing::game_clock_sector_override::GameClockSectorAdopter::new);
     if game_clock_sector.is_some() {
         eprintln!(
-            "game_clock: Sektor-Übernahme aktiv (sector_splits=true) — Sektor-i-Zeit (UE4SS) an S1/S2/S3/Finish"
+            "game_clock: Sektor-Übernahme aktiv (sector_splits=true) — Sektor-i-Zeit (external timing provider) an S1/S2/S3/Finish"
         );
     } else if game_clock.enabled() {
         eprintln!(

@@ -4,8 +4,8 @@
 **/target
 install/staging/
 
-# Private AcrGameClockMod Lua (not for public repo — backup under secret/ue4ss_mod_backup/)
-install/ue4ss/Mods/AcrGameClockMod/Scripts/main.lua
+# Private game-clock mod Lua (not for public repo — backup under secret/)
+install/external_timing_provider/Mods/game_clock_mod/Scripts/main.lua
 
 # SimHub plugin build output
 simhub/User.AcrGameClock/bin/

@@ -2,7 +2,7 @@
 
 **Repo:** `acc-stage-timing` (dieser Ordner)  
 **Binary:** `acr_timing` (aus diesem Verzeichnis bauen und starten)  
-**Referenz-Commit (Baseline):** `0b4cf4f` — lokal, Stand vor Pause-Fix und vollständiger UE4SS-Δ-Korrektur  
+**Referenz-Commit (Baseline):** `0b4cf4f` — lokal, Stand vor Pause-Fix und vollständiger Provider-Δ-Korrektur  
 **RTSS-Preset:** `[osd_display] preset = "minimal"` in `acr_timing.toml`
 
 Dieses Dokument ist die **verbindliche Zielbeschreibung** für Implementierung und Reviews.  
@@ -29,11 +29,11 @@ Es gibt **keinen** Marker „Sektor 4“. Sektor 4 ist das Teilstück **Sektor 3
 | Begriff | Bedeutung |
 |---------|-----------|
 | **Referenzzeit** | Vergleichszeit pro Sektor aus `timing_pb` / DB gemäß `[reference_times]` in `acr_timing.toml` (`best_sector`, `best_stage`, …). **Nicht** zwingend „persönliche Bestzeit“ im umgangssprachlichen Sinn — immer **Referenz**. |
-| **Sektor-*i*-Zeit (UE4SS)** | Vom Spiel/Mod gelieferte offizielle Zeit für Sektor *i* (1…4), zugeordnet zur **Klammer *i*** in der oberen RTSS-Zeile. |
-| **Δ Sektor *i*** | `Sektor_i_Zeit_UE4SS − Referenzzeit_i` (nach Übernahme der Spielzeit). |
+| **Sektor-*i*-Zeit (Provider)** | Vom **external timing provider** gelieferte offizielle Zeit für Sektor *i* (1…4), zugeordnet zur **Klammer *i*** in der oberen RTSS-Zeile. |
+| **Δ Sektor *i*** | `ProviderSector_i − Referenzzeit_i` (nach Übernahme der Provider-Spielzeit). |
 | **Kumuliertes Δ (große mittlere Zeile)** | Laufweite Abweichung gegenüber Referenz über den aktiven Lauf; Verhalten siehe `delta_scope` (Abschnitt 6). |
-| **1-Hz-Zeitkorrektur** | Laufende Anpassung der Replik-Spielzeit an UE4SS (`acr_game_clock.jsonl`): z. B. System Δt = 300 ms, Spiel Δt = 250 ms → Replik um 50 ms nachziehen. Läuft **parallel** zu den Sektor-Übernahmen an den Markern. |
-| **Sektor-Übernahme (Marker)** | An S1-, S2-, S3-, Finish-Grenze: Sektorzeit = UE4SS-Wert für diese Klammer; Δ Sektor und **kumuliertes Δ** um die Differenz (Alt-Anzeige − UE4SS) **mitkorrigieren**. |
+| **1-Hz-Zeitkorrektur** | Laufende Anpassung der Replik-Spielzeit an den **external timing provider** (`acr_game_clock.jsonl`): z. B. System Δt = 300 ms, Spiel Δt = 250 ms → Replik um 50 ms nachziehen. Läuft **parallel** zu den Sektor-Übernahmen an den Markern. |
+| **Sektor-Übernahme (Marker)** | An S1-, S2-, S3-, Finish-Grenze: Sektorzeit = Provider-Wert für diese Klammer; Δ Sektor und **kumuliertes Δ** um die Differenz (Alt-Anzeige − Provider) **mitkorrigieren**. |
 
 ---
 
@@ -41,7 +41,7 @@ Es gibt **keinen** Marker „Sektor 4“. Sektor 4 ist das Teilstück **Sektor 3
 
 ### 3.1 Vor Track-Lock
 
-- Zweck: nur klären, ob **UE4SS-Daten** ankommen.
+- Zweck: nur klären, ob **Daten vom external timing provider** ankommen.
 - RTSS (optional): **`Game Data available`**, wenn frische `acr_game_clock.jsonl`-Samples da sind; sonst kein/spärlicher Text.
 - **Keine** Sektorzeiten, kein kumuliertes Δ.
 
@@ -63,7 +63,7 @@ Es gibt **keinen** Marker „Sektor 4“. Sektor 4 ist das Teilstück **Sektor 3
 | Zeile | Inhalt |
 |-------|--------|
 | **Oben** | Pro Sektor eine Klammer in Reihenfolge 1…4: |
-| | • **Fertige Sektoren:** `[Sektorzeit_UE4SS ±Δ]` (Δ zur **Referenz** dieses Sektors). |
+| | • **Fertige Sektoren:** `[Provider-Sektorzeit ±Δ]` (Δ zur **Referenz** dieses Sektors). |
 | | • **Aktueller Sektor:** nur **laufende Zeit** (tickt), **kein** Δ bis die Grenze passiert. |
 | | • **Keine Doppelklammern** (z. B. nicht `[S1][S1]`): Klammer *k* = nur Sektor *k*. |
 | **Mitte** | **Großes kumuliertes Δ** (Schrift z. B. 150 %): siehe Abschnitt 6; Farben Abschnitt 7. |
@@ -71,9 +71,9 @@ Es gibt **keinen** Marker „Sektor 4“. Sektor 4 ist das Teilstück **Sektor 3
 
 **An jeder Sektor-Grenze (S1, S2, S3) und am Finish:**
 
-1. Sektorzeit aus UE4SS in Klammer *i* (Finish → **Sektor 4** / Klammer 4).
+1. Sektorzeit vom **external timing provider** in Klammer *i* (Finish → **Sektor 4** / Klammer 4).
 2. Δ Sektor *i* neu berechnen.
-3. **Kumuliertes Δ anpassen:** Differenz `(bisher verwendete Sektorzeit − UE4SS_Sektorzeit)` vom kumulierten Δ **abziehen** (Beispiel: Anzeige 1:30.653, Spiel 1:30.543 → kumuliertes Δ um **0,110 s** reduzieren).
+3. **Kumuliertes Δ anpassen:** Differenz `(bisher verwendete Sektorzeit − Provider-Sektorzeit)` vom kumulierten Δ **abziehen** (Beispiel: Anzeige 1:30.653, Spiel 1:30.543 → kumuliertes Δ um **0,110 s** reduzieren).
 4. Am Finish: dasselbe für Sektor 4; danach Zeitnahme beendet.
 
 Die **1-Hz-Zeitkorrektur** (Replik vs. JSONL) läuft **weiter** zwischen den Markern; die **Sektor-Übernahmen** sind zusätzliche, schärfere Korrekturen an den Grenzen.
@@ -107,13 +107,13 @@ Einstellung in `acr_timing.toml`: `[delta_display] delta_scope = "stage" | "sect
 | **`sector`** | **Reset** zu Beginn jedes **Hauptsektors** (nach jedem Marker S1, S2, S3 — d. h. neuer Sektor 2, 3, 4). |
 | **`subsector`** | **Reset** nach **jedem** GeoJSON-Gate (Zwischenpunkt), nicht nur an den fünf Hauptmarkern. |
 
-**Unabhängig davon:** An **jedem** Hauptmarker (S1, S2, S3, Finish) werden die **Sektorzeiten aus UE4SS** übernommen und das kumulierte Δ um die Sektor-Korrektur **mitjustiert** (Abschnitt 3.3), auch wenn `delta_scope = stage`.
+**Unabhängig davon:** An **jedem** Hauptmarker (S1, S2, S3, Finish) werden die **Sektorzeiten vom external timing provider** übernommen und das kumulierte Δ um die Sektor-Korrektur **mitjustiert** (Abschnitt 3.3), auch wenn `delta_scope = stage`.
 
 ---
 
 ## 6. Sonderfall: Pause / Spiel steht, JSONL lebt noch
 
-**Symptom:** System-/Replik-Zeit und korrigierte Spielzeit laufen auseinander (> **1,0 s**), aber das letzte UE4SS-Paket ist **nicht älter als 2,0 s** (Daten kommen, `race_time` bewegt sich nicht → Pause).
+**Symptom:** System-/Replik-Zeit und korrigierte Spielzeit laufen auseinander (> **1,0 s**), aber das letzte Provider-Paket ist **nicht älter als 2,0 s** (Daten kommen, `race_time` bewegt sich nicht → Pause).
 
 **Anzeige:**
 
@@ -146,8 +146,8 @@ Vor Merge / nach Änderung an Timing/RTSS:
 2. Vor Lock: bei JSONL → `Game Data available` (wenn spezifiziert aktiv).
 3. Pre-Start: `ref: […] … tot: […]`, Mitte `0`, unten `Timer ready` / `Timing ready`.
 4. **Kein** `Afon: ref | cur | delta` im Minimal-Modus.
-5. Im Run: Klammer *k* = UE4SS Sektor *k*; kein Doppel; laufende Zeit nur im aktiven Sektor.
-6. An S1/S2/S3/Finish: UE4SS übernimmt Sektorzeit; kumuliertes Δ springt um Korrekturdifferenz.
+5. Im Run: Klammer *k* = Provider-Sektor *k*; kein Doppel; laufende Zeit nur im aktiven Sektor.
+6. An S1/S2/S3/Finish: Provider übernimmt Sektorzeit; kumuliertes Δ springt um Korrekturdifferenz.
 7. Finish: Sektor **4** in Klammer 4; Zeitnahme stoppt.
 8. Pause-Sonderfall: `--` laut Abschnitt 6 (wenn implementiert).
 
@@ -159,7 +159,7 @@ Vor Merge / nach Änderung an Timing/RTSS:
 |-------|------------------------|-----------------|
 | Minimal statt Afon-Zeile | ja | weitgehend |
 | `ref:` + `tot:` Pre-Start | ja | teils (ohne `ref:`/`tot:`-Prefix) |
-| UE4SS Sektor → Klammer *i* | ja | Adopt-Pfad vorhanden, Grenzfälle prüfen |
+| Provider-Sektor → Klammer *i* | ja | Adopt-Pfad vorhanden, Grenzfälle prüfen |
 | Kumuliertes Δ bei Sektor-Korrektur mitziehen | ja | **prüfen / vervollständigen** |
 | Pause → `--` | ja | ja (Replik-Sync + `PauseOsdState`) |
 | `Game Data available` vor Lock | ja | ggf. noch alte Texte |

@@ -1,4 +1,4 @@
-//! Read `acr_game_clock.jsonl` from UE4SS (ACR race time + distance) and optionally
+//! Read `acr_game_clock.jsonl` from external timing provider (ACR race time + distance) and optionally
 //! steer a replica game clock toward those samples between ticks.
 //!
 //! ACR does not expose rally time via ACC shared memory; the mod writes game-internal
@@ -62,10 +62,10 @@ pub struct GameClockSample {
     pub game_z: Option<f64>,
     #[serde(default)]
     pub t_process_ms: Option<u64>,
-    /// UE4SS mod wall clock (unix seconds) when the line was written.
+    /// external timing provider mod wall clock (unix seconds) when the line was written.
     #[serde(default)]
     pub t_wall_s: Option<i64>,
-    /// `"light"` = race time only; `"full"` includes sectors/ghost (UE4SS mod).
+    /// `"light"` = race time only; `"full"` includes sectors/ghost (external timing provider mod).
     #[serde(rename = "sample", default)]
     pub sample_kind: Option<String>,
 }
@@ -77,7 +77,7 @@ pub struct GameClockSyncConfig {
     pub jsonl_path: PathBuf,
     /// Ignore samples older than this (seconds, by file mtime).
     pub max_sample_age_sec: f64,
-    /// Expected UE4SS interval for rate correction (seconds).
+    /// Expected external timing provider interval for rate correction (seconds).
     pub expected_tick_sec: f64,
     /// Max per-tick rate adjustment (e.g. 0.02 = ±2% sim-time speed).
     pub max_rate_adjust: f64,
@@ -111,7 +111,7 @@ fn is_light_sample(s: &GameClockSample) -> bool {
     s.sample_kind.as_deref() == Some("light")
 }
 
-/// Keep sector/ghost from the last full UE4SS line when a light tick omits them.
+/// Keep sector/ghost from the last full external timing provider line when a light tick omits them.
 pub fn merge_game_clock_sample(prev: Option<GameClockSample>, mut new: GameClockSample) -> GameClockSample {
     let Some(p) = prev else {
         return new;
@@ -185,7 +185,7 @@ fn read_last_line(path: &Path) -> Option<String> {
         })
 }
 
-/// Replica of game race clock advanced with physics `dt_sim`, steered toward UE4SS samples.
+/// Replica of game race clock advanced with physics `dt_sim`, steered toward external timing provider samples.
 ///
 /// Model: each frame `replica += dt_sim * rate_time` while the game clock runs; on each JSONL
 /// sample compare game HUD `race_time_s` to replica — large gap → snap, small gap → adjust
