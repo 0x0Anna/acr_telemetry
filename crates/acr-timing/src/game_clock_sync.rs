@@ -894,6 +894,31 @@ pub fn truncate_jsonl(path: &Path) -> std::io::Result<()> {
 mod tests {
     use super::*;
 
+    fn default_test() -> GameClockSample {
+        GameClockSample {
+            race_time_s: None,
+            distance_m: None,
+            race_time_valid: false,
+            diff_time_s: None,
+            position: None,
+            phase: None,
+            sectors: vec![],
+            sectors_source: None,
+            sectors_debug: None,
+            next_sector_index: None,
+            race_source: None,
+            travel_track_id: None,
+            travel_track_source: None,
+            penalty_total_s: None,
+            ghost_ref: None,
+            game_x: None,
+            game_z: None,
+            t_process_ms: None,
+            t_wall_s: None,
+            sample_kind: None,
+        }
+    }
+
     #[test]
     fn merge_light_sample_keeps_sectors() {
         let full = GameClockSample {
@@ -904,13 +929,13 @@ mod tests {
                 split_s: Some(114.0),
             }],
             sample_kind: Some("full".into()),
-            ..GameClockSample::default_test()
+            ..default_test()
         };
         let light = GameClockSample {
             race_time_s: Some(114.5),
             sectors: vec![],
             sample_kind: Some("light".into()),
-            ..GameClockSample::default_test()
+            ..default_test()
         };
         let merged = merge_game_clock_sample(Some(full), light);
         assert_eq!(merged.race_time_s, Some(114.5));
@@ -979,7 +1004,7 @@ mod tests {
             GameClockSample {
                 race_time_s: Some(50.0),
                 race_time_valid: false,
-                ..GameClockSample::default_test()
+                ..default_test()
             },
             Instant::now(),
             None,
@@ -998,7 +1023,7 @@ mod tests {
         let running = GameClockSample {
             race_time_s: Some(83.347),
             race_time_valid: true,
-            ..GameClockSample::default_test()
+            ..default_test()
         };
         c.apply_sample(running, Instant::now(), None);
         c.tick(1.0 / 333.0, None);
@@ -1006,7 +1031,7 @@ mod tests {
         let paused = GameClockSample {
             race_time_s: Some(83.347),
             race_time_valid: false,
-            ..GameClockSample::default_test()
+            ..default_test()
         };
         c.apply_sample(paused, Instant::now(), None);
         for _ in 0..500 {
@@ -1018,29 +1043,3 @@ mod tests {
     }
 }
 
-impl GameClockSample {
-    fn default_test() -> Self {
-        Self {
-            race_time_s: None,
-            distance_m: None,
-            race_time_valid: false,
-            diff_time_s: None,
-            position: None,
-            phase: None,
-            sectors: vec![],
-            sectors_source: None,
-            sectors_debug: None,
-            next_sector_index: None,
-            race_source: None,
-            travel_track_id: None,
-            travel_track_source: None,
-            penalty_total_s: None,
-            ghost_ref: None,
-            game_x: None,
-            game_z: None,
-            t_process_ms: None,
-            t_wall_s: None,
-            sample_kind: None,
-        }
-    }
-}

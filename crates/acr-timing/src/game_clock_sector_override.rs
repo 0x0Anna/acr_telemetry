@@ -477,7 +477,7 @@ pub fn drain_finish_overrides(
         }
     }
     if now >= fp.deadline {
-        if let Some(session) = sessions.get(fp.session_si) {
+        if let Some(_session) = sessions.get(fp.session_si) {
             let missing: Vec<usize> = (0..fp.leg_count)
                 .filter(|&leg_ix| {
                     adopter

@@ -1,7 +1,7 @@
 {
 "type": "FeatureCollection",
 "name": "cumulative_sectors:hafren_north_linestrings",
-"properties": { "reference_track": "hafren_north", "coordinate_space": "acc_world_zx", "timing_mode": "cumulative", "geometry_type": "LineString", "marker_count": 28, "source": "Handselected with the help of Cristi Cotan" },
+"properties": { "reference_track": "hafren_north", "coordinate_space": "acc_world_zx", "timing_mode": "cumulative", "geometry_type": "LineString", "marker_count": 30, "source": "runtime export from hafren_north_linestrings3.geojson (geometry-only gates)" },
 "features": [
 { "type": "Feature", "properties": { "marker_role": "timing_start", "marker_order": 0, "seg_id": 0, "marker_label": "Start" }, "geometry": { "type": "LineString", "coordinates": [ [ -1081.3, 634.3 ], [ -1091.0, 674.2 ] ] } },
 { "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 1, "seg_id": 1, "marker_label": "S1-1" }, "geometry": { "type": "LineString", "coordinates": [ [ -896.6, 742.5 ], [ -913.3, 772.6 ] ] } },
@@ -18,16 +18,12 @@
 { "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 14, "seg_id": 39, "marker_label": "S2-6" }, "geometry": { "type": "LineString", "coordinates": [ [ 363.5, -198.1 ], [ 346.4, -167.2 ] ] } },
 { "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 23, "seg_id": 9, "marker_label": "Sector 2" }, "geometry": { "type": "LineString", "coordinates": [ [ 37.8, 101.6 ], [ 53.9, 120.6 ] ] } },
 { "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 25, "seg_id": 18, "marker_label": "S3-1" }, "geometry": { "type": "LineString", "coordinates": [ [ 109.3, 502.5 ], [ 146.6, 477.2 ] ] } },
-{ "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 26, "seg_id": 19, "marker_label": "S3-2" }, "geometry": { "type": "LineString", "coordinates": [ [ -7.2, 614.5 ], [ 6.9, 639.5 ] ] } },
-{ "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 27, "seg_id": 20, "marker_label": "S3-3" }, "geometry": { "type": "LineString", "coordinates": [ [ 132.1, 735.6 ], [ 115.4, 785.5 ] ] } },
-{ "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 28, "seg_id": 21, "marker_label": "S3-4" }, "geometry": { "type": "LineString", "coordinates": [ [ 149.6, 935.1 ], [ 158.7, 968.2 ] ] } },
+{ "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 27, "seg_id": 20, "marker_label": "S3-3" }, "geometry": { "type": "LineString", "coordinates": [ [ 177.961819214077138, 744.352003375119466 ], [ 153.530384787847595, 804.073287528124979 ] ] } },
 { "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 29, "seg_id": 22, "marker_label": "S3-5" }, "geometry": { "type": "LineString", "coordinates": [ [ -360.0, 955.9 ], [ -308.7, 914.2 ] ] } },
 { "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 30, "seg_id": 23, "marker_label": "S3-6" }, "geometry": { "type": "LineString", "coordinates": [ [ -683.2, 766.9 ], [ -672.1, 829.8 ] ] } },
 { "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 32, "seg_id": 25, "marker_label": "Sector 3" }, "geometry": { "type": "LineString", "coordinates": [ [ -564.1, 1603.7 ], [ -597.1, 1598.2 ] ] } },
-{ "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 33, "seg_id": 26, "marker_label": "S4-1" }, "geometry": { "type": "LineString", "coordinates": [ [ -462.4, 1673.8 ], [ -484.5, 1702.9 ] ] } },
 { "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 34, "seg_id": 27, "marker_label": "S4-2" }, "geometry": { "type": "LineString", "coordinates": [ [ -227.3, 1725.7 ], [ -226.9, 1752.2 ] ] } },
 { "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 35, "seg_id": 28, "marker_label": "S4-3" }, "geometry": { "type": "LineString", "coordinates": [ [ 108.5, 1587.5 ], [ 125.5, 1619.9 ] ] } },
-{ "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 36, "seg_id": 29, "marker_label": "S4-4" }, "geometry": { "type": "LineString", "coordinates": [ [ 301.2, 1600.3 ], [ 246.9, 1653.9 ] ] } },
 { "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 37, "seg_id": 30, "marker_label": "S4-5" }, "geometry": { "type": "LineString", "coordinates": [ [ 466.1, 1607.9 ], [ 501.5, 1620.0 ] ] } },
 { "type": "Feature", "properties": { "marker_role": "sector_boundary", "marker_order": 39, "seg_id": 32, "marker_label": "S4-6" }, "geometry": { "type": "LineString", "coordinates": [ [ 944.4, 1357.8 ], [ 946.2, 1391.9 ] ] } },
 { "type": "Feature", "properties": { "marker_role": "finish", "marker_order": 40, "seg_id": 33, "marker_label": "Finish" }, "geometry": { "type": "LineString", "coordinates": [ [ 1127.6, 1122.6 ], [ 1126.1, 1142.9 ] ] } }

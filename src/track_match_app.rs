@@ -313,6 +313,7 @@ fn stage_sektoren_summe_sec(timing_state: &LiveTimingState) -> f64 {
         .sum()
 }
 
+#[allow(dead_code)]
 struct TimingDebugFrame<'a> {
     physics: &'a PhysicsMap,
     graphics_x: f64,
@@ -1589,6 +1590,7 @@ fn apply_game_clock_finish_overrides(
     all_present
 }
 
+#[allow(dead_code)]
 fn prior_stage_splits(state: &LiveTimingState, session_si: usize, leg_ix: usize) -> Vec<f64> {
     state
         .stage_sector_sessions
@@ -1635,81 +1637,84 @@ fn process_stage_sector_sessions_on_step(
         game_clock.poll_now(Some(graphics_distance_traveled as f64));
     }
     let game_race_hud = game_clock.game_race_for_sector_display();
+    let jsonl_fresh_for_adopt = game_clock.jsonl_fresh_for_display();
     if let Some(adopter) = game_clock_sector.as_mut() {
-        let finish_overrides =
-            acr_timing::game_clock_sector_override::drain_finish_overrides(
-                adopter,
-                now_inst,
-                &mut state.stage_sector_sessions,
-            );
-        for o in finish_overrides {
-            let label = state
-                .stage_sector_sessions
-                .get(o.session_si)
-                .map(|s| s.markers.rtss_label())
-                .unwrap_or("stage");
-            eprintln!(
-                "[{label}] Sektor-Übernahme Finish S{} (nachgereicht): {:.3}s → Sektor-{}-Zeit (external timing provider) {:.3}s",
-                o.leg_ix + 1,
-                o.prev_sec,
-                o.leg_ix + 1,
-                o.provider_sec,
-            );
-            sync_modular_stage_cum_delta_from_brackets(
-                state,
-                timing_pb,
-                car_model,
-                cfg.delta_display.delta_scope,
-                false,
-            );
-        }
-        let commits = adopter.drain_commit_ready(now_inst, &state.stage_sector_sessions);
-        for c in commits {
-            let s = c.leg_ix + 1;
-            if c.via == "gate" {
-                eprintln!(
-                    "[{}] Sektor-Übernahme S{s}: FEHLGESCHLAGEN — Sektor-{s}-Zeit (external timing provider) nach {:.1}s nicht verfügbar; Gate-Zeit {:.3}s bleibt",
-                    c.label,
-                    adopter.cfg.adopt_window_sec,
-                    c.duration_sec,
+        if jsonl_fresh_for_adopt {
+            let finish_overrides =
+                acr_timing::game_clock_sector_override::drain_finish_overrides(
+                    adopter,
+                    now_inst,
+                    &mut state.stage_sector_sessions,
                 );
-            } else if c.via == "game_clock" && (c.duration_sec - c.gate_dt).abs() > 0.001 {
+            for o in finish_overrides {
+                let label = state
+                    .stage_sector_sessions
+                    .get(o.session_si)
+                    .map(|s| s.markers.rtss_label())
+                    .unwrap_or("stage");
                 eprintln!(
-                    "[{}] Sektor-Übernahme S{s}: Gate {:.3}s → Sektor-{s}-Zeit (external timing provider) {:.3}s (verzögert)",
-                    c.label,
-                    c.gate_dt,
-                    c.duration_sec,
+                    "[{label}] Sektor-Übernahme Finish S{} (nachgereicht): {:.3}s → Sektor-{}-Zeit (external timing provider) {:.3}s",
+                    o.leg_ix + 1,
+                    o.prev_sec,
+                    o.leg_ix + 1,
+                    o.provider_sec,
+                );
+                sync_modular_stage_cum_delta_from_brackets(
+                    state,
+                    timing_pb,
+                    car_model,
+                    cfg.delta_display.delta_scope,
+                    false,
                 );
             }
-            if c.leg_ix < state.stage_sector_sessions[c.session_si].run.sector_secs.len() {
-                state.stage_sector_sessions[c.session_si].run.sector_secs[c.leg_ix] =
-                    Some(c.duration_sec);
+            let commits = adopter.drain_commit_ready(now_inst, &state.stage_sector_sessions);
+            for c in commits {
+                let s = c.leg_ix + 1;
+                if c.via == "gate" {
+                    eprintln!(
+                        "[{}] Sektor-Übernahme S{s}: FEHLGESCHLAGEN — Sektor-{s}-Zeit (external timing provider) nach {:.1}s nicht verfügbar; Gate-Zeit {:.3}s bleibt",
+                        c.label,
+                        adopter.cfg.adopt_window_sec,
+                        c.duration_sec,
+                    );
+                } else if c.via == "game_clock" && (c.duration_sec - c.gate_dt).abs() > 0.001 {
+                    eprintln!(
+                        "[{}] Sektor-Übernahme S{s}: Gate {:.3}s → Sektor-{s}-Zeit (external timing provider) {:.3}s (verzögert)",
+                        c.label,
+                        c.gate_dt,
+                        c.duration_sec,
+                    );
+                }
+                if c.leg_ix < state.stage_sector_sessions[c.session_si].run.sector_secs.len() {
+                    state.stage_sector_sessions[c.session_si].run.sector_secs[c.leg_ix] =
+                        Some(c.duration_sec);
+                }
+                sync_modular_stage_cum_delta_from_brackets(
+                    state,
+                    timing_pb,
+                    car_model,
+                    cfg.delta_display.delta_scope,
+                    false,
+                );
+                frame_monitor.reset_leg_accumulator();
+                state.stage_sector_sessions[c.session_si].run.leg_excess_wall_sec = 0.0;
+                let leg_stats = take_leg_stats(state, physics.speed_kmh);
+                let frozen = state.stage_sector_sessions[c.session_si]
+                    .run
+                    .reference_secs_for_display();
+                let _ = acr_timing::stage_sector_timing::archive_stage_leg(
+                    &timing_conn,
+                    timing_pb,
+                    frozen,
+                    c.leg_ix,
+                    &c.slug,
+                    car_model,
+                    c.from_order,
+                    c.to_order,
+                    c.duration_sec,
+                    leg_stats,
+                );
             }
-            sync_modular_stage_cum_delta_from_brackets(
-                state,
-                timing_pb,
-                car_model,
-                cfg.delta_display.delta_scope,
-                false,
-            );
-            frame_monitor.reset_leg_accumulator();
-            state.stage_sector_sessions[c.session_si].run.leg_excess_wall_sec = 0.0;
-            let leg_stats = take_leg_stats(state, physics.speed_kmh);
-            let frozen = state.stage_sector_sessions[c.session_si]
-                .run
-                .reference_secs_for_display();
-            let _ = acr_timing::stage_sector_timing::archive_stage_leg(
-                &timing_conn,
-                timing_pb,
-                frozen,
-                c.leg_ix,
-                &c.slug,
-                car_model,
-                c.from_order,
-                c.to_order,
-                c.duration_sec,
-                leg_stats,
-            );
         }
     }
     let stage_radius = cfg.stage_timing.stage_sector_radius_m();
@@ -1807,7 +1812,7 @@ fn process_stage_sector_sessions_on_step(
                 let mut adopt_dt = leg_dt;
                 let s_num = leg_ix + 1;
                 if cfg.game_clock_sector.is_some() {
-                    if !game_clock.jsonl_fresh_for_display() {
+                    if !jsonl_fresh_for_adopt {
                         eprintln!(
                             "[{label}] Sektor-Übernahme S{s_num}: keine frische acr_game_clock.jsonl — Sektor-{s_num}-Zeit (external timing provider) nicht verfügbar; vorläufig Gate-Zeit {leg_dt:.3}s"
                         );
@@ -2053,7 +2058,7 @@ fn process_stage_sector_sessions_on_step(
         }
         if run_completed {
             if let Some(adopter) = game_clock_sector.as_mut() {
-                if adopter.is_live() || game_clock.jsonl_fresh_for_display() {
+                if jsonl_fresh_for_adopt {
                     let _ = apply_game_clock_finish_overrides(
                         state,
                         si,

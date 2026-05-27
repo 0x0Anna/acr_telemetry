@@ -155,7 +155,6 @@ pub struct GameClockConfigFile {
 
 impl GameClockConfigFile {
     pub fn to_runtime(&self) -> crate::game_clock_sync::GameClockSyncConfig {
-        let tick_hz = 2.0_f64;
         crate::game_clock_sync::GameClockSyncConfig {
             enabled: self.enabled,
             jsonl_path: self

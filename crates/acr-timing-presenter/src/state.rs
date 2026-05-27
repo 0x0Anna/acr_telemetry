@@ -6,7 +6,7 @@ use std::time::Instant;
 
 use acr_timing::delta_display::{DeltaColorStyle, DeltaDisplayConfig, DeltaScope};
 use acr_timing::osd_template::OsdTemplateConfig;
-use acr_timing_protocol::{SectorCompleted, SectorStarted, TimingEvent, TimingEventBody};
+use acr_timing_protocol::{SectorCompleted, TimingEvent, TimingEventBody};
 
 use crate::osd::{
     format_carousel_sector_line, format_duration, format_live_sector_line,

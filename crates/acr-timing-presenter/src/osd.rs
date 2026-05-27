@@ -63,6 +63,7 @@ pub fn format_sector_bracket(
 }
 
 /// All completed sectors on the upper OSD line.
+#[allow(dead_code)]
 pub fn format_sector_tape(
     completed: &[SectorCompleted],
     rtss_colors: bool,
@@ -76,6 +77,7 @@ pub fn format_sector_tape(
 }
 
 /// Reference times for the upcoming sector (only before the sector timer runs).
+#[allow(dead_code)]
 pub fn format_sector_reference_line(
     sector_index: u32,
     reference_tot_sec: Option<f64>,
