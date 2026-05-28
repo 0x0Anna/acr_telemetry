@@ -1,0 +1,14 @@
+# MoTeC live recorder (acr_motec). Copy to acr_motec.toml next to the exe or CWD.
+# Falls back to acr_recorder.toml if this file is absent.
+
+[recorder]
+raw_output_dir = "telemetry_raw"
+# stop_file_path = "acr_stop"
+
+[export.motec]
+# Profile: motec_profiles/<profile>.toml (next to exe, or profiles_dir)
+#   rbr       = sim/RBR-style (default)
+#   rally     = MoTeC Rally Basic / ADL names
+#   all_data  = all supported physics channels (see docs/MOTEC_PROFILES.md)
+profile = "rbr"
+# profiles_dir = "motec_profiles"

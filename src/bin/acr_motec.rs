@@ -36,9 +36,13 @@ fn print_help() {
     println!("USAGE:");
     println!("    acr_motec [OPTIONS]");
     println!();
+    println!("CONFIG:");
+    println!("    acr_motec.toml next to the exe (or CWD); falls back to acr_recorder.toml.");
+    println!("    [recorder] raw_output_dir, [export.motec] profile — see config-examples/.");
+    println!();
     println!("OPTIONS:");
     println!("    --out <dir>      Output directory for the LD file");
-    println!("                     Default: raw_output_dir from acr_recorder.toml");
+    println!("                     Default: raw_output_dir from acr_motec.toml / acr_recorder.toml");
     println!("    --out=<dir>      Same as --out <dir>");
     println!("    --help, -h       Show this help message and exit");
     println!();

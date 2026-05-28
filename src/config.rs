@@ -246,6 +246,36 @@ fn default_sqlite_path() -> String {
     "telemetry.db".into()
 }
 
+/// Load MoTeC live config (`acr_motec`, `acr_recorder --motec`).
+/// Tries `acr_motec.toml` first, then falls back to [`load_config`].
+pub fn load_motec_config() -> Config {
+    for path in motec_config_paths() {
+        if path.exists() {
+            if let Ok(s) = std::fs::read_to_string(&path) {
+                match toml::from_str(&s) {
+                    Ok(cfg) => return cfg,
+                    Err(e) => eprintln!("Config parse error in {}: {}", path.display(), e),
+                }
+            }
+        }
+    }
+    load_config()
+}
+
+fn motec_config_paths() -> Vec<PathBuf> {
+    let mut paths = Vec::new();
+    if let Some(exe_dir) = base_dir() {
+        paths.push(exe_dir.join("acr_motec.toml"));
+    }
+    if let Ok(cwd) = std::env::current_dir() {
+        paths.push(cwd.join("acr_motec.toml"));
+    }
+    if let Some(config_dir) = dirs::config_dir() {
+        paths.push(config_dir.join("acr_recorder").join("acr_motec.toml"));
+    }
+    paths
+}
+
 /// Load config from standard locations:
 /// 1. acr_recorder.toml next to the executable
 /// 2. ./acr_recorder.toml (current working directory)

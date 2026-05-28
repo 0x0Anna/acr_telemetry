@@ -15,6 +15,7 @@ Executables (run from this install folder):
 Configuration (edit before first run if needed):
 
   acr_recorder.toml           Recorder + export paths
+  acr_motec.toml              MoTeC live .ld (output dir, profile)
   acr_timing.toml             Sector timing / stage sectors
   acr_track_match.toml        Track match + RTSS
   acr_telemetry_bridge.toml   Bridge rate, HTTP address, dashboard slots

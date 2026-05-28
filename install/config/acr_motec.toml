@@ -1,0 +1,13 @@
+# MoTeC live recorder (acr_motec). Paths relative to install dir.
+# Same layout as acr_recorder.toml [recorder] + [export.motec]; this file is optional
+# (acr_motec falls back to acr_recorder.toml if missing).
+
+[recorder]
+raw_output_dir = "telemetry_raw"
+# stop_file_path omitted → %APPDATA%\acr_telemetry\acr_stop (see batch\acr_stop.bat)
+
+[export.motec]
+profile = "rbr"
+# profile = "rally"
+# profile = "all_data"
+# profiles_dir = "motec_profiles"

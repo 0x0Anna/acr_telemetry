@@ -70,7 +70,7 @@ CI: `pwsh install/build.ps1 -SkipCargoBuild` after `cargo build` (see `.github/w
 
 
 
-- `acr_recorder.toml`, `acr_timing.toml`, `acr_track_match.toml`
+- `acr_recorder.toml`, `acr_motec.toml`, `acr_timing.toml`, `acr_track_match.toml`
 
 - `acr_telemetry_bridge.toml`, `telemetry_color.toml`
 

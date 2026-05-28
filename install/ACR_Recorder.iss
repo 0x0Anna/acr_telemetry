@@ -56,6 +56,7 @@ Source: "staging\acr_track_match.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "staging\acr_timing.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "staging\acr_rtss_osd.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "staging\acr_recorder.toml"; DestDir: "{app}"; Flags: onlyifdoesntexist ignoreversion
+Source: "staging\acr_motec.toml"; DestDir: "{app}"; Flags: onlyifdoesntexist ignoreversion
 Source: "staging\acr_timing.toml"; DestDir: "{app}"; Flags: onlyifdoesntexist ignoreversion
 Source: "staging\acr_track_match.toml"; DestDir: "{app}"; Flags: onlyifdoesntexist ignoreversion
 Source: "staging\acr_telemetry_bridge.toml"; DestDir: "{app}"; Flags: onlyifdoesntexist ignoreversion

@@ -32,7 +32,7 @@ pub fn parse_out_dir(args: &[String]) -> Option<PathBuf> {
 
 /// Record physics from ACC shared memory until `running` is cleared or the stop file appears.
 pub fn run(options: Options, running: &AtomicBool) -> Result<(), Box<dyn std::error::Error>> {
-    let cfg = config::load_config();
+    let cfg = config::load_motec_config();
 
     let out_dir = match options.out_dir {
         Some(d) => {
