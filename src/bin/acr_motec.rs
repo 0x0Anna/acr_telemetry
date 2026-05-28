@@ -45,6 +45,9 @@ fn print_help() {
     println!("OUTPUT:");
     println!("    acr_motec_<unix_timestamp>.ld   MoTeC LD file, openable in MoTeC i2");
     println!();
+    println!("STARTUP:");
+    println!("    If ACC is not running yet, waits for shared memory (polls every 0.5s).");
+    println!();
     println!("STOPPING:");
     println!("    Ctrl+C                          Stop recording");
     println!("    Create the stop file            Default: acr_stop (see config)");

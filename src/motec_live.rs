@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
-use acc_shared_memory_rs::ACCSharedMemory;
+use acc_shared_memory_rs::{ACCError, ACCSharedMemory};
 
 use crate::config;
 use crate::export::motec_ld;
@@ -69,7 +69,9 @@ pub fn run(options: Options, running: &AtomicBool) -> Result<(), Box<dyn std::er
     );
     eprintln!("Ctrl+C or create '{}' to stop.", stop_path.display());
 
-    let mut acc = ACCSharedMemory::new()?;
+    let Some(mut acc) = open_acc_or_wait(running, &stop_path)? else {
+        return Ok(());
+    };
 
     let mut statics: Option<StaticsRecord> = acc
         .read_shared_memory()?
@@ -179,5 +181,36 @@ fn stop_requested(stop_path: &Path) -> bool {
         true
     } else {
         false
+    }
+}
+
+/// Block until ACC shared memory is available, Ctrl+C, or the stop file.
+fn open_acc_or_wait(
+    running: &AtomicBool,
+    stop_path: &Path,
+) -> Result<Option<ACCSharedMemory>, Box<dyn std::error::Error>> {
+    let poll = Duration::from_millis(500);
+    let mut last_msg = std::time::Instant::now() - Duration::from_secs(10);
+
+    loop {
+        if !running.load(Ordering::Relaxed) || stop_requested(stop_path) {
+            eprintln!("Stopped before ACC shared memory became available.");
+            return Ok(None);
+        }
+
+        match ACCSharedMemory::new() {
+            Ok(acc) => {
+                eprintln!("Connected to ACC shared memory.");
+                return Ok(Some(acc));
+            }
+            Err(ACCError::SharedMemoryNotAvailable) => {
+                if last_msg.elapsed() >= Duration::from_secs(5) {
+                    eprintln!("Waiting for ACC shared memory (start ACC / enter a session)…");
+                    last_msg = std::time::Instant::now();
+                }
+                std::thread::sleep(poll);
+            }
+            Err(e) => return Err(e.into()),
+        }
     }
 }

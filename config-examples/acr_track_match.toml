@@ -6,10 +6,27 @@ rtss = true
 rtss_owner = "acr_track_match"
 rtss_slot = 3
 
-# rtss_osd_anchor = "middle_monitor"
-# rtss_osd_offset_x = 0
-# rtss_osd_offset_y = -40
+# RTSS timing OSD position (calibrated with acr_rtss_osd — see docs/RTSS_OVERLAY.md)
+rtss_osd_anchor = "pixel"
+rtss_osd_x = 180
+rtss_osd_y = 40
 
 track_lock_after_sec = 10.0
 track_keep_max_dist = 15.0
 track_switch_min_gain = 0.8
+
+# Optional tuning (defaults shown)
+# downsample = 10
+# buffer = 30.0
+# required_ratio = 0.5
+# history_points = 200
+# rate = 5
+# min_ref_spacing = 2.0
+# rtss_clear_all = false
+# debug_physics_1hz = false
+
+# Triple-screen alternatives (see docs/RTSS_OVERLAY.md):
+# rtss_osd_anchor = "middle_monitor"
+# rtss_osd_offset_x = 0
+# rtss_osd_offset_y = -40
+# rtss_osd_anchor = "sticky_center"
