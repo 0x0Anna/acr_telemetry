@@ -45,10 +45,10 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $tag = '${{ github.ref_name }}'
-          if ($tag -match '^v(\d+\.\d+\.\d+)') {
+          if ($tag -match '^v(.+)$') {
             $version = $Matches[1]
           } else {
-            throw "Tag $tag has no semver prefix (expected v0.0.5_...)"
+            throw "Tag $tag must start with v (e.g. v0.0.8.1, v0.0.8_timing)"
           }
           powershell -NoProfile -ExecutionPolicy Bypass -File install/build.ps1 -SkipCargoBuild -Version $version
           Copy-Item "target/install/ACR_Recorder_${version}_windows-x64_portable.zip" "acr-$tag-windows-x86_64.zip"
