@@ -119,6 +119,32 @@ pub enum ChannelSource {
     GraphicsPosX,
     GraphicsPosY,
     GraphicsPosZ,
+    Clutch,
+    Fuel,
+    Tc,
+    Abs,
+    TurboBoost,
+    AirTemp,
+    RoadTemp,
+    WaterTemp,
+    Heading,
+    Pitch,
+    Roll,
+    BrakePressureFl,
+    BrakePressureFr,
+    BrakePressureRl,
+    BrakePressureRr,
+    SlipAngleFl,
+    SlipAngleFr,
+    SlipAngleRl,
+    SlipAngleRr,
+    RideHeightFront,
+    RideHeightRear,
+    CarDamageFront,
+    CarDamageRear,
+    CarDamageLeft,
+    CarDamageRight,
+    CarDamageCenter,
 }
 
 impl ChannelSource {
@@ -187,6 +213,32 @@ impl ChannelSource {
             "graphics_pos_x" => GraphicsPosX,
             "graphics_pos_y" => GraphicsPosY,
             "graphics_pos_z" => GraphicsPosZ,
+            "clutch" => Clutch,
+            "fuel" => Fuel,
+            "tc" => Tc,
+            "abs" => Abs,
+            "turbo_boost" => TurboBoost,
+            "air_temp" => AirTemp,
+            "road_temp" => RoadTemp,
+            "water_temp" => WaterTemp,
+            "heading" => Heading,
+            "pitch" => Pitch,
+            "roll" => Roll,
+            "brake_pressure_fl" => BrakePressureFl,
+            "brake_pressure_fr" => BrakePressureFr,
+            "brake_pressure_rl" => BrakePressureRl,
+            "brake_pressure_rr" => BrakePressureRr,
+            "slip_angle_fl" => SlipAngleFl,
+            "slip_angle_fr" => SlipAngleFr,
+            "slip_angle_rl" => SlipAngleRl,
+            "slip_angle_rr" => SlipAngleRr,
+            "ride_height_front" => RideHeightFront,
+            "ride_height_rear" => RideHeightRear,
+            "car_damage_front" => CarDamageFront,
+            "car_damage_rear" => CarDamageRear,
+            "car_damage_left" => CarDamageLeft,
+            "car_damage_right" => CarDamageRight,
+            "car_damage_center" => CarDamageCenter,
             other => return Err(format!("unknown MoTeC channel source '{other}'")),
         };
         Ok(v)
@@ -550,6 +602,44 @@ fn extract_channel(
             let (g, _) = graphics.ok_or("graphics_pos_z requires graphics sidecar")?;
             resample_graphics_to_len(g, n, |rec| rec.car_coordinates_z)
         }
+        ChannelSource::Clutch => records.iter().map(|r| r.clutch).collect(),
+        ChannelSource::Fuel => records.iter().map(|r| r.fuel).collect(),
+        ChannelSource::Tc => records.iter().map(|r| r.tc).collect(),
+        ChannelSource::Abs => records.iter().map(|r| r.abs).collect(),
+        ChannelSource::TurboBoost => records.iter().map(|r| r.turbo_boost).collect(),
+        ChannelSource::AirTemp => records.iter().map(|r| r.air_temp).collect(),
+        ChannelSource::RoadTemp => records.iter().map(|r| r.road_temp).collect(),
+        ChannelSource::WaterTemp => records.iter().map(|r| r.water_temp).collect(),
+        ChannelSource::Heading => records.iter().map(|r| r.heading).collect(),
+        ChannelSource::Pitch => records.iter().map(|r| r.pitch).collect(),
+        ChannelSource::Roll => records.iter().map(|r| r.roll).collect(),
+        ChannelSource::BrakePressureFl => records
+            .iter()
+            .map(|r| r.brake_pressure.front_left)
+            .collect(),
+        ChannelSource::BrakePressureFr => records
+            .iter()
+            .map(|r| r.brake_pressure.front_right)
+            .collect(),
+        ChannelSource::BrakePressureRl => records
+            .iter()
+            .map(|r| r.brake_pressure.rear_left)
+            .collect(),
+        ChannelSource::BrakePressureRr => records
+            .iter()
+            .map(|r| r.brake_pressure.rear_right)
+            .collect(),
+        ChannelSource::SlipAngleFl => records.iter().map(|r| r.slip_angle.front_left).collect(),
+        ChannelSource::SlipAngleFr => records.iter().map(|r| r.slip_angle.front_right).collect(),
+        ChannelSource::SlipAngleRl => records.iter().map(|r| r.slip_angle.rear_left).collect(),
+        ChannelSource::SlipAngleRr => records.iter().map(|r| r.slip_angle.rear_right).collect(),
+        ChannelSource::RideHeightFront => records.iter().map(|r| r.ride_height_front).collect(),
+        ChannelSource::RideHeightRear => records.iter().map(|r| r.ride_height_rear).collect(),
+        ChannelSource::CarDamageFront => records.iter().map(|r| r.car_damage.front).collect(),
+        ChannelSource::CarDamageRear => records.iter().map(|r| r.car_damage.rear).collect(),
+        ChannelSource::CarDamageLeft => records.iter().map(|r| r.car_damage.left).collect(),
+        ChannelSource::CarDamageRight => records.iter().map(|r| r.car_damage.right).collect(),
+        ChannelSource::CarDamageCenter => records.iter().map(|r| r.car_damage.center).collect(),
     })
 }
 

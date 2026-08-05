@@ -315,3 +315,133 @@ name = "graphics_pos_z"
 unit = "m"
 source = "graphics_pos_z"
 graphics = true
+
+[[channels]]
+name = "clutch"
+unit = ""
+source = "clutch"
+
+[[channels]]
+name = "fuel"
+unit = "L"
+source = "fuel"
+
+[[channels]]
+name = "tc"
+unit = ""
+source = "tc"
+
+[[channels]]
+name = "abs"
+unit = ""
+source = "abs"
+
+[[channels]]
+name = "turbo_boost"
+unit = "bar"
+source = "turbo_boost"
+
+[[channels]]
+name = "air_temp"
+unit = "C"
+source = "air_temp"
+
+[[channels]]
+name = "road_temp"
+unit = "C"
+source = "road_temp"
+
+[[channels]]
+name = "water_temp"
+unit = "C"
+source = "water_temp"
+
+[[channels]]
+name = "heading"
+unit = "rad"
+source = "heading"
+
+[[channels]]
+name = "pitch"
+unit = "rad"
+source = "pitch"
+
+[[channels]]
+name = "roll"
+unit = "rad"
+source = "roll"
+
+[[channels]]
+name = "brake_pressure_fl"
+unit = ""
+source = "brake_pressure_fl"
+
+[[channels]]
+name = "brake_pressure_fr"
+unit = ""
+source = "brake_pressure_fr"
+
+[[channels]]
+name = "brake_pressure_rl"
+unit = ""
+source = "brake_pressure_rl"
+
+[[channels]]
+name = "brake_pressure_rr"
+unit = ""
+source = "brake_pressure_rr"
+
+[[channels]]
+name = "slip_angle_fl"
+unit = "rad"
+source = "slip_angle_fl"
+
+[[channels]]
+name = "slip_angle_fr"
+unit = "rad"
+source = "slip_angle_fr"
+
+[[channels]]
+name = "slip_angle_rl"
+unit = "rad"
+source = "slip_angle_rl"
+
+[[channels]]
+name = "slip_angle_rr"
+unit = "rad"
+source = "slip_angle_rr"
+
+[[channels]]
+name = "ride_height_front"
+unit = "m"
+source = "ride_height_front"
+
+[[channels]]
+name = "ride_height_rear"
+unit = "m"
+source = "ride_height_rear"
+
+[[channels]]
+name = "car_damage_front"
+unit = ""
+source = "car_damage_front"
+
+[[channels]]
+name = "car_damage_rear"
+unit = ""
+source = "car_damage_rear"
+
+[[channels]]
+name = "car_damage_left"
+unit = ""
+source = "car_damage_left"
+
+[[channels]]
+name = "car_damage_right"
+unit = ""
+source = "car_damage_right"
+
+[[channels]]
+name = "car_damage_center"
+unit = ""
+source = "car_damage_center"
