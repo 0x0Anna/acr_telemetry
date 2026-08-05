@@ -461,7 +461,6 @@ mod tests {
 
     #[test]
     fn blame_score_orders_by_r_and_sigma() {
-        let scale = 2.0;
         let r: f64 = 0.8;
         let c = 2.5_f64;
         let severity = (c.abs() / 2.0).min(1.0);

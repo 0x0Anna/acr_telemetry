@@ -333,7 +333,6 @@ pub fn compose_minimal_timing_osd(upper: &str, delta_line: &str, status: &str) -
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::delta_display::DeltaColorStyle;
 
     #[test]
     fn reference_tape_formats_brackets() {

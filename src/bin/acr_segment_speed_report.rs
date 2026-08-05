@@ -87,7 +87,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         let rec_t = tl.movement_phy_sec + t_game;
         let phy_i = (tl.movement_phy_idx as f64 + t_game * tl.hz_p_eff).round() as usize;
-        let (x, y, z) = pos_at_game_time(&phy, &tl, t_game).unwrap_or((0.0, 0.0, 0.0));
+        let (x, _y, z) = pos_at_game_time(&phy, &tl, t_game).unwrap_or((0.0, 0.0, 0.0));
         let spd = speed_at_game_time(&phy, &tl, t_game);
         let wc_valid = wheel_center(&phy[phy_i.min(phy.len() - 1)]).is_some();
 

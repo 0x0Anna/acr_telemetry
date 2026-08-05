@@ -73,7 +73,7 @@ mod tests {
 
     #[test]
     fn hafren_like_route_has_empty_s1_to_s2_block() {
-        let mut ordered = vec![
+        let ordered = vec![
             (0, "Start".into()),
             (1, "CP 1".into()),
             (8, "Sector 1".into()),

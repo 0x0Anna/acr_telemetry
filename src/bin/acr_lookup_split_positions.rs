@@ -1,7 +1,7 @@
 //! Look up wheel-centroid position + speed at split times (seconds after movement start).
 
 use std::env;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use acr_recorder::gis;
 use acr_recorder::recording_position::{

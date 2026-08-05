@@ -11,7 +11,6 @@ use rkyv::Deserialize;
 use crate::format_meta::{
     self, FormatMetadataDoc, GRAPHICS_RECORD_SCHEMA_V1, GRAPHICS_RECORD_SCHEMA_V2,
     PHYSICS_RECORD_SCHEMA_V1, PHYSICS_RECORD_SCHEMA_V2, PHYSICS_RECORD_SCHEMA_V3,
-    RKYV_BINARY_VERSION_V1,
 };
 use crate::record::disk_v2::PhysicsRecordDiskV2;
 use crate::record::v1::{GraphicsRecordV1, PhysicsRecordV1};
@@ -212,6 +211,7 @@ pub fn read_graphics(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::format_meta::RKYV_BINARY_VERSION_V1;
     use std::path::PathBuf;
 
     fn calib_physics() -> PathBuf {
