@@ -14,6 +14,7 @@ acr_recorder = { path = "../.." }
 acc_shared_memory_rs = { path = "../../vendor/acc_shared_memory_rs" }
 slint = "1.17"
 rfd = "0.17"
+toml = "0.8"
 
 [build-dependencies]
 slint-build = "1.17"

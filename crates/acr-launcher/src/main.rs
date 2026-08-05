@@ -21,19 +21,19 @@ use acc_shared_memory_rs::{ACCError, ACCSharedMemory};
 use slint::ComponentHandle;
 
 pub mod process;
+pub mod recorder_panel;
 
 slint::include_modules!();
 
-/// Everything that needs to survive between callbacks. Deliberately
-/// minimal for this unit — the recorder/export panels will grow this
-/// with their own config/child-process state (see `process.rs`'s
-/// doc comment for the shape they're expected to reuse).
-#[derive(Default)]
+/// Everything that needs to survive between callbacks. Shared across the
+/// Status/Record/Export panels via `Rc<RefCell<AppState>>` — see
+/// `recorder_panel.rs`'s `init` for how the Record tab reads/writes
+/// `config`.
 struct AppState {
-    /// Set once `acr_recorder::config::load_config()` is wired up by the
-    /// recorder panel unit; left unused here to keep this skeleton
-    /// buildable without pulling in the full config surface yet.
-    _config: Option<acr_recorder::config::Config>,
+    /// Loaded once at startup via `acr_recorder::config::load_config()`,
+    /// edited in place by the Record (and, once built, Export) tab, and
+    /// written back out with `toml::to_string_pretty` on Save.
+    config: acr_recorder::config::Config,
 }
 
 /// Poll `ACCSharedMemory::new()` once a second on a background thread
@@ -87,10 +87,14 @@ fn spawn_status_poll(window: &AppWindow, running: Arc<AtomicBool>) {
 
 fn main() -> Result<(), slint::PlatformError> {
     let window = AppWindow::new()?;
-    let _state: Rc<RefCell<AppState>> = Rc::new(RefCell::new(AppState::default()));
+    let state: Rc<RefCell<AppState>> = Rc::new(RefCell::new(AppState {
+        config: acr_recorder::config::load_config(),
+    }));
 
     let poll_running = Arc::new(AtomicBool::new(true));
     spawn_status_poll(&window, poll_running.clone());
+
+    recorder_panel::init(&window, state.clone());
 
     window.run()?;
 
