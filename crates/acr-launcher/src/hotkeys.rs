@@ -1,10 +1,12 @@
-//! Hotkeys tab (section 2 of `docs/plans/acr-launcher-phase2.md`): binds
-//! a single "Toggle Recording" action — start if idle, stop if
-//! running, the typical button-box/keybind convention rather than
-//! separate Start/Stop bindings — to a keyboard shortcut (registered
-//! OS-wide via `global-hotkey`, so it fires even while the game window
-//! has focus) and/or a controller/button-box button (polled via
-//! `gilrs`).
+//! Hotkeys tab (section 2 of `docs/plans/acr-launcher-phase2.md`, extended
+//! to cover Track Match too): binds a single "Toggle" action per target
+//! — start if idle, stop if running, the typical button-box/keybind
+//! convention rather than separate Start/Stop bindings — to a keyboard
+//! shortcut (registered OS-wide via `global-hotkey`, so it fires even
+//! while the game window has focus) and/or a controller/button-box
+//! button (polled via `gilrs`). Two independent targets: Recording and
+//! Track Match (live mode), each with its own keyboard + controller
+//! binding.
 //!
 //! **Keyboard binding UX deviation from "press any key to capture":**
 //! `global-hotkey` (Tauri's crate) only exposes *registering* a
@@ -20,8 +22,8 @@
 //!
 //! **Controller binding** *is* true press-to-capture: `gilrs::Gilrs` is
 //! polled on its own background thread, and while "Bind (press
-//! button)…" is active, the very next `ButtonPressed` event is captured
-//! as the binding.
+//! button)…" is active for a target, the very next `ButtonPressed` event
+//! is captured as that target's binding.
 //!
 //! Both listeners post into the UI thread via
 //! `slint::invoke_from_event_loop`, mirroring `recorder_panel.rs`'s
@@ -32,11 +34,11 @@
 //! thread (`window.on_*`), same as `recorder_panel.rs` touches
 //! `AppState`.
 //!
-//! Firing the binding doesn't call `invoke_recorder_start`/`_stop`
-//! directly — it checks `recorder-running` and picks whichever makes
+//! Firing a binding doesn't call `invoke_*_start`/`_stop` directly — it
+//! checks the target's `*-running` property and picks whichever makes
 //! sense, so one press/button always does the opposite of the current
-//! state (the same convention a real button box's "record" button
-//! follows).
+//! state (the same convention a real button box's "record"/"track match"
+//! button follows).
 
 use std::cell::RefCell;
 use std::path::PathBuf;
@@ -53,18 +55,101 @@ use slint::{ComponentHandle, Weak};
 
 use crate::{AppState, AppWindow};
 
+/// A bindable toggle action. Adding a new one means: a variant here, a
+/// `label`/`config_key` string, and `is_running`/`toggle` implementations
+/// — the bind/clear/listen plumbing in `init` and the background
+/// listener threads are already generic over this.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+enum Target {
+    Recording,
+    TrackMatch,
+}
+
+impl Target {
+    const ALL: [Target; 2] = [Target::Recording, Target::TrackMatch];
+
+    fn label(self) -> &'static str {
+        match self {
+            Target::Recording => "Toggle Recording",
+            Target::TrackMatch => "Toggle Track Match",
+        }
+    }
+
+    /// TOML key prefix in `acr_launcher_hotkeys.toml` (`<prefix>_key`,
+    /// `<prefix>_button`).
+    fn config_key(self) -> &'static str {
+        match self {
+            Target::Recording => "recording",
+            Target::TrackMatch => "track_match",
+        }
+    }
+
+    fn is_running(self, window: &AppWindow) -> bool {
+        match self {
+            Target::Recording => window.get_recorder_running(),
+            Target::TrackMatch => window.get_track_match_running(),
+        }
+    }
+
+    /// Start if idle, stop if running — same check a real button box's
+    /// single toggle button would need.
+    fn toggle(self, window: &AppWindow) {
+        let running = self.is_running(window);
+        match (self, running) {
+            (Target::Recording, false) => window.invoke_recorder_start(),
+            (Target::Recording, true) => window.invoke_recorder_stop(),
+            (Target::TrackMatch, false) => window.invoke_track_match_start(),
+            (Target::TrackMatch, true) => window.invoke_track_match_stop(),
+        }
+    }
+}
+
 /// On-disk shape of `acr_launcher_hotkeys.toml`. The keyboard binding is
 /// stored as `HotKey`'s own `Display`/`FromStr` string form (e.g.
 /// `"control+F1"`); the controller binding stores the gamepad index
 /// (gilrs's `GamepadId` only round-trips *to* `usize`, not from it, so
 /// the index is tracked separately) plus the `Button` variant's `Debug`
-/// name.
+/// name. Flat fields (not a map) so the TOML stays hand-editable.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 struct HotkeyFileConfig {
     #[serde(default)]
-    toggle_key: Option<String>,
+    recording_key: Option<String>,
     #[serde(default)]
-    toggle_button: Option<ButtonBindingCfg>,
+    recording_button: Option<ButtonBindingCfg>,
+    #[serde(default)]
+    track_match_key: Option<String>,
+    #[serde(default)]
+    track_match_button: Option<ButtonBindingCfg>,
+}
+
+impl HotkeyFileConfig {
+    fn key(&self, target: Target) -> Option<&str> {
+        match target {
+            Target::Recording => self.recording_key.as_deref(),
+            Target::TrackMatch => self.track_match_key.as_deref(),
+        }
+    }
+
+    fn set_key(&mut self, target: Target, value: Option<String>) {
+        match target {
+            Target::Recording => self.recording_key = value,
+            Target::TrackMatch => self.track_match_key = value,
+        }
+    }
+
+    fn button(&self, target: Target) -> Option<&ButtonBindingCfg> {
+        match target {
+            Target::Recording => self.recording_button.as_ref(),
+            Target::TrackMatch => self.track_match_button.as_ref(),
+        }
+    }
+
+    fn set_button(&mut self, target: Target, value: Option<ButtonBindingCfg>) {
+        match target {
+            Target::Recording => self.recording_button = value,
+            Target::TrackMatch => self.track_match_button = value,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -85,106 +170,142 @@ pub(crate) fn init(window: &AppWindow, _state: Rc<RefCell<AppState>>) {
     // thread that will run the (win32) event loop — that's this thread,
     // since `main()` calls `window.run()` on it after `init` returns.
     // Creation can fail in headless/sandboxed environments (no message-only
-    // window support, etc.) — log and continue with the keyboard hotkey
+    // window support, etc.) — log and continue with keyboard hotkeys
     // simply inactive rather than panicking.
     let manager = match GlobalHotKeyManager::new() {
         Ok(m) => Some(Rc::new(m)),
         Err(e) => {
-            eprintln!("hotkeys: GlobalHotKeyManager::new() failed, keyboard hotkey disabled: {e}");
+            eprintln!("hotkeys: GlobalHotKeyManager::new() failed, keyboard hotkeys disabled: {e}");
             None
         }
     };
 
     // `HotKey` is `Copy` (no heap data), so the currently-registered
-    // keyboard binding lives directly in an `Arc<Mutex<..>>` shared
+    // keyboard bindings live directly in an `Arc<Mutex<..>>` shared
     // between the UI-thread bind/clear callbacks and the background
-    // listener thread — no separate mirror needed.
-    let key_binding: Arc<Mutex<Option<HotKey>>> = Arc::new(Mutex::new(None));
-    let button_binding: Arc<Mutex<Option<(usize, Button)>>> = Arc::new(Mutex::new(None));
-    let listening: Arc<Mutex<bool>> = Arc::new(Mutex::new(false));
+    // listener thread — no separate mirror needed. Keyed by `Target`
+    // rather than one field per target so the listener loop can stay
+    // generic.
+    let key_bindings: Arc<Mutex<std::collections::HashMap<Target, HotKey>>> =
+        Arc::new(Mutex::new(std::collections::HashMap::new()));
+    let button_bindings: Arc<Mutex<std::collections::HashMap<Target, (usize, Button)>>> =
+        Arc::new(Mutex::new(std::collections::HashMap::new()));
+    let listening: Arc<Mutex<Option<Target>>> = Arc::new(Mutex::new(None));
 
     // Register whatever was loaded from disk.
     {
         let cfg = file_cfg.borrow();
-        if let Some(manager) = &manager {
-            let mut kb = key_binding.lock().unwrap();
-            apply_saved_key_binding(manager, &mut kb, cfg.toggle_key.as_deref());
+        for target in Target::ALL {
+            if let Some(manager) = &manager {
+                let mut kb = key_bindings.lock().unwrap();
+                apply_saved_key_binding(manager, &mut kb, target, cfg.key(target));
+            }
+            if let Some(binding) = cfg.button(target).and_then(cfg_to_button) {
+                button_bindings.lock().unwrap().insert(target, binding);
+            }
         }
-        *button_binding.lock().unwrap() = cfg.toggle_button.as_ref().and_then(cfg_to_button);
     }
 
     sync_ui(window, &file_cfg.borrow());
 
-    // --- Set/Clear keyboard binding callbacks ---
-    {
-        let window_weak = window.as_weak();
-        let file_cfg = file_cfg.clone();
-        let manager = manager.clone();
-        let key_binding = key_binding.clone();
-        window.on_hotkeys_set_toggle_key(move || {
-            let Some(window) = window_weak.upgrade() else {
-                return;
+    for target in Target::ALL {
+        // --- Set/Clear keyboard binding ---
+        {
+            let window_weak = window.as_weak();
+            let file_cfg = file_cfg.clone();
+            let manager = manager.clone();
+            let key_bindings = key_bindings.clone();
+            let set_cb = move || {
+                let Some(window) = window_weak.upgrade() else {
+                    return;
+                };
+                set_key_binding(&window, target, &file_cfg, manager.as_deref(), &key_bindings);
             };
-            set_key_binding(&window, &file_cfg, manager.as_deref(), &key_binding);
-        });
-    }
-    {
-        let window_weak = window.as_weak();
-        let file_cfg = file_cfg.clone();
-        let manager = manager.clone();
-        let key_binding = key_binding.clone();
-        window.on_hotkeys_clear_toggle_key(move || {
-            let Some(window) = window_weak.upgrade() else {
-                return;
+            match target {
+                Target::Recording => window.on_hotkeys_set_recording_key(set_cb),
+                Target::TrackMatch => window.on_hotkeys_set_track_match_key(set_cb),
+            }
+        }
+        {
+            let window_weak = window.as_weak();
+            let file_cfg = file_cfg.clone();
+            let manager = manager.clone();
+            let key_bindings = key_bindings.clone();
+            let clear_cb = move || {
+                let Some(window) = window_weak.upgrade() else {
+                    return;
+                };
+                clear_key_binding(&window, target, &file_cfg, manager.as_deref(), &key_bindings);
             };
-            clear_key_binding(&window, &file_cfg, manager.as_deref(), &key_binding);
-        });
-    }
-    {
-        let window_weak = window.as_weak();
-        let listening = listening.clone();
-        window.on_hotkeys_listen_toggle_button(move || {
-            let Some(window) = window_weak.upgrade() else {
-                return;
+            match target {
+                Target::Recording => window.on_hotkeys_clear_recording_key(clear_cb),
+                Target::TrackMatch => window.on_hotkeys_clear_track_match_key(clear_cb),
+            }
+        }
+        // --- Listen/Clear controller binding ---
+        {
+            let window_weak = window.as_weak();
+            let listening = listening.clone();
+            let listen_cb = move || {
+                let Some(window) = window_weak.upgrade() else {
+                    return;
+                };
+                *listening.lock().unwrap() = Some(target);
+                window.set_hotkeys_listening_text(
+                    format!("Listening… press a controller button to bind \"{}\".", target.label())
+                        .into(),
+                );
             };
-            *listening.lock().unwrap() = true;
-            window.set_hotkeys_listening_text(
-                "Listening… press a controller button to bind \"Toggle Recording\".".into(),
-            );
-        });
-    }
-    {
-        let window_weak = window.as_weak();
-        let file_cfg = file_cfg.clone();
-        let button_binding = button_binding.clone();
-        window.on_hotkeys_clear_toggle_button(move || {
-            let Some(window) = window_weak.upgrade() else {
-                return;
+            match target {
+                Target::Recording => window.on_hotkeys_listen_recording_button(listen_cb),
+                Target::TrackMatch => window.on_hotkeys_listen_track_match_button(listen_cb),
+            }
+        }
+        {
+            let window_weak = window.as_weak();
+            let file_cfg = file_cfg.clone();
+            let button_bindings = button_bindings.clone();
+            let clear_button_cb = move || {
+                let Some(window) = window_weak.upgrade() else {
+                    return;
+                };
+                button_bindings.lock().unwrap().remove(&target);
+                let mut cfg = file_cfg.borrow_mut();
+                cfg.set_button(target, None);
+                save_bindings(&cfg);
+                sync_ui(&window, &cfg);
             };
-            *button_binding.lock().unwrap() = None;
-            let mut cfg = file_cfg.borrow_mut();
-            cfg.toggle_button = None;
-            save_bindings(&cfg);
-            sync_ui(&window, &cfg);
-        });
+            match target {
+                Target::Recording => window.on_hotkeys_clear_recording_button(clear_button_cb),
+                Target::TrackMatch => window.on_hotkeys_clear_track_match_button(clear_button_cb),
+            }
+        }
     }
 
     // Fired (via `invoke_from_event_loop`) by the `gilrs` poll thread once
-    // it captures the next button press while `listening` is set — see
-    // `spawn_gilrs_poll`. Runs on the UI thread, so it's free to touch
-    // `file_cfg`'s `Rc<RefCell<...>>` directly.
+    // it captures the next button press for whichever target is in
+    // "listening" mode — see `spawn_gilrs_poll`. Runs on the UI thread,
+    // so it's free to touch `file_cfg`'s `Rc<RefCell<...>>` directly.
     {
         let window_weak = window.as_weak();
         let file_cfg = file_cfg.clone();
-        window.on_hotkeys_controller_captured(move |gamepad_index, button_name| {
+        window.on_hotkeys_controller_captured(move |target_str, gamepad_index, button_name| {
             let Some(window) = window_weak.upgrade() else {
                 return;
             };
+            let target = if target_str.as_str() == Target::TrackMatch.config_key() {
+                Target::TrackMatch
+            } else {
+                Target::Recording
+            };
             let mut cfg = file_cfg.borrow_mut();
-            cfg.toggle_button = Some(ButtonBindingCfg {
-                gamepad_index: gamepad_index.max(0) as usize,
-                button: button_name.to_string(),
-            });
+            cfg.set_button(
+                target,
+                Some(ButtonBindingCfg {
+                    gamepad_index: gamepad_index.max(0) as usize,
+                    button: button_name.to_string(),
+                }),
+            );
             save_bindings(&cfg);
             window.set_hotkeys_listening_text("".into());
             sync_ui(&window, &cfg);
@@ -192,28 +313,39 @@ pub(crate) fn init(window: &AppWindow, _state: Rc<RefCell<AppState>>) {
     }
 
     if manager.is_some() {
-        spawn_hotkey_listener(window.as_weak(), key_binding);
+        spawn_hotkey_listener(window.as_weak(), key_bindings);
     }
-    spawn_gilrs_poll(window.as_weak(), listening, button_binding);
+    spawn_gilrs_poll(window.as_weak(), listening, button_bindings);
 }
 
-/// Build a `HotKey` from the Hotkeys tab's modifier checkboxes + key
-/// dropdown, and (re)register it: unregisters whichever `HotKey` was
-/// previously bound first (a no-op if none was), then registers the new
+/// Build a `HotKey` from `target`'s modifier checkboxes + key dropdown,
+/// and (re)register it: unregisters whichever `HotKey` was previously
+/// bound to `target` first (a no-op if none was), then registers the new
 /// one. Persists to disk and refreshes the tab's label regardless of
 /// whether OS registration succeeded, so a bad binding (e.g. already
 /// claimed by another app) still round-trips through the UI with a
 /// status message instead of silently no-opping.
 fn set_key_binding(
     window: &AppWindow,
+    target: Target,
     file_cfg: &Rc<RefCell<HotkeyFileConfig>>,
     manager: Option<&GlobalHotKeyManager>,
-    key_binding: &Arc<Mutex<Option<HotKey>>>,
+    key_bindings: &Arc<Mutex<std::collections::HashMap<Target, HotKey>>>,
 ) {
-    let ctrl = window.get_hotkeys_toggle_mod_ctrl();
-    let alt = window.get_hotkeys_toggle_mod_alt();
-    let shift = window.get_hotkeys_toggle_mod_shift();
-    let key_choice = window.get_hotkeys_toggle_key_choice();
+    let (ctrl, alt, shift, key_choice) = match target {
+        Target::Recording => (
+            window.get_hotkeys_recording_mod_ctrl(),
+            window.get_hotkeys_recording_mod_alt(),
+            window.get_hotkeys_recording_mod_shift(),
+            window.get_hotkeys_recording_key_choice(),
+        ),
+        Target::TrackMatch => (
+            window.get_hotkeys_track_match_mod_ctrl(),
+            window.get_hotkeys_track_match_mod_alt(),
+            window.get_hotkeys_track_match_mod_shift(),
+            window.get_hotkeys_track_match_key_choice(),
+        ),
+    };
 
     let combo = build_combo_string(ctrl, alt, shift, &key_choice);
     let hotkey = match HotKey::from_str(&combo) {
@@ -225,13 +357,13 @@ fn set_key_binding(
     };
 
     if let Some(manager) = manager {
-        let mut binding = key_binding.lock().unwrap();
-        if let Some(old) = binding.take() {
+        let mut bindings = key_bindings.lock().unwrap();
+        if let Some(old) = bindings.remove(&target) {
             let _ = manager.unregister(old);
         }
         match manager.register(hotkey) {
             Ok(()) => {
-                *binding = Some(hotkey);
+                bindings.insert(target, hotkey);
                 window.set_hotkeys_status_text("".into());
             }
             Err(e) => {
@@ -247,26 +379,26 @@ fn set_key_binding(
     }
 
     let mut cfg = file_cfg.borrow_mut();
-    cfg.toggle_key = Some(hotkey.into_string());
+    cfg.set_key(target, Some(hotkey.into_string()));
     save_bindings(&cfg);
     sync_ui(window, &cfg);
 }
 
 fn clear_key_binding(
     window: &AppWindow,
+    target: Target,
     file_cfg: &Rc<RefCell<HotkeyFileConfig>>,
     manager: Option<&GlobalHotKeyManager>,
-    key_binding: &Arc<Mutex<Option<HotKey>>>,
+    key_bindings: &Arc<Mutex<std::collections::HashMap<Target, HotKey>>>,
 ) {
     if let Some(manager) = manager {
-        let mut binding = key_binding.lock().unwrap();
-        if let Some(old) = binding.take() {
+        if let Some(old) = key_bindings.lock().unwrap().remove(&target) {
             let _ = manager.unregister(old);
         }
     }
 
     let mut cfg = file_cfg.borrow_mut();
-    cfg.toggle_key = None;
+    cfg.set_key(target, None);
     save_bindings(&cfg);
     sync_ui(window, &cfg);
 }
@@ -292,7 +424,8 @@ fn build_combo_string(ctrl: bool, alt: bool, shift: bool, key: &str) -> String {
 /// starting.
 fn apply_saved_key_binding(
     manager: &GlobalHotKeyManager,
-    binding: &mut Option<HotKey>,
+    bindings: &mut std::collections::HashMap<Target, HotKey>,
+    target: Target,
     key_str: Option<&str>,
 ) {
     let Some(key_str) = key_str else {
@@ -300,13 +433,15 @@ fn apply_saved_key_binding(
     };
     match HotKey::from_str(key_str) {
         Ok(hotkey) => match manager.register(hotkey) {
-            Ok(()) => *binding = Some(hotkey),
+            Ok(()) => {
+                bindings.insert(target, hotkey);
+            }
             Err(e) => {
-                eprintln!("hotkeys: failed to register saved toggle binding {key_str:?}: {e}");
+                eprintln!("hotkeys: failed to register saved {target:?} binding {key_str:?}: {e}");
             }
         },
         Err(e) => {
-            eprintln!("hotkeys: failed to parse saved toggle binding {key_str:?}: {e}");
+            eprintln!("hotkeys: failed to parse saved {target:?} binding {key_str:?}: {e}");
         }
     }
 }
@@ -343,10 +478,13 @@ fn parse_button_name(name: &str) -> Option<Button> {
 }
 
 /// Push the Hotkeys tab's read-only labels (current bindings) from
-/// `cfg`. Called after every successful bind/clear and once at startup.
+/// `cfg`, for both targets. Called after every successful bind/clear and
+/// once at startup.
 fn sync_ui(window: &AppWindow, cfg: &HotkeyFileConfig) {
-    window.set_hotkeys_toggle_key_label(label_or_unbound(cfg.toggle_key.as_deref()).into());
-    window.set_hotkeys_toggle_button_label(button_label(cfg.toggle_button.as_ref()).into());
+    window.set_hotkeys_recording_key_label(label_or_unbound(cfg.key(Target::Recording)).into());
+    window.set_hotkeys_recording_button_label(button_label(cfg.button(Target::Recording)).into());
+    window.set_hotkeys_track_match_key_label(label_or_unbound(cfg.key(Target::TrackMatch)).into());
+    window.set_hotkeys_track_match_button_label(button_label(cfg.button(Target::TrackMatch)).into());
 }
 
 fn label_or_unbound(s: Option<&str>) -> String {
@@ -362,23 +500,14 @@ fn button_label(binding: Option<&ButtonBindingCfg>) -> String {
     }
 }
 
-/// Toggle recording on the UI thread: start if idle, stop if running —
-/// the same check a real button box's single "record" button would need,
-/// so one keyboard/controller trigger always does the opposite of the
-/// current state instead of requiring two separate bindings.
-fn toggle_recording(window: &AppWindow) {
-    if window.get_recorder_running() {
-        window.invoke_recorder_stop();
-    } else {
-        window.invoke_recorder_start();
-    }
-}
-
 /// Background thread: block on `GlobalHotKeyEvent::receiver()` (a
 /// `crossbeam_channel` shared across the whole process, per
-/// `global_hotkey`'s design) and, for each `Pressed` event matching the
-/// currently-bound toggle `HotKey`, toggle recording.
-fn spawn_hotkey_listener(window_weak: Weak<AppWindow>, key_binding: Arc<Mutex<Option<HotKey>>>) {
+/// `global_hotkey`'s design) and, for each `Pressed` event matching a
+/// currently-bound target's `HotKey`, toggle that target.
+fn spawn_hotkey_listener(
+    window_weak: Weak<AppWindow>,
+    key_bindings: Arc<Mutex<std::collections::HashMap<Target, HotKey>>>,
+) {
     std::thread::spawn(move || {
         let receiver = GlobalHotKeyEvent::receiver();
         loop {
@@ -389,18 +518,20 @@ fn spawn_hotkey_listener(window_weak: Weak<AppWindow>, key_binding: Arc<Mutex<Op
             if event.state() != HotKeyState::Pressed {
                 continue;
             }
-            let matched = key_binding
-                .lock()
-                .unwrap()
-                .map(|h| h.id() == event.id())
-                .unwrap_or(false);
-            if !matched {
+            let matched = {
+                let bindings = key_bindings.lock().unwrap();
+                bindings
+                    .iter()
+                    .find(|(_, h)| h.id() == event.id())
+                    .map(|(t, _)| *t)
+            };
+            let Some(target) = matched else {
                 continue;
-            }
+            };
             let window_weak = window_weak.clone();
             let _ = slint::invoke_from_event_loop(move || {
                 if let Some(window) = window_weak.upgrade() {
-                    toggle_recording(&window);
+                    target.toggle(&window);
                 }
             });
         }
@@ -409,17 +540,18 @@ fn spawn_hotkey_listener(window_weak: Weak<AppWindow>, key_binding: Arc<Mutex<Op
 
 /// Background thread: poll `gilrs::Gilrs::next_event()` roughly every
 /// 20ms. In "listening" mode, the next `ButtonPressed` is captured as the
-/// toggle binding (and posted back to the UI thread to persist +
-/// relabel); otherwise, a `ButtonPressed` matching the currently-bound
-/// `(gamepad index, Button)` toggles recording.
+/// binding for whichever target is being bound (and posted back to the
+/// UI thread to persist + relabel); otherwise, a `ButtonPressed` matching
+/// a currently-bound target's `(gamepad index, Button)` toggles that
+/// target.
 ///
 /// `Gilrs::new()` can fail in a headless/sandboxed environment with no
 /// input devices/backends available — logged and the thread exits rather
 /// than panicking, leaving controller support simply inactive.
 fn spawn_gilrs_poll(
     window_weak: Weak<AppWindow>,
-    listening: Arc<Mutex<bool>>,
-    button_binding: Arc<Mutex<Option<(usize, Button)>>>,
+    listening: Arc<Mutex<Option<Target>>>,
+    button_bindings: Arc<Mutex<std::collections::HashMap<Target, (usize, Button)>>>,
 ) {
     std::thread::spawn(move || {
         let mut gilrs = match Gilrs::new() {
@@ -437,17 +569,19 @@ fn spawn_gilrs_poll(
                 };
                 let gamepad_index: usize = id.into();
 
-                let capturing = {
-                    let mut listening = listening.lock().unwrap();
-                    std::mem::take(&mut *listening)
-                };
-                if capturing {
-                    *button_binding.lock().unwrap() = Some((gamepad_index, button));
+                let capture_target = listening.lock().unwrap().take();
+                if let Some(target) = capture_target {
+                    button_bindings
+                        .lock()
+                        .unwrap()
+                        .insert(target, (gamepad_index, button));
                     let window_weak = window_weak.clone();
                     let button_name = format!("{button:?}");
+                    let target_key = target.config_key();
                     let _ = slint::invoke_from_event_loop(move || {
                         if let Some(window) = window_weak.upgrade() {
                             window.invoke_hotkeys_controller_captured(
+                                target_key.into(),
                                 gamepad_index as i32,
                                 button_name.into(),
                             );
@@ -456,12 +590,18 @@ fn spawn_gilrs_poll(
                     continue;
                 }
 
-                let matched = *button_binding.lock().unwrap() == Some((gamepad_index, button));
-                if matched {
+                let matched = {
+                    let bindings = button_bindings.lock().unwrap();
+                    bindings
+                        .iter()
+                        .find(|(_, b)| **b == (gamepad_index, button))
+                        .map(|(t, _)| *t)
+                };
+                if let Some(target) = matched {
                     let window_weak = window_weak.clone();
                     let _ = slint::invoke_from_event_loop(move || {
                         if let Some(window) = window_weak.upgrade() {
-                            toggle_recording(&window);
+                            target.toggle(&window);
                         }
                     });
                 }

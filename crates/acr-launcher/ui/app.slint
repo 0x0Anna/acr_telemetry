@@ -63,31 +63,45 @@ export component AppWindow inherits Window {
     callback export-run();
     callback export-open-output-folder();
 
-    // --- Hotkeys tab state (src/hotkeys.rs owns the logic). A single
-    // "Toggle Recording" action (typical button-box/keybind convention:
-    // one button starts if idle, stops if running) rather than separate
-    // Start/Stop bindings. Keyboard binding shows as a display string
-    // ("control+F1"/"unbound"); the dropdown + checkboxes below are what
-    // "Set" reads to build a new one. Controller binding is pure
-    // press-to-capture, so there's no corresponding input widgets — just
-    // a label + Bind/Clear. ---
-    in-out property <string> hotkeys-toggle-key-label: "unbound";
-    in-out property <string> hotkeys-toggle-button-label: "unbound";
-    in-out property <bool> hotkeys-toggle-mod-ctrl: true;
-    in-out property <bool> hotkeys-toggle-mod-alt: false;
-    in-out property <bool> hotkeys-toggle-mod-shift: false;
-    in-out property <string> hotkeys-toggle-key-choice: "F1";
+    // --- Hotkeys tab state (src/hotkeys.rs owns the logic). Each
+    // bindable action is a single "Toggle" (typical button-box/keybind
+    // convention: one button starts if idle, stops if running) rather
+    // than separate Start/Stop bindings. Keyboard binding shows as a
+    // display string ("control+F1"/"unbound"); the dropdown + checkboxes
+    // below are what "Set" reads to build a new one. Controller binding
+    // is pure press-to-capture, so there's no corresponding input
+    // widgets — just a label + Bind/Clear. ---
+    in-out property <string> hotkeys-recording-key-label: "unbound";
+    in-out property <string> hotkeys-recording-button-label: "unbound";
+    in-out property <bool> hotkeys-recording-mod-ctrl: true;
+    in-out property <bool> hotkeys-recording-mod-alt: false;
+    in-out property <bool> hotkeys-recording-mod-shift: false;
+    in-out property <string> hotkeys-recording-key-choice: "F1";
+
+    in-out property <string> hotkeys-track-match-key-label: "unbound";
+    in-out property <string> hotkeys-track-match-button-label: "unbound";
+    in-out property <bool> hotkeys-track-match-mod-ctrl: true;
+    in-out property <bool> hotkeys-track-match-mod-alt: false;
+    in-out property <bool> hotkeys-track-match-mod-shift: false;
+    in-out property <string> hotkeys-track-match-key-choice: "F2";
+
     in-out property <string> hotkeys-listening-text: "";
     in-out property <string> hotkeys-status-text: "";
 
-    callback hotkeys-set-toggle-key();
-    callback hotkeys-clear-toggle-key();
-    callback hotkeys-listen-toggle-button();
-    callback hotkeys-clear-toggle-button();
+    callback hotkeys-set-recording-key();
+    callback hotkeys-clear-recording-key();
+    callback hotkeys-listen-recording-button();
+    callback hotkeys-clear-recording-button();
+
+    callback hotkeys-set-track-match-key();
+    callback hotkeys-clear-track-match-key();
+    callback hotkeys-listen-track-match-button();
+    callback hotkeys-clear-track-match-button();
     // Invoked by src/hotkeys.rs's gilrs poll thread (via
     // slint::invoke_from_event_loop) once it captures the next button
-    // press while binding is in "listening" mode.
-    callback hotkeys-controller-captured(int, string);
+    // press while a binding is in "listening" mode. First arg is which
+    // action ("recording" or "track_match").
+    callback hotkeys-controller-captured(string, int, string);
 
     // --- Track Match tab state (src/track_match_panel.rs owns the
     // logic). Only `--refs` and the live/offline choice are exposed —
@@ -340,46 +354,94 @@ export component AppWindow inherits Window {
                         font-weight: 700;
                     }
                     Text {
-                        text: "Keyboard: " + root.hotkeys-toggle-key-label;
+                        text: "Keyboard: " + root.hotkeys-recording-key-label;
                     }
                     HorizontalBox {
                         CheckBox {
                             text: "Ctrl";
-                            checked <=> root.hotkeys-toggle-mod-ctrl;
+                            checked <=> root.hotkeys-recording-mod-ctrl;
                         }
                         CheckBox {
                             text: "Alt";
-                            checked <=> root.hotkeys-toggle-mod-alt;
+                            checked <=> root.hotkeys-recording-mod-alt;
                         }
                         CheckBox {
                             text: "Shift";
-                            checked <=> root.hotkeys-toggle-mod-shift;
+                            checked <=> root.hotkeys-recording-mod-shift;
                         }
                         ComboBox {
                             model: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "Space", "Enter", "Home", "End", "PageUp", "PageDown"];
-                            current-value <=> root.hotkeys-toggle-key-choice;
+                            current-value <=> root.hotkeys-recording-key-choice;
                         }
                         Button {
                             text: "Set";
-                            clicked => { root.hotkeys-set-toggle-key(); }
+                            clicked => { root.hotkeys-set-recording-key(); }
                         }
                         Button {
                             text: "Clear";
-                            clicked => { root.hotkeys-clear-toggle-key(); }
+                            clicked => { root.hotkeys-clear-recording-key(); }
                         }
                     }
                     HorizontalBox {
                         Text {
-                            text: "Controller: " + root.hotkeys-toggle-button-label;
+                            text: "Controller: " + root.hotkeys-recording-button-label;
                             vertical-alignment: center;
                         }
                         Button {
                             text: "Bind (press button)…";
-                            clicked => { root.hotkeys-listen-toggle-button(); }
+                            clicked => { root.hotkeys-listen-recording-button(); }
                         }
                         Button {
                             text: "Clear";
-                            clicked => { root.hotkeys-clear-toggle-button(); }
+                            clicked => { root.hotkeys-clear-recording-button(); }
+                        }
+                    }
+
+                    Text {
+                        text: "Toggle Track Match (Start/Stop, live mode)";
+                        font-weight: 700;
+                    }
+                    Text {
+                        text: "Keyboard: " + root.hotkeys-track-match-key-label;
+                    }
+                    HorizontalBox {
+                        CheckBox {
+                            text: "Ctrl";
+                            checked <=> root.hotkeys-track-match-mod-ctrl;
+                        }
+                        CheckBox {
+                            text: "Alt";
+                            checked <=> root.hotkeys-track-match-mod-alt;
+                        }
+                        CheckBox {
+                            text: "Shift";
+                            checked <=> root.hotkeys-track-match-mod-shift;
+                        }
+                        ComboBox {
+                            model: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "Space", "Enter", "Home", "End", "PageUp", "PageDown"];
+                            current-value <=> root.hotkeys-track-match-key-choice;
+                        }
+                        Button {
+                            text: "Set";
+                            clicked => { root.hotkeys-set-track-match-key(); }
+                        }
+                        Button {
+                            text: "Clear";
+                            clicked => { root.hotkeys-clear-track-match-key(); }
+                        }
+                    }
+                    HorizontalBox {
+                        Text {
+                            text: "Controller: " + root.hotkeys-track-match-button-label;
+                            vertical-alignment: center;
+                        }
+                        Button {
+                            text: "Bind (press button)…";
+                            clicked => { root.hotkeys-listen-track-match-button(); }
+                        }
+                        Button {
+                            text: "Clear";
+                            clicked => { root.hotkeys-clear-track-match-button(); }
                         }
                     }
 
