@@ -21,6 +21,7 @@ use acc_shared_memory_rs::{ACCError, ACCSharedMemory};
 use slint::ComponentHandle;
 
 pub mod export_panel;
+pub mod hotkeys;
 pub mod process;
 pub mod recorder_panel;
 
@@ -107,6 +108,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
     export_panel::init(&window, state.clone());
     recorder_panel::init(&window, state.clone());
+    hotkeys::init(&window, state.clone());
 
     let poll_running = Arc::new(AtomicBool::new(true));
     spawn_status_poll(&window, poll_running.clone());
