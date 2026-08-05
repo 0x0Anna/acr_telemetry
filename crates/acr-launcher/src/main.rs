@@ -24,6 +24,7 @@ pub mod export_panel;
 pub mod hotkeys;
 pub mod process;
 pub mod recorder_panel;
+pub mod track_match_panel;
 
 slint::include_modules!();
 
@@ -42,6 +43,12 @@ pub(crate) struct AppState {
     /// Currently selected export input (file/dir/raw-dir), set by the
     /// Export tab's pick buttons; consumed by `export_panel::run_export`.
     pub(crate) export_input: Option<ExportInput>,
+    /// Reference track file(s) or a single directory, picked by the
+    /// Track Match tab's pick buttons; joined into `acr_track_match`'s
+    /// `--refs path[,path...]` argument by `track_match_panel::refs_arg`.
+    pub(crate) track_match_refs: Vec<std::path::PathBuf>,
+    /// Offline mode's `.rkyv` input file, picked by the Track Match tab.
+    pub(crate) track_match_input: Option<std::path::PathBuf>,
 }
 
 impl Default for AppState {
@@ -49,6 +56,8 @@ impl Default for AppState {
         Self {
             config: acr_recorder::config::load_config(),
             export_input: None,
+            track_match_refs: Vec::new(),
+            track_match_input: None,
         }
     }
 }
@@ -109,6 +118,7 @@ fn main() -> Result<(), slint::PlatformError> {
     export_panel::init(&window, state.clone());
     recorder_panel::init(&window, state.clone());
     hotkeys::init(&window, state.clone());
+    track_match_panel::init(&window, state.clone());
 
     let poll_running = Arc::new(AtomicBool::new(true));
     spawn_status_poll(&window, poll_running.clone());

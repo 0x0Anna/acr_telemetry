@@ -91,6 +91,26 @@ export component AppWindow inherits Window {
     // press for whichever action is in "listening" mode.
     callback hotkeys-controller-captured(string, int, string);
 
+    // --- Track Match tab state (src/track_match_panel.rs owns the
+    // logic). Only `--refs` and the live/offline choice are exposed —
+    // everything else stays acr_track_match.toml-driven. ---
+    in-out property <string> track-match-refs-label: "No references selected.";
+    in-out property <bool> track-match-live-mode: true;
+    in-out property <string> track-match-input-path: "No input file selected.";
+    in-out property <bool> track-match-running: false;
+    in-out property <string> track-match-status-pill: "Idle";
+    in-out property <string> track-match-status-text: "";
+    in-out property <bool> track-match-offline-running: false;
+    in-out property <string> track-match-offline-status: "Idle.";
+    in-out property <string> track-match-log-text: "";
+
+    callback track-match-pick-refs-files();
+    callback track-match-pick-refs-folder();
+    callback track-match-pick-input();
+    callback track-match-start();
+    callback track-match-stop();
+    callback track-match-run();
+
     VerticalBox {
         Text {
             text: root.status-text;
@@ -402,6 +422,98 @@ export component AppWindow inherits Window {
                         text: "Keyboard shortcuts register at the OS level (via global-hotkey) and fire even while the game window has focus. Known trade-off: if the game itself has exclusive raw-input capture on the same controller/button-box device, this launcher may not see its button presses while the game has focus — that's a device-sharing limitation, not a bug, and isn't solved in this pass.";
                         wrap: word-wrap;
                         font-size: 11px;
+                    }
+                }
+            }
+
+            Tab {
+                title: "Track Match";
+                VerticalBox {
+                    alignment: start;
+
+                    Text {
+                        text: "Reference tracks";
+                        font-weight: 700;
+                    }
+                    HorizontalBox {
+                        Button {
+                            text: "Pick reference file(s)…";
+                            clicked => { root.track-match-pick-refs-files(); }
+                        }
+                        Button {
+                            text: "Pick folder…";
+                            clicked => { root.track-match-pick-refs-folder(); }
+                        }
+                    }
+                    Text {
+                        text: root.track-match-refs-label;
+                        wrap: word-wrap;
+                    }
+
+                    HorizontalBox {
+                        CheckBox {
+                            text: "Live (runs full sector timing until stopped)";
+                            checked <=> root.track-match-live-mode;
+                        }
+                    }
+
+                    if root.track-match-live-mode: VerticalBox {
+                        alignment: start;
+
+                        HorizontalBox {
+                            Button {
+                                text: "Start";
+                                enabled: !root.track-match-running;
+                                clicked => { root.track-match-start(); }
+                            }
+                            Button {
+                                text: "Stop";
+                                enabled: root.track-match-running;
+                                clicked => { root.track-match-stop(); }
+                            }
+                        }
+                        Text {
+                            text: root.track-match-status-pill;
+                            font-size: 14px;
+                        }
+                        Text {
+                            text: root.track-match-status-text;
+                        }
+                    }
+
+                    if !root.track-match-live-mode: VerticalBox {
+                        alignment: start;
+
+                        HorizontalBox {
+                            Button {
+                                text: "Pick .rkyv input file…";
+                                clicked => { root.track-match-pick-input(); }
+                            }
+                        }
+                        Text {
+                            text: root.track-match-input-path;
+                            wrap: word-wrap;
+                        }
+                        HorizontalBox {
+                            Button {
+                                text: root.track-match-offline-running ? "Running…" : "Run";
+                                enabled: !root.track-match-offline-running;
+                                clicked => { root.track-match-run(); }
+                            }
+                        }
+                        Text {
+                            text: root.track-match-offline-status;
+                            font-weight: 700;
+                        }
+                    }
+
+                    ScrollView {
+                        height: 140px;
+                        TextEdit {
+                            text: root.track-match-log-text;
+                            read-only: true;
+                            wrap: word-wrap;
+                        }
                     }
                 }
             }
