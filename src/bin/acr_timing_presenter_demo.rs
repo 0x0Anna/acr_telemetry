@@ -161,7 +161,7 @@ fn finish_sector(presenter: &mut PresenterState, sector_index: u32, sub_times: &
             tot_sec: tot,
             sub_ids,
             sub_times_sec: sub_times.to_vec(),
-            sub_delta_sec: vec![None; SUBS_PER_SECTOR],
+            sub_delta_sec: vec![None; SUBS_PER_SECTOR as usize],
             reference_tot_sec: SUBS_PER_SECTOR as f64,
         })));
     } else {
