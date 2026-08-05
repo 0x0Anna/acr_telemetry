@@ -1,0 +1,57 @@
+import { TabWidget, VerticalBox } from "std-widgets.slint";
+
+// Skeleton window for unit A of the acr-launcher plan
+// (docs/plans/acr-launcher-v1.md): a status bar plus a three-tab shell.
+// Record/Export are placeholders here — filled in by the next two units.
+// Declarative markup only; all state/logic lives in Rust (src/main.rs).
+export component AppWindow inherits Window {
+    title: "acr_telemetry launcher";
+    preferred-width: 640px;
+    preferred-height: 420px;
+
+    // Live "is ACC/AC Rally running" text, pushed from Rust's background
+    // poll thread (see src/main.rs's status-poll thread and
+    // slint::invoke_from_event_loop usage). Placeholder default matches
+    // what the poll thread reports before its first successful read.
+    in-out property <string> status-text: "ACC/AC Rally: not detected";
+
+    VerticalBox {
+        Text {
+            text: root.status-text;
+            font-size: 14px;
+        }
+
+        TabWidget {
+            Tab {
+                title: "Status";
+                VerticalBox {
+                    alignment: start;
+                    Text {
+                        text: root.status-text;
+                        font-size: 18px;
+                    }
+                }
+            }
+
+            Tab {
+                title: "Record";
+                VerticalBox {
+                    alignment: start;
+                    Text {
+                        text: "Coming soon";
+                    }
+                }
+            }
+
+            Tab {
+                title: "Export";
+                VerticalBox {
+                    alignment: start;
+                    Text {
+                        text: "Coming soon";
+                    }
+                }
+            }
+        }
+    }
+}
