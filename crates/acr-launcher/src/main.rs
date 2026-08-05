@@ -20,20 +20,32 @@ use std::time::Duration;
 use acc_shared_memory_rs::{ACCError, ACCSharedMemory};
 use slint::ComponentHandle;
 
+pub mod export_panel;
 pub mod process;
 
 slint::include_modules!();
 
-/// Everything that needs to survive between callbacks. Deliberately
-/// minimal for this unit — the recorder/export panels will grow this
-/// with their own config/child-process state (see `process.rs`'s
-/// doc comment for the shape they're expected to reuse).
-#[derive(Default)]
-struct AppState {
-    /// Set once `acr_recorder::config::load_config()` is wired up by the
-    /// recorder panel unit; left unused here to keep this skeleton
-    /// buildable without pulling in the full config surface yet.
-    _config: Option<acr_recorder::config::Config>,
+use export_panel::ExportInput;
+
+/// Everything that needs to survive between callbacks.
+pub(crate) struct AppState {
+    /// Loaded once at startup via `acr_recorder::config::load_config()`;
+    /// the export panel reads `raw_output_dir`/`sqlite_db_path` defaults
+    /// from it. The recorder panel unit will grow this with its own
+    /// editable copy for the Record tab's save action.
+    pub(crate) export_config: acr_recorder::config::Config,
+    /// Currently selected export input (file/dir/raw-dir), set by the
+    /// Export tab's pick buttons; consumed by `export_panel::run_export`.
+    pub(crate) export_input: Option<ExportInput>,
+}
+
+impl Default for AppState {
+    fn default() -> Self {
+        Self {
+            export_config: acr_recorder::config::load_config(),
+            export_input: None,
+        }
+    }
 }
 
 /// Poll `ACCSharedMemory::new()` once a second on a background thread
@@ -87,7 +99,9 @@ fn spawn_status_poll(window: &AppWindow, running: Arc<AtomicBool>) {
 
 fn main() -> Result<(), slint::PlatformError> {
     let window = AppWindow::new()?;
-    let _state: Rc<RefCell<AppState>> = Rc::new(RefCell::new(AppState::default()));
+    let state: Rc<RefCell<AppState>> = Rc::new(RefCell::new(AppState::default()));
+
+    export_panel::init(&window, state.clone());
 
     let poll_running = Arc::new(AtomicBool::new(true));
     spawn_status_poll(&window, poll_running.clone());

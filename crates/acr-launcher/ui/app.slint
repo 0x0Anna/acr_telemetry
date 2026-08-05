@@ -1,4 +1,4 @@
-import { TabWidget, VerticalBox } from "std-widgets.slint";
+import { TabWidget, VerticalBox, HorizontalBox, Button, CheckBox, LineEdit, TextEdit, ComboBox } from "std-widgets.slint";
 
 // Skeleton window for unit A of the acr-launcher plan
 // (docs/plans/acr-launcher-v1.md): a status bar plus a three-tab shell.
@@ -14,6 +14,24 @@ export component AppWindow inherits Window {
     // slint::invoke_from_event_loop usage). Placeholder default matches
     // what the poll thread reports before its first successful read.
     in-out property <string> status-text: "ACC/AC Rally: not detected";
+
+    // --- Export tab state (src/export_panel.rs owns the logic; this is
+    // just the declarative surface it drives via the generated AppWindow
+    // setters/callbacks). ---
+    in-out property <string> export-mode-label: "No input selected.";
+    in-out property <bool> export-do-csv: true;
+    in-out property <bool> export-do-sqlite: false;
+    in-out property <string> export-sqlite-path: "";
+    in-out property <bool> export-running: false;
+    in-out property <string> export-status: "Idle.";
+    in-out property <string> export-log: "";
+    in-out property <string> export-output-dir: "";
+
+    callback export-pick-file();
+    callback export-pick-folder();
+    callback export-use-raw-dir();
+    callback export-run();
+    callback export-open-output-folder();
 
     VerticalBox {
         Text {
@@ -47,8 +65,82 @@ export component AppWindow inherits Window {
                 title: "Export";
                 VerticalBox {
                     alignment: start;
+
                     Text {
-                        text: "Coming soon";
+                        text: "Input";
+                        font-weight: 700;
+                    }
+                    HorizontalBox {
+                        Button {
+                            text: "Pick .rkyv file…";
+                            clicked => { root.export-pick-file(); }
+                        }
+                        Button {
+                            text: "Pick folder…";
+                            clicked => { root.export-pick-folder(); }
+                        }
+                        Button {
+                            text: "Use configured raw dir (batch)";
+                            clicked => { root.export-use-raw-dir(); }
+                        }
+                    }
+                    Text {
+                        text: root.export-mode-label;
+                        wrap: word-wrap;
+                    }
+
+                    Text {
+                        text: "Export methods";
+                        font-weight: 700;
+                    }
+                    Text {
+                        text: "MoTeC .ld is always written alongside CSV — no separate toggle needed. CSV and SQLite are run as separate acr_export invocations if both are checked (acr_export only accepts one format per run).";
+                        wrap: word-wrap;
+                        font-size: 11px;
+                    }
+                    HorizontalBox {
+                        CheckBox {
+                            text: "CSV (+ LD)";
+                            checked <=> root.export-do-csv;
+                        }
+                        CheckBox {
+                            text: "SQLite";
+                            checked <=> root.export-do-sqlite;
+                        }
+                    }
+                    HorizontalBox {
+                        visible: root.export-do-sqlite;
+                        Text {
+                            text: "DB path:";
+                            vertical-alignment: center;
+                        }
+                        LineEdit {
+                            text <=> root.export-sqlite-path;
+                        }
+                    }
+
+                    HorizontalBox {
+                        Button {
+                            text: root.export-running ? "Running…" : "Run export";
+                            enabled: !root.export-running;
+                            clicked => { root.export-run(); }
+                        }
+                        Button {
+                            text: "Open output folder";
+                            enabled: root.export-output-dir != "";
+                            clicked => { root.export-open-output-folder(); }
+                        }
+                    }
+
+                    Text {
+                        text: root.export-status;
+                        font-weight: 700;
+                    }
+
+                    TextEdit {
+                        text: root.export-log;
+                        read-only: true;
+                        height: 160px;
                     }
                 }
             }
