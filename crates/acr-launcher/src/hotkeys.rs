@@ -41,7 +41,6 @@
 //! button follows).
 
 use std::cell::RefCell;
-use std::path::PathBuf;
 use std::rc::Rc;
 use std::str::FromStr;
 use std::sync::{Arc, Mutex};
@@ -111,7 +110,7 @@ impl Target {
 /// the index is tracked separately) plus the `Button` variant's `Debug`
 /// name. Flat fields (not a map) so the TOML stays hand-editable.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-struct HotkeyFileConfig {
+pub(crate) struct HotkeyFileConfig {
     #[serde(default)]
     recording_key: Option<String>,
     #[serde(default)]
@@ -164,7 +163,7 @@ pub(crate) fn init(window: &AppWindow, _state: Rc<RefCell<AppState>>) {
     // `acr_recorder.toml`), but `init` still takes the same
     // `(window, state)` signature as `export_panel`/`recorder_panel` for
     // consistency, per the plan.
-    let file_cfg = Rc::new(RefCell::new(load_bindings()));
+    let file_cfg = Rc::new(RefCell::new(crate::launcher_config::load().hotkeys));
 
     // Per `global_hotkey`'s docs: the manager must be created on the same
     // thread that will run the (win32) event loop — that's this thread,
@@ -611,34 +610,12 @@ fn spawn_gilrs_poll(
     });
 }
 
-/// Where `acr_launcher_hotkeys.toml` is written/read: next to the
-/// launcher's own executable, same convention as
-/// `recorder_panel.rs::config_file_path` for `acr_recorder.toml`.
-fn config_file_path() -> PathBuf {
-    acr_recorder::config::base_dir()
-        .map(|dir| dir.join("acr_launcher_hotkeys.toml"))
-        .unwrap_or_else(|| PathBuf::from("acr_launcher_hotkeys.toml"))
-}
-
-fn load_bindings() -> HotkeyFileConfig {
-    let path = config_file_path();
-    if let Ok(text) = std::fs::read_to_string(&path) {
-        match toml::from_str(&text) {
-            Ok(cfg) => return cfg,
-            Err(e) => eprintln!("hotkeys: failed to parse {}: {e}", path.display()),
-        }
-    }
-    HotkeyFileConfig::default()
-}
-
+/// Persist `cfg` into the shared `acr_launcher.toml`'s `[hotkeys]` table
+/// (see `launcher_config.rs`). Re-loads the full launcher config first
+/// so a future sibling settings section isn't clobbered by a hotkeys-only
+/// write.
 fn save_bindings(cfg: &HotkeyFileConfig) {
-    let path = config_file_path();
-    match toml::to_string_pretty(cfg) {
-        Ok(text) => {
-            if let Err(e) = std::fs::write(&path, text) {
-                eprintln!("hotkeys: failed to write {}: {e}", path.display());
-            }
-        }
-        Err(e) => eprintln!("hotkeys: failed to serialize hotkey bindings: {e}"),
-    }
+    let mut full = crate::launcher_config::load();
+    full.hotkeys = cfg.clone();
+    crate::launcher_config::save(&full);
 }

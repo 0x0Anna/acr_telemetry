@@ -22,6 +22,7 @@ use slint::ComponentHandle;
 
 pub mod export_panel;
 pub mod hotkeys;
+pub mod launcher_config;
 pub mod process;
 pub mod recorder_panel;
 pub mod track_match_panel;
