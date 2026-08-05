@@ -276,6 +276,80 @@ unit = "%"
 source = "tyre_wear_pct_rr"
 
 [[channels]]
+name = "clutch"
+unit = ""
+source = "clutch"
+
+[[channels]]
+name = "fuel"
+unit = "L"
+source = "fuel"
+
+[[channels]]
+name = "tc"
+unit = ""
+source = "tc"
+
+[[channels]]
+name = "abs"
+unit = ""
+source = "abs"
+
+[[channels]]
+name = "airTemp"
+unit = "C"
+source = "air_temp"
+
+[[channels]]
+name = "roadTemp"
+unit = "C"
+source = "road_temp"
+
+[[channels]]
+name = "waterTemp"
+unit = "C"
+source = "water_temp"
+
+[[channels]]
+name = "heading"
+unit = "rad"
+source = "heading"
+
+[[channels]]
+name = "pitch"
+unit = "rad"
+source = "pitch"
+
+[[channels]]
+name = "roll"
+unit = "rad"
+source = "roll"
+
+[[channels]]
+name = "LF.brakePressure"
+unit = "%"
+source = "brake_pressure_fl"
+scale = 100.0
+
+[[channels]]
+name = "RF.brakePressure"
+unit = "%"
+source = "brake_pressure_fr"
+scale = 100.0
+
+[[channels]]
+name = "LB.brakePressure"
+unit = "%"
+source = "brake_pressure_rl"
+scale = 100.0
+
+[[channels]]
+name = "RB.brakePressure"
+unit = "%"
+source = "brake_pressure_rr"
+scale = 100.0
+
+[[channels]]
 name = "position.x"
 unit = "m"
 source = "graphics_pos_x"
