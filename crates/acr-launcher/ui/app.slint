@@ -58,38 +58,31 @@ export component AppWindow inherits Window {
     callback export-run();
     callback export-open-output-folder();
 
-    // --- Hotkeys tab state (src/hotkeys.rs owns the logic). Keyboard
-    // bindings show as a display string ("control+F1"/"unbound"); the
-    // dropdown + checkboxes below are what "Set" reads to build a new
-    // one. Controller bindings are pure press-to-capture, so there's no
-    // corresponding input widgets — just a label + Bind/Clear. ---
-    in-out property <string> hotkeys-start-key-label: "unbound";
-    in-out property <string> hotkeys-stop-key-label: "unbound";
-    in-out property <string> hotkeys-start-button-label: "unbound";
-    in-out property <string> hotkeys-stop-button-label: "unbound";
-    in-out property <bool> hotkeys-start-mod-ctrl: true;
-    in-out property <bool> hotkeys-start-mod-alt: false;
-    in-out property <bool> hotkeys-start-mod-shift: false;
-    in-out property <string> hotkeys-start-key-choice: "F1";
-    in-out property <bool> hotkeys-stop-mod-ctrl: true;
-    in-out property <bool> hotkeys-stop-mod-alt: false;
-    in-out property <bool> hotkeys-stop-mod-shift: false;
-    in-out property <string> hotkeys-stop-key-choice: "F2";
+    // --- Hotkeys tab state (src/hotkeys.rs owns the logic). A single
+    // "Toggle Recording" action (typical button-box/keybind convention:
+    // one button starts if idle, stops if running) rather than separate
+    // Start/Stop bindings. Keyboard binding shows as a display string
+    // ("control+F1"/"unbound"); the dropdown + checkboxes below are what
+    // "Set" reads to build a new one. Controller binding is pure
+    // press-to-capture, so there's no corresponding input widgets — just
+    // a label + Bind/Clear. ---
+    in-out property <string> hotkeys-toggle-key-label: "unbound";
+    in-out property <string> hotkeys-toggle-button-label: "unbound";
+    in-out property <bool> hotkeys-toggle-mod-ctrl: true;
+    in-out property <bool> hotkeys-toggle-mod-alt: false;
+    in-out property <bool> hotkeys-toggle-mod-shift: false;
+    in-out property <string> hotkeys-toggle-key-choice: "F1";
     in-out property <string> hotkeys-listening-text: "";
     in-out property <string> hotkeys-status-text: "";
 
-    callback hotkeys-set-start-key();
-    callback hotkeys-clear-start-key();
-    callback hotkeys-set-stop-key();
-    callback hotkeys-clear-stop-key();
-    callback hotkeys-listen-start-button();
-    callback hotkeys-clear-start-button();
-    callback hotkeys-listen-stop-button();
-    callback hotkeys-clear-stop-button();
+    callback hotkeys-set-toggle-key();
+    callback hotkeys-clear-toggle-key();
+    callback hotkeys-listen-toggle-button();
+    callback hotkeys-clear-toggle-button();
     // Invoked by src/hotkeys.rs's gilrs poll thread (via
     // slint::invoke_from_event_loop) once it captures the next button
-    // press for whichever action is in "listening" mode.
-    callback hotkeys-controller-captured(string, int, string);
+    // press while binding is in "listening" mode.
+    callback hotkeys-controller-captured(int, string);
 
     // --- Track Match tab state (src/track_match_panel.rs owns the
     // logic). Only `--refs` and the live/offline choice are exposed —
@@ -314,98 +307,50 @@ export component AppWindow inherits Window {
                     alignment: start;
 
                     Text {
-                        text: "Start Recording";
+                        text: "Toggle Recording (Start/Stop)";
                         font-weight: 700;
                     }
                     Text {
-                        text: "Keyboard: " + root.hotkeys-start-key-label;
+                        text: "Keyboard: " + root.hotkeys-toggle-key-label;
                     }
                     HorizontalBox {
                         CheckBox {
                             text: "Ctrl";
-                            checked <=> root.hotkeys-start-mod-ctrl;
+                            checked <=> root.hotkeys-toggle-mod-ctrl;
                         }
                         CheckBox {
                             text: "Alt";
-                            checked <=> root.hotkeys-start-mod-alt;
+                            checked <=> root.hotkeys-toggle-mod-alt;
                         }
                         CheckBox {
                             text: "Shift";
-                            checked <=> root.hotkeys-start-mod-shift;
+                            checked <=> root.hotkeys-toggle-mod-shift;
                         }
                         ComboBox {
                             model: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "Space", "Enter", "Home", "End", "PageUp", "PageDown"];
-                            current-value <=> root.hotkeys-start-key-choice;
+                            current-value <=> root.hotkeys-toggle-key-choice;
                         }
                         Button {
                             text: "Set";
-                            clicked => { root.hotkeys-set-start-key(); }
+                            clicked => { root.hotkeys-set-toggle-key(); }
                         }
                         Button {
                             text: "Clear";
-                            clicked => { root.hotkeys-clear-start-key(); }
+                            clicked => { root.hotkeys-clear-toggle-key(); }
                         }
                     }
                     HorizontalBox {
                         Text {
-                            text: "Controller: " + root.hotkeys-start-button-label;
+                            text: "Controller: " + root.hotkeys-toggle-button-label;
                             vertical-alignment: center;
                         }
                         Button {
                             text: "Bind (press button)…";
-                            clicked => { root.hotkeys-listen-start-button(); }
+                            clicked => { root.hotkeys-listen-toggle-button(); }
                         }
                         Button {
                             text: "Clear";
-                            clicked => { root.hotkeys-clear-start-button(); }
-                        }
-                    }
-
-                    Text {
-                        text: "Stop Recording";
-                        font-weight: 700;
-                    }
-                    Text {
-                        text: "Keyboard: " + root.hotkeys-stop-key-label;
-                    }
-                    HorizontalBox {
-                        CheckBox {
-                            text: "Ctrl";
-                            checked <=> root.hotkeys-stop-mod-ctrl;
-                        }
-                        CheckBox {
-                            text: "Alt";
-                            checked <=> root.hotkeys-stop-mod-alt;
-                        }
-                        CheckBox {
-                            text: "Shift";
-                            checked <=> root.hotkeys-stop-mod-shift;
-                        }
-                        ComboBox {
-                            model: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "Space", "Enter", "Home", "End", "PageUp", "PageDown"];
-                            current-value <=> root.hotkeys-stop-key-choice;
-                        }
-                        Button {
-                            text: "Set";
-                            clicked => { root.hotkeys-set-stop-key(); }
-                        }
-                        Button {
-                            text: "Clear";
-                            clicked => { root.hotkeys-clear-stop-key(); }
-                        }
-                    }
-                    HorizontalBox {
-                        Text {
-                            text: "Controller: " + root.hotkeys-stop-button-label;
-                            vertical-alignment: center;
-                        }
-                        Button {
-                            text: "Bind (press button)…";
-                            clicked => { root.hotkeys-listen-stop-button(); }
-                        }
-                        Button {
-                            text: "Clear";
-                            clicked => { root.hotkeys-clear-stop-button(); }
+                            clicked => { root.hotkeys-clear-toggle-button(); }
                         }
                     }
 
