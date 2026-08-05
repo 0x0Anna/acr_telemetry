@@ -1,9 +1,11 @@
-import { TabWidget, VerticalBox, HorizontalBox, Button, CheckBox, LineEdit, TextEdit, ComboBox } from "std-widgets.slint";
+import { TabWidget, VerticalBox, HorizontalBox, Button, CheckBox, LineEdit, TextEdit, ScrollView, ComboBox } from "std-widgets.slint";
 
 // Skeleton window for unit A of the acr-launcher plan
 // (docs/plans/acr-launcher-v1.md): a status bar plus a three-tab shell.
-// Record/Export are placeholders here — filled in by the next two units.
-// Declarative markup only; all state/logic lives in Rust (src/main.rs).
+// Export is still a placeholder here — filled in by a later unit. The
+// Record tab (unit C) is implemented in Rust by src/recorder_panel.rs.
+// Declarative markup only; all state/logic lives in Rust (src/main.rs,
+// src/recorder_panel.rs).
 export component AppWindow inherits Window {
     title: "acr_telemetry launcher";
     preferred-width: 640px;
@@ -14,6 +16,29 @@ export component AppWindow inherits Window {
     // slint::invoke_from_event_loop usage). Placeholder default matches
     // what the poll thread reports before its first successful read.
     in-out property <string> status-text: "ACC/AC Rally: not detected";
+
+    // Record tab state — populated from acr_recorder::config::load_config()
+    // at startup by src/recorder_panel.rs, and read back out on Save/Start.
+    in-out property <string> recorder-raw-output-dir: "";
+    in-out property <string> recorder-notes-dir: "";
+    in-out property <bool> recorder-record-graphics: true;
+    in-out property <bool> recorder-ring-mode: false;
+    in-out property <string> recorder-ring-slots: "8";
+    in-out property <string> recorder-ring-prefix: "acc_ring";
+    in-out property <bool> recorder-motec-mode: false;
+
+    // Recording status: whether a child process is currently spawned
+    // (drives Start/Stop enablement), a short status pill driven by
+    // substring-matching the subprocess's stderr (see recorder_panel.rs),
+    // a one-line save/error message, and a scrolling raw-output log.
+    in-out property <bool> recorder-running: false;
+    in-out property <string> recorder-status-pill: "Idle";
+    in-out property <string> recorder-status-text: "";
+    in-out property <string> recorder-log-text: "";
+
+    callback recorder-save();
+    callback recorder-start();
+    callback recorder-stop();
 
     // --- Export tab state (src/export_panel.rs owns the logic; this is
     // just the declarative surface it drives via the generated AppWindow
@@ -55,8 +80,93 @@ export component AppWindow inherits Window {
                 title: "Record";
                 VerticalBox {
                     alignment: start;
+
+                    HorizontalBox {
+                        Text {
+                            text: "Raw output dir:";
+                            vertical-alignment: center;
+                        }
+                        LineEdit {
+                            text <=> root.recorder-raw-output-dir;
+                        }
+                    }
+
+                    HorizontalBox {
+                        Text {
+                            text: "Notes dir:";
+                            vertical-alignment: center;
+                        }
+                        LineEdit {
+                            text <=> root.recorder-notes-dir;
+                        }
+                    }
+
+                    HorizontalBox {
+                        CheckBox {
+                            text: "Record graphics (~60 Hz)";
+                            checked <=> root.recorder-record-graphics;
+                        }
+                        CheckBox {
+                            text: "Ring mode";
+                            checked <=> root.recorder-ring-mode;
+                        }
+                    }
+
+                    HorizontalBox {
+                        Text {
+                            text: "Ring slots:";
+                            vertical-alignment: center;
+                        }
+                        LineEdit {
+                            text <=> root.recorder-ring-slots;
+                            width: 60px;
+                        }
+                        Text {
+                            text: "Ring prefix:";
+                            vertical-alignment: center;
+                        }
+                        LineEdit {
+                            text <=> root.recorder-ring-prefix;
+                        }
+                    }
+
+                    CheckBox {
+                        text: "Record directly to MoTeC (no rkyv)";
+                        checked <=> root.recorder-motec-mode;
+                    }
+
+                    HorizontalBox {
+                        Button {
+                            text: "Save";
+                            clicked => { root.recorder-save(); }
+                        }
+                        Button {
+                            text: "Start";
+                            enabled: !root.recorder-running;
+                            clicked => { root.recorder-start(); }
+                        }
+                        Button {
+                            text: "Stop";
+                            enabled: root.recorder-running;
+                            clicked => { root.recorder-stop(); }
+                        }
+                    }
+
                     Text {
-                        text: "Coming soon";
+                        text: root.recorder-status-pill;
+                        font-size: 14px;
+                    }
+                    Text {
+                        text: root.recorder-status-text;
+                    }
+
+                    ScrollView {
+                        height: 140px;
+                        TextEdit {
+                            text: root.recorder-log-text;
+                            read-only: true;
+                            wrap: word-wrap;
+                        }
                     }
                 }
             }

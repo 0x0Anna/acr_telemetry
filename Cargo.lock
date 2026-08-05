@@ -145,6 +145,7 @@ dependencies = [
  "rfd",
  "slint",
  "slint-build",
+ "toml 0.8.23",
 ]
 
 [[package]]

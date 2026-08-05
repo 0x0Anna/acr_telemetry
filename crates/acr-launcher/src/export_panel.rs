@@ -70,7 +70,7 @@ impl ExportInput {
 pub(crate) fn init(window: &AppWindow, state: Rc<RefCell<AppState>>) {
     let sqlite_default = {
         let s = state.borrow();
-        acr_recorder::config::resolve_path(&s.export_config.export.sqlite_db_path)
+        acr_recorder::config::resolve_path(&s.config.export.sqlite_db_path)
             .to_string_lossy()
             .into_owned()
     };
@@ -83,7 +83,7 @@ pub(crate) fn init(window: &AppWindow, state: Rc<RefCell<AppState>>) {
             let Some(window) = window_weak.upgrade() else { return };
             let raw_dir = {
                 let s = state.borrow();
-                acr_recorder::config::resolve_path(&s.export_config.recorder.raw_output_dir)
+                acr_recorder::config::resolve_path(&s.config.recorder.raw_output_dir)
             };
             let mut dialog = rfd::FileDialog::new().add_filter("rkyv recording", &["rkyv"]);
             if raw_dir.exists() {
@@ -117,7 +117,7 @@ pub(crate) fn init(window: &AppWindow, state: Rc<RefCell<AppState>>) {
             let Some(window) = window_weak.upgrade() else { return };
             let raw_dir = {
                 let s = state.borrow();
-                acr_recorder::config::resolve_path(&s.export_config.recorder.raw_output_dir)
+                acr_recorder::config::resolve_path(&s.config.recorder.raw_output_dir)
             };
             window.set_export_mode_label(
                 format!("Whole raw dir (batch, from config): {}", raw_dir.display()).into(),
@@ -166,7 +166,7 @@ fn append_log(window: &AppWindow, line: &str) {
 fn run_export(window: &AppWindow, state: &Rc<RefCell<AppState>>) {
     let (input, cfg) = {
         let s = state.borrow();
-        (s.export_input.clone(), s.export_config.clone())
+        (s.export_input.clone(), s.config.clone())
     };
 
     let Some(input) = input else {

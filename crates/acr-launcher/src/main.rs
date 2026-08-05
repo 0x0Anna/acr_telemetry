@@ -22,18 +22,22 @@ use slint::ComponentHandle;
 
 pub mod export_panel;
 pub mod process;
+pub mod recorder_panel;
 
 slint::include_modules!();
 
 use export_panel::ExportInput;
 
-/// Everything that needs to survive between callbacks.
+/// Everything that needs to survive between callbacks. Shared across the
+/// Status/Record/Export panels via `Rc<RefCell<AppState>>` — see
+/// `recorder_panel.rs`'s `init` for how the Record tab reads/writes
+/// `config`.
 pub(crate) struct AppState {
-    /// Loaded once at startup via `acr_recorder::config::load_config()`;
-    /// the export panel reads `raw_output_dir`/`sqlite_db_path` defaults
-    /// from it. The recorder panel unit will grow this with its own
-    /// editable copy for the Record tab's save action.
-    pub(crate) export_config: acr_recorder::config::Config,
+    /// Loaded once at startup via `acr_recorder::config::load_config()`,
+    /// edited in place by the Record tab, and written back out with
+    /// `toml::to_string_pretty` on Save. The export panel also reads
+    /// `raw_output_dir`/`sqlite_db_path` defaults from it.
+    pub(crate) config: acr_recorder::config::Config,
     /// Currently selected export input (file/dir/raw-dir), set by the
     /// Export tab's pick buttons; consumed by `export_panel::run_export`.
     pub(crate) export_input: Option<ExportInput>,
@@ -42,7 +46,7 @@ pub(crate) struct AppState {
 impl Default for AppState {
     fn default() -> Self {
         Self {
-            export_config: acr_recorder::config::load_config(),
+            config: acr_recorder::config::load_config(),
             export_input: None,
         }
     }
@@ -102,6 +106,7 @@ fn main() -> Result<(), slint::PlatformError> {
     let state: Rc<RefCell<AppState>> = Rc::new(RefCell::new(AppState::default()));
 
     export_panel::init(&window, state.clone());
+    recorder_panel::init(&window, state.clone());
 
     let poll_running = Arc::new(AtomicBool::new(true));
     spawn_status_poll(&window, poll_running.clone());
