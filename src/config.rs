@@ -196,6 +196,10 @@ pub struct ExportConfig {
     /// Default path for SQLite database (relative to executable directory or absolute).
     #[serde(default = "default_sqlite_path")]
     pub sqlite_db_path: String,
+    /// Directory for CSV/LD/SHP export outputs (relative to executable directory or
+    /// absolute). Empty = same directory as the source .rkyv file (previous behavior).
+    #[serde(default)]
+    pub output_dir: String,
     #[serde(default)]
     pub motec: MotecExportConfig,
 }
@@ -205,6 +209,7 @@ impl Default for ExportConfig {
         Self {
             default_method: default_export_method(),
             sqlite_db_path: default_sqlite_path(),
+            output_dir: String::new(),
             motec: MotecExportConfig::default(),
         }
     }

@@ -76,6 +76,36 @@ pub(crate) fn init(window: &AppWindow, state: Rc<RefCell<AppState>>) {
     };
     window.set_export_sqlite_path(sqlite_default.into());
 
+    let out_dir_default = {
+        let s = state.borrow();
+        let dir = &s.config.export.output_dir;
+        if dir.trim().is_empty() {
+            String::new()
+        } else {
+            acr_recorder::config::resolve_path(dir)
+                .to_string_lossy()
+                .into_owned()
+        }
+    };
+    window.set_export_out_dir(out_dir_default.into());
+
+    {
+        let window_weak = window.as_weak();
+        window.on_export_pick_out_dir(move || {
+            let Some(window) = window_weak.upgrade() else { return };
+            if let Some(path) = rfd::FileDialog::new().pick_folder() {
+                window.set_export_out_dir(path.to_string_lossy().into_owned().into());
+            }
+        });
+    }
+    {
+        let window_weak = window.as_weak();
+        window.on_export_clear_out_dir(move || {
+            let Some(window) = window_weak.upgrade() else { return };
+            window.set_export_out_dir("".into());
+        });
+    }
+
     {
         let window_weak = window.as_weak();
         let state = state.clone();
@@ -182,12 +212,17 @@ fn run_export(window: &AppWindow, state: &Rc<RefCell<AppState>>) {
     }
 
     let sqlite_path = window.get_export_sqlite_path().to_string();
+    let out_dir_override = window.get_export_out_dir().to_string();
     let base_args = input.base_args();
 
     let mut invocations: Vec<Vec<String>> = Vec::new();
     if do_csv {
         let mut args = base_args.clone();
         args.push("--csv".to_string());
+        if !out_dir_override.is_empty() {
+            args.push("--output-dir".to_string());
+            args.push(out_dir_override.clone());
+        }
         invocations.push(args);
     }
     if do_sqlite {
@@ -200,7 +235,13 @@ fn run_export(window: &AppWindow, state: &Rc<RefCell<AppState>>) {
     }
 
     let binary = process::resolve_binary("acr_export.exe");
-    let output_dir = input.output_dir(&cfg).to_string_lossy().into_owned();
+    // "Open output folder" should point at wherever CSV/LD actually landed:
+    // the custom output dir if one is set, else the source-relative default.
+    let output_dir = if out_dir_override.is_empty() {
+        input.output_dir(&cfg).to_string_lossy().into_owned()
+    } else {
+        out_dir_override.clone()
+    };
 
     window.set_export_running(true);
     window.set_export_status("Running…".into());

@@ -47,6 +47,9 @@ export component AppWindow inherits Window {
     in-out property <bool> export-do-csv: true;
     in-out property <bool> export-do-sqlite: false;
     in-out property <string> export-sqlite-path: "";
+    // Custom directory for CSV/LD/SHP outputs (--output-dir). Empty = same
+    // directory as the source .rkyv file (acr_export's default).
+    in-out property <string> export-out-dir: "";
     in-out property <bool> export-running: false;
     in-out property <string> export-status: "Idle.";
     in-out property <string> export-log: "";
@@ -55,6 +58,8 @@ export component AppWindow inherits Window {
     callback export-pick-file();
     callback export-pick-folder();
     callback export-use-raw-dir();
+    callback export-pick-out-dir();
+    callback export-clear-out-dir();
     callback export-run();
     callback export-open-output-folder();
 
@@ -272,6 +277,30 @@ export component AppWindow inherits Window {
                         }
                         LineEdit {
                             text <=> root.export-sqlite-path;
+                        }
+                    }
+
+                    Text {
+                        text: "Output folder (CSV/LD/SHP)";
+                        font-weight: 700;
+                    }
+                    Text {
+                        text: "Leave blank to write next to the source .rkyv file (default). Only affects CSV/LD/SHP — the SQLite DB path above is separate.";
+                        wrap: word-wrap;
+                        font-size: 11px;
+                    }
+                    HorizontalBox {
+                        LineEdit {
+                            text <=> root.export-out-dir;
+                            placeholder-text: "(same as source file)";
+                        }
+                        Button {
+                            text: "Pick folder…";
+                            clicked => { root.export-pick-out-dir(); }
+                        }
+                        Button {
+                            text: "Clear";
+                            clicked => { root.export-clear-out-dir(); }
                         }
                     }
 
