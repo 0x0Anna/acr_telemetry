@@ -1,5 +1,6 @@
 //! Shared library for acr_recorder and acr_export.
 
+pub mod acc_wait;
 pub mod app_config;
 pub mod config;
 pub mod color_config;
