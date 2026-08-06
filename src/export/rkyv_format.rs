@@ -211,6 +211,7 @@ pub fn read_graphics(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::format_meta::RKYV_BINARY_VERSION_V1;
     use std::path::PathBuf;
 
     fn calib_physics() -> PathBuf {
