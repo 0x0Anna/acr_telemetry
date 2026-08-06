@@ -32,6 +32,12 @@ struct ChannelSpecFile {
     offset: f32,
     #[serde(default)]
     graphics: bool,
+    /// Omit this channel from the .ld if every sample in this recording is exactly
+    /// 0.0. Meant for sources the game currently never populates (see all_data.toml
+    /// comments); if a future game/sim update starts returning real values, the
+    /// channel reappears automatically without editing the profile.
+    #[serde(default)]
+    skip_if_zero: bool,
 }
 
 fn default_scale() -> f32 {
@@ -53,6 +59,7 @@ pub struct ProfileChannel {
     pub scale: f32,
     pub offset: f32,
     pub graphics_only: bool,
+    pub skip_if_zero: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -559,6 +566,7 @@ fn parse_profile_text(id: &str, text: &str) -> Result<MotecProfile, String> {
             scale: ch.scale,
             offset: ch.offset,
             graphics_only: ch.graphics,
+            skip_if_zero: ch.skip_if_zero,
         });
     }
     Ok(MotecProfile {
@@ -603,6 +611,9 @@ pub fn build_ld_channels(
             for v in &mut data {
                 *v = *v * ch.scale + ch.offset;
             }
+        }
+        if ch.skip_if_zero && data.iter().all(|&v| v == 0.0) {
+            continue;
         }
         out.push((ch.name.clone(), ch.unit.clone(), data));
     }
@@ -1209,6 +1220,71 @@ mod tests {
             let p = load_profile(id, None).expect(id);
             assert!(!p.channels.is_empty(), "{id}");
         }
+    }
+
+    #[test]
+    fn all_data_profile_drops_flagged_channels_when_recording_is_all_zero() {
+        let profile = load_profile("all_data", None).expect("all_data");
+        let total = profile.channels.len();
+        let flagged = profile.channels.iter().filter(|c| c.skip_if_zero).count();
+        let graphics_only = profile.channels.iter().filter(|c| c.graphics_only).count();
+        let mut zero_record = minimal_physics_record();
+        zero_record.speed_kmh = 120.0;
+        zero_record.rpm = 6000;
+        let out = build_ld_channels(&profile, &[zero_record], 300, None).unwrap();
+        assert_eq!(out.len(), total - flagged - graphics_only);
+    }
+
+    #[test]
+    fn skip_if_zero_channel_omitted_when_all_zero_present_otherwise() {
+        let profile = MotecProfile {
+            id: "test".into(),
+            description: String::new(),
+            channels: vec![
+                ProfileChannel {
+                    name: "camber_rad_fl".into(),
+                    unit: "rad".into(),
+                    source: ChannelSource::CamberRadFl,
+                    scale: 1.0,
+                    offset: 0.0,
+                    graphics_only: false,
+                    skip_if_zero: true,
+                },
+                ProfileChannel {
+                    name: "speed_kmh".into(),
+                    unit: "km/h".into(),
+                    source: ChannelSource::SpeedKmh,
+                    scale: 1.0,
+                    offset: 0.0,
+                    graphics_only: false,
+                    skip_if_zero: true,
+                },
+            ],
+        };
+
+        let mut zero_record = minimal_physics_record();
+        zero_record.speed_kmh = 0.0;
+        let out = build_ld_channels(&profile, &[zero_record], 300, None).unwrap();
+        assert!(
+            out.iter().all(|(name, _, _)| name != "camber_rad_fl"),
+            "all-zero skip_if_zero channel should be omitted"
+        );
+        assert!(
+            out.iter().all(|(name, _, _)| name != "speed_kmh"),
+            "speed_kmh is also all-zero here, so it should be omitted too"
+        );
+
+        let mut nonzero_record = minimal_physics_record();
+        nonzero_record.speed_kmh = 120.0;
+        let out = build_ld_channels(&profile, &[nonzero_record], 300, None).unwrap();
+        assert!(
+            out.iter().all(|(name, _, _)| name != "camber_rad_fl"),
+            "camber_rad_fl is still all-zero and should stay omitted"
+        );
+        assert!(
+            out.iter().any(|(name, _, _)| name == "speed_kmh"),
+            "speed_kmh has nonzero data and should be included"
+        );
     }
 
     #[test]
