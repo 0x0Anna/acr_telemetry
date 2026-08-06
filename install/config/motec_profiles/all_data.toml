@@ -1,4 +1,22 @@
 # Shipped with install; copy of config/motec_profiles/all_data.toml — edit in {app}\motec_profiles\
+#
+# Some channels below always read 0 in AC Rally / ACC as of this writing because
+# the game's shared memory never populates them (confirmed against a live capture,
+# see docs/FIELDS.md for the per-field breakdown): tyre_wear_pct, turbo_boost,
+# brake_pressure (rarely populated), ride_height, car_damage, camber_rad,
+# suspension_damage, front/rear_brake_compound, tyre_dirty_level, tyre_temp_i/m/o,
+# tc_in_action, abs_in_action, pit_limiter_on, is_ai_controlled, drs, cg_height,
+# number_of_tyres_out, kers_*, ballast, air_density, performance_meter,
+# engine_brake, ers_*, drs_available/enabled, p2p_*, kerb_vibration,
+# autoshifter_on. They're kept here (not pruned) so a future sim/game update that
+# starts populating them doesn't require someone to notice and re-add the channel.
+#
+# tyre_temp_extra is populated, but its value is numerically identical to
+# tyre_core_temp on every wheel in testing — treat it as a probable duplicate of
+# the core temp slot, not an independent measurement.
+#
+# pad_life / disc_life are populated but vary by ~1e-5 (car-constant, negligible
+# in-session change) — real data, just easy to mistake for zero when rounded.
 
 description = "All currently supported MoTeC exporter sources"
 

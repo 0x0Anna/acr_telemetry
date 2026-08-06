@@ -87,7 +87,7 @@ All Temperatures are given as Kelvin by the game, any reference to °C is a late
 | `pad_life` | Pad life (%) | yes | ~0.000016 … 0.000018 (negligible variation, probably per car) |
 | `disc_life` | Disc life (%) | yes | ~0.00001 … 0.000032 (negligible variation, probably per car) |
 | `tyre_temp_i`, `tyre_temp_m`, `tyre_temp_o` | Tyre temp inner/middle/outer | no | constant (no data) |
-| `tyre_temp_extra` | Fourth per-wheel temp block from ACC physics shared memory (same offset previously skipped in parsers) | *?* | no production recordings with new field yet |
+| `tyre_temp_extra` | Fourth per-wheel temp block from ACC physics shared memory (same offset previously skipped in parsers) | yes | 0 … 363.15 K (~90°C) — numerically identical to `tyre_core_temp` on every wheel in a live AC Rally capture; likely a duplicate of the core temp slot, not an independent measurement |
 | `mz`, `fz`, `my` | *Tyre moments/forces (probably: mz = roll moment, fz= longitudinal force, my: yaw moment) | yes | mz: ~−1500 … 1250; fz: ~−16 700 … 16 400; my: ~−18 600 … 18 500 |
 | `suspension_damage` | Suspension damage | no | constant (no data) |
 | `tyre_contact_point_*_x/y/z` | *Tyre contact patch position (world coordinates, meters) | yes | position of contact point for each wheel |
