@@ -33,6 +33,37 @@ use crate::{AppState, AppWindow};
 /// `main()` after the window is constructed, alongside the other panels'
 /// `init` calls.
 pub(crate) fn init(window: &AppWindow, state: Rc<RefCell<AppState>>) {
+    // Pre-fill from the last references saved via "Save references" (see
+    // `on_track_match_save_refs` below) — stored in the launcher-only
+    // acr_launcher.toml since the launcher always passes `--refs`
+    // explicitly, so this is purely "remember what I picked last time".
+    let remembered_refs = crate::launcher_config::load().track_match.refs;
+    if !remembered_refs.is_empty() {
+        let paths: Vec<PathBuf> = remembered_refs.into_iter().map(PathBuf::from).collect();
+        set_refs_label(window, &paths);
+        state.borrow_mut().track_match_refs = paths;
+    }
+
+    {
+        let window_weak = window.as_weak();
+        let state = state.clone();
+        window.on_track_match_save_refs(move || {
+            let Some(window) = window_weak.upgrade() else { return };
+            let refs = state.borrow().track_match_refs.clone();
+            if refs.is_empty() {
+                window.set_track_match_settings_status(
+                    "Error: pick reference track file(s) or a folder first.".into(),
+                );
+                return;
+            }
+            let mut cfg = crate::launcher_config::load();
+            cfg.track_match.refs =
+                refs.iter().map(|p| p.to_string_lossy().into_owned()).collect();
+            crate::launcher_config::save(&cfg);
+            window.set_track_match_settings_status("Saved.".into());
+        });
+    }
+
     {
         let window_weak = window.as_weak();
         let state = state.clone();

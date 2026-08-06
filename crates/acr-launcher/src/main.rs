@@ -11,6 +11,8 @@
 //! (so a closed window doesn't keep background work alive), and one
 //! `window.on_xxx(move |...| { ... })` registration block per callback.
 
+#![windows_subsystem = "windows"]
+
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -21,10 +23,13 @@ use acc_shared_memory_rs::{ACCError, ACCSharedMemory};
 use slint::ComponentHandle;
 
 pub mod export_panel;
+pub mod grip_estimator_panel;
 pub mod hotkeys;
 pub mod launcher_config;
+pub mod plot_recording_panel;
 pub mod process;
 pub mod recorder_panel;
+pub mod telemetry_bridge_panel;
 pub mod track_match_panel;
 
 slint::include_modules!();
@@ -50,6 +55,8 @@ pub(crate) struct AppState {
     pub(crate) track_match_refs: Vec<std::path::PathBuf>,
     /// Offline mode's `.rkyv` input file, picked by the Track Match tab.
     pub(crate) track_match_input: Option<std::path::PathBuf>,
+    /// The physics `.rkyv` input picked by the Plot Recording tab.
+    pub(crate) plot_recording_input: Option<std::path::PathBuf>,
 }
 
 impl Default for AppState {
@@ -59,30 +66,45 @@ impl Default for AppState {
             export_input: None,
             track_match_refs: Vec::new(),
             track_match_input: None,
+            plot_recording_input: None,
         }
     }
 }
 
-/// Poll `ACCSharedMemory::new()` once a second on a background thread
-/// and push "Connected"/"not detected" transitions into `status-text`
-/// via `slint::invoke_from_event_loop` — the same crash-safe call the
-/// backend fix in `acr_recorder::acc_wait` uses, just polled instead of
+/// AC Rally's game process image name — checked via `tasklist` (see
+/// `process::is_process_running`) to drive the "Launch AC Rally" button
+/// independent of the ACC-shared-memory poll below. Shared-memory presence
+/// alone isn't a reliable "is the game running" signal: overlay tools like
+/// SimHub keep the same ACC-shaped shared memory segments alive on their
+/// own even when the game itself isn't running.
+const ACR_PROCESS_NAME: &str = "acr.exe";
+
+/// Poll `ACCSharedMemory::new()` once a second on a background thread and
+/// push "Connected"/"not detected" transitions into `status-text` via
+/// `slint::invoke_from_event_loop` — the same crash-safe call the backend
+/// fix in `acr_recorder::acc_wait` uses, just polled instead of
 /// blocked-on, since the launcher window needs to keep running either
 /// way. Deliberately independent of any recorder/export subprocess: the
-/// Status tab should reflect whether the game itself is up, not whether
-/// a recording happens to be active.
+/// Status tab should reflect whether the game itself is up, not whether a
+/// recording happens to be active.
+///
+/// Also polls `ACR_PROCESS_NAME` via `tasklist` on the same tick and pushes
+/// its own transitions into `acr-process-running` — kept separate from the
+/// shared-memory `connected` state above (see `ACR_PROCESS_NAME`'s doc
+/// comment for why they can disagree).
 fn spawn_status_poll(window: &AppWindow, running: Arc<AtomicBool>) {
     let window_weak = window.as_weak();
 
     std::thread::spawn(move || {
         let mut last_connected: Option<bool> = None;
+        let mut last_process_running: Option<bool> = None;
 
         while running.load(Ordering::Relaxed) {
             let connected = match ACCSharedMemory::new() {
                 Ok(_) => Some(true),
                 Err(ACCError::SharedMemoryNotAvailable) => Some(false),
                 Err(e) => {
-                    eprintln!("acc_shared_memory poll error: {e}");
+                    crate::process::log_err(format!("acc_shared_memory poll error: {e}"));
                     None
                 }
             };
@@ -102,9 +124,21 @@ fn spawn_status_poll(window: &AppWindow, running: Arc<AtomicBool>) {
                     let _ = slint::invoke_from_event_loop(move || {
                         if let Some(window) = window_weak.upgrade() {
                             window.set_status_text(text.into());
+                            window.set_acr_running(connected);
                         }
                     });
                 }
+            }
+
+            let process_running = process::is_process_running(ACR_PROCESS_NAME);
+            if last_process_running != Some(process_running) {
+                last_process_running = Some(process_running);
+                let window_weak = window_weak.clone();
+                let _ = slint::invoke_from_event_loop(move || {
+                    if let Some(window) = window_weak.upgrade() {
+                        window.set_acr_process_running(process_running);
+                    }
+                });
             }
 
             std::thread::sleep(Duration::from_secs(1));
@@ -112,14 +146,29 @@ fn spawn_status_poll(window: &AppWindow, running: Arc<AtomicBool>) {
     });
 }
 
+/// AC Rally's Steam App ID — used to build the `steam://run/<id>` URI that
+/// `on_launch_acr` hands off to `explorer` (Steam registers this protocol
+/// on install; `explorer` invoking it is the same mechanism a desktop
+/// shortcut or Start Menu entry uses).
+const ACR_STEAM_APP_ID: &str = "3917090";
+
 fn main() -> Result<(), slint::PlatformError> {
     let window = AppWindow::new()?;
     let state: Rc<RefCell<AppState>> = Rc::new(RefCell::new(AppState::default()));
+
+    window.on_launch_acr(|| {
+        let _ = std::process::Command::new("explorer")
+            .arg(format!("steam://run/{ACR_STEAM_APP_ID}"))
+            .spawn();
+    });
 
     export_panel::init(&window, state.clone());
     recorder_panel::init(&window, state.clone());
     hotkeys::init(&window, state.clone());
     track_match_panel::init(&window, state.clone());
+    plot_recording_panel::init(&window, state.clone());
+    grip_estimator_panel::init(&window, state.clone());
+    telemetry_bridge_panel::init(&window, state.clone());
 
     let poll_running = Arc::new(AtomicBool::new(true));
     spawn_status_poll(&window, poll_running.clone());

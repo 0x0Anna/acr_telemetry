@@ -1,5 +1,134 @@
 import { TabWidget, VerticalBox, HorizontalBox, Button, CheckBox, LineEdit, TextEdit, ScrollView, ComboBox } from "std-widgets.slint";
 
+// Small rally-dashboard-style indicator lamp: dark/unlit at rest, red and
+// glowing when `lit` is true. Layered as housing -> lens -> highlight so
+// the "glow" and "lens flare" read as physical light rather than a flat
+// color swap. Used by the Record tab to show recorder-running at a
+// glance without relying on the text status pill alone.
+component RecordingLamp inherits Rectangle {
+    in property <bool> lit: false;
+    width: 26px;
+    height: 26px;
+
+    // Soft halo cast onto the panel behind the lamp — only visible once lit.
+    Rectangle {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: 26px;
+        height: 26px;
+        border-radius: 13px;
+        background: #ff2020;
+        opacity: root.lit ? 0.5 : 0;
+        drop-shadow-color: #ff3030;
+        drop-shadow-blur: root.lit ? 12px : 0px;
+        animate opacity, drop-shadow-blur { duration: 250ms; easing: ease-out; }
+    }
+
+    // Dark metal bezel/housing, like a dashboard telltale surround.
+    Rectangle {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        background: #1c1c1c;
+        border-width: 2px;
+        border-color: #3c3c3c;
+    }
+
+    // The lens itself: dull red-grey when idle, saturated glossy red when lit.
+    Rectangle {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: 14px;
+        height: 14px;
+        border-radius: 7px;
+        background: root.lit ? #ff2b2b : #3a2020;
+        border-width: 1px;
+        border-color: root.lit ? #ffb0b0 : #2a2020;
+        animate background, border-color { duration: 250ms; easing: ease-out; }
+
+        // Lens-flare highlight: a small bright fleck offset toward the
+        // top-left, as if catching a light source — brighter and more
+        // opaque while lit, nearly invisible when idle.
+        Rectangle {
+            x: 3px;
+            y: 2px;
+            width: 4px;
+            height: 3px;
+            border-radius: 1.5px;
+            background: white;
+            opacity: root.lit ? 0.9 : 0.12;
+            animate opacity { duration: 250ms; easing: ease-out; }
+        }
+    }
+}
+
+// Small "victory lap" flourish: a Mini Cooper (Monte Carlo livery) that
+// drives across the strip below the Launch button once triggered. Uses a
+// Timer ticking `car-x` directly (procedural) rather than the declarative
+// `animate` directive, because a one-shot "run across and stop, ready to
+// run again from the left" effect doesn't fit `animate`'s toggle model —
+// re-triggering it would just play the transition backwards.
+component MiniZoomStrip inherits Rectangle {
+    in-out property <bool> active: false;
+    height: 70px;
+    clip: true;
+
+    property <length> car-x: -180px;
+    property <length> car-width: 160px;
+    // Distance covered per tick, exposed so callers (see AppWindow's
+    // Launch button) can time other actions relative to how long a full
+    // run-across actually takes without duplicating the math.
+    property <length> px-per-tick: 14px;
+    property <duration> tick-interval: 16ms;
+    out property <duration> total-duration: (root.width + root.car-width) / root.px-per-tick * root.tick-interval;
+
+    Timer {
+        interval: root.tick-interval;
+        running: root.active;
+        triggered => {
+            root.car-x += root.px-per-tick;
+            if root.car-x > root.width {
+                root.car-x = -root.car-width;
+                root.active = false;
+            }
+        }
+    }
+
+    // Dust trail: puffs trailing behind the car at fixed offsets, shrinking
+    // and fading with distance. No real particle/physics system here
+    // (Slint doesn't have one) — each puff's size/opacity/position is a
+    // function of `car-x`, driven by the same 16ms Timer that drives the
+    // car. Every puff uses a distinct frequency/phase (offset itself seeds
+    // both) so they drift out of sync with each other on both axes instead
+    // of bobbing in lockstep — a uniform shared rhythm is what made the
+    // first pass read as floating bubbles rather than scattered dust.
+    for offset[i] in [16px, 28px, 42px, 58px, 76px, 96px, 118px]: Rectangle {
+        property <float> offset-n: offset / 1px;
+        property <length> base-size: 21px - i * 2.4px;
+        property <length> y-drift: Math.sin(root.car-x / (4px + offset / 9) * 1deg + self.offset-n * 3deg) * (3px + i * 0.8px);
+        property <length> x-jitter: Math.cos(root.car-x / (6px + offset / 6) * 1deg + self.offset-n * 5deg) * (5px + i * 0.6px);
+        property <float> pulse: 1.0 + 0.25 * Math.sin(root.car-x / (3px + offset / 4) * 1deg + self.offset-n * 7deg);
+
+        width: max(2px, self.base-size * self.pulse);
+        height: self.width * (0.75 + 0.25 * Math.cos(root.car-x / (5px + offset / 3) * 1deg));
+        border-radius: min(self.width, self.height) / 2;
+        x: root.car-x - offset - self.width / 2 + self.x-jitter;
+        y: (parent.height - self.height) / 2 + 18px - i * 1.5px + self.y-drift;
+        background: Math.mod(i, 2) == 0 ? #a89a86 : #8f7c63;
+        opacity: max(0.0, 0.3 - i * 0.03) * (0.55 + 0.45 * Math.sin(root.car-x / (8px + offset / 5) * 1deg + self.offset-n * 2deg));
+    }
+
+    Image {
+        source: @image-url("assets/mini_monte_carlo.png");
+        x: root.car-x;
+        y: (parent.height - self.height) / 2;
+        width: root.car-width;
+        image-fit: contain;
+    }
+}
+
 // Skeleton window for unit A of the acr-launcher plan
 // (docs/plans/acr-launcher-v1.md): a status bar plus a three-tab shell.
 // Export is still a placeholder here — filled in by a later unit. The
@@ -16,6 +145,19 @@ export component AppWindow inherits Window {
     // slint::invoke_from_event_loop usage). Placeholder default matches
     // what the poll thread reports before its first successful read.
     in-out property <string> status-text: "ACC/AC Rally: not detected";
+    // Whether the ACC-shaped shared memory is currently available (see
+    // main.rs's status-poll thread) — drives the Status tab's lamp. Not a
+    // reliable "is the game process itself running" signal on its own:
+    // overlay tools like SimHub keep the same shared memory segments
+    // alive independent of the game (see acr-process-running below).
+    in-out property <bool> acr-running: false;
+    // Whether AC Rally's own process (acr.exe) is currently running, via
+    // `tasklist` (see main.rs's ACR_PROCESS_NAME/spawn_status_poll) —
+    // drives the "Launch AC Rally" button's visibility so it's only
+    // offered when the game process itself isn't already up.
+    in-out property <bool> acr-process-running: false;
+
+    callback launch-acr();
 
     // Record tab state — populated from acr_recorder::config::load_config()
     // at startup by src/recorder_panel.rs, and read back out on Save/Start.
@@ -54,6 +196,8 @@ export component AppWindow inherits Window {
     in-out property <string> export-status: "Idle.";
     in-out property <string> export-log: "";
     in-out property <string> export-output-dir: "";
+    // Result of the last "Save settings" click (see export-save below).
+    in-out property <string> export-settings-status: "";
 
     callback export-pick-file();
     callback export-pick-folder();
@@ -62,6 +206,9 @@ export component AppWindow inherits Window {
     callback export-clear-out-dir();
     callback export-run();
     callback export-open-output-folder();
+    // Persists do-csv/do-sqlite/sqlite-path/out-dir so they're pre-filled
+    // next launch — see src/export_panel.rs's save_export_settings.
+    callback export-save();
 
     // --- Hotkeys tab state (src/hotkeys.rs owns the logic). Each
     // bindable action is a single "Toggle" (typical button-box/keybind
@@ -115,6 +262,9 @@ export component AppWindow inherits Window {
     in-out property <bool> track-match-offline-running: false;
     in-out property <string> track-match-offline-status: "Idle.";
     in-out property <string> track-match-log-text: "";
+    // Result of the last "Save references" click (see
+    // track-match-save-refs below).
+    in-out property <string> track-match-settings-status: "";
 
     callback track-match-pick-refs-files();
     callback track-match-pick-refs-folder();
@@ -122,6 +272,64 @@ export component AppWindow inherits Window {
     callback track-match-start();
     callback track-match-stop();
     callback track-match-run();
+    // Persists the picked reference file(s)/folder so they're pre-filled
+    // next launch — see src/track_match_panel.rs's on_track_match_save_refs.
+    callback track-match-save-refs();
+
+    // --- Plot Recording tab state (src/plot_recording_panel.rs owns the
+    // logic). One-shot: pick a physics .rkyv, optionally an output .html
+    // (blank = tool's own default next to the input), Run, then Open
+    // once done. ---
+    in-out property <string> plot-recording-input-path: "No input file selected.";
+    in-out property <string> plot-recording-output-path: "";
+    in-out property <bool> plot-recording-running: false;
+    in-out property <string> plot-recording-status: "Idle.";
+    in-out property <string> plot-recording-log: "";
+    // Path Rust resolved the plot to (either the explicit output path, or
+    // the tool's own default) once a run finishes successfully — drives
+    // "Open plot"'s enablement/target.
+    in-out property <string> plot-recording-last-output: "";
+
+    callback plot-recording-pick-input();
+    callback plot-recording-pick-output();
+    callback plot-recording-run();
+    callback plot-recording-open();
+
+    // --- Grip Estimator tab state (src/grip_estimator_panel.rs owns the
+    // logic). One-shot, two mutually exclusive input modes (sqlite vs.
+    // rkyv); output is a CSV-formatted results dump, not a file. ---
+    in-out property <bool> grip-estimator-sqlite-mode: false;
+    in-out property <string> grip-estimator-sqlite-path: "";
+    in-out property <string> grip-estimator-recording-id: "";
+    in-out property <string> grip-estimator-rkyv-path: "";
+    in-out property <string> grip-estimator-track: "";
+    in-out property <string> grip-estimator-car: "";
+    in-out property <string> grip-estimator-early-sec: "10";
+    in-out property <string> grip-estimator-correction-sec: "60";
+    in-out property <bool> grip-estimator-running: false;
+    in-out property <string> grip-estimator-status: "Idle.";
+    in-out property <string> grip-estimator-results: "";
+
+    callback grip-estimator-pick-sqlite();
+    callback grip-estimator-pick-rkyv();
+    callback grip-estimator-run();
+
+    // --- Telemetry Bridge tab state (src/telemetry_bridge_panel.rs owns
+    // the logic). Long-running server, Start/Stop lifecycle like Record —
+    // needs the sim already running (no retry) when started. ---
+    in-out property <string> telemetry-bridge-rate-hz: "5";
+    in-out property <bool> telemetry-bridge-udp-enabled: false;
+    in-out property <string> telemetry-bridge-udp-target: "";
+    in-out property <bool> telemetry-bridge-http-enabled: true;
+    in-out property <string> telemetry-bridge-http-addr: "0.0.0.0:8080";
+    in-out property <string> telemetry-bridge-temp-unit: "c";
+    in-out property <bool> telemetry-bridge-running: false;
+    in-out property <string> telemetry-bridge-status-pill: "Idle";
+    in-out property <string> telemetry-bridge-status-text: "";
+    in-out property <string> telemetry-bridge-log: "";
+
+    callback telemetry-bridge-start();
+    callback telemetry-bridge-stop();
 
     VerticalBox {
         Text {
@@ -134,9 +342,60 @@ export component AppWindow inherits Window {
                 title: "Status";
                 VerticalBox {
                     alignment: start;
-                    Text {
-                        text: root.status-text;
-                        font-size: 18px;
+
+                    HorizontalBox {
+                        alignment: start;
+                        RecordingLamp {
+                            lit: root.acr-running;
+                        }
+                        Text {
+                            text: root.status-text;
+                            font-size: 18px;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    Image {
+                        source: @image-url("assets/acr_thumbnail.jpg");
+                        width: 90%;
+                        image-fit: contain;
+                        horizontal-alignment: center;
+                    }
+
+                    // Single-shot: fires launch-acr() partway through the
+                    // zoom run rather than the instant the button is
+                    // clicked, since the animation is quick enough that
+                    // launching immediately would step on it. Interval is
+                    // half of mini_zoom's actual run time so it stays
+                    // correct if the strip's width/speed ever changes.
+                    launch_delay_timer := Timer {
+                        interval: mini_zoom.total-duration / 2;
+                        running: false;
+                        triggered => {
+                            self.running = false;
+                            root.launch-acr();
+                        }
+                    }
+
+                    if !root.acr-process-running: Button {
+                        text: "Launch AC Rally (Steam)";
+                        clicked => {
+                            mini_zoom.active = true;
+                            launch_delay_timer.running = true;
+                        }
+                    }
+
+                    mini_zoom := MiniZoomStrip {
+                        width: 100%;
+                    }
+
+                    // Hidden debug aid: lets the zoom animation be
+                    // re-triggered without actually launching Steam/AC
+                    // Rally. Flip to `if true:` to bring it back if the
+                    // animation needs tweaking again.
+                    if false: Button {
+                        text: "Test zoom (debug)";
+                        clicked => { mini_zoom.active = true; }
                     }
                 }
             }
@@ -195,16 +454,28 @@ export component AppWindow inherits Window {
                         }
                     }
 
-                    CheckBox {
-                        text: "Record directly to MoTeC (no rkyv)";
-                        checked <=> root.recorder-motec-mode;
+                    HorizontalBox {
+                        CheckBox {
+                            text: "Record directly to MoTeC (no rkyv)";
+                            checked <=> root.recorder-motec-mode;
+                        }
                     }
 
                     HorizontalBox {
+                        alignment: start;
                         Button {
-                            text: "Save";
+                            text: "Save settings";
                             clicked => { root.recorder-save(); }
                         }
+                        Text {
+                            text: "Writes these Record tab settings to acr_recorder.toml (Start does this automatically too — use this to save without starting).";
+                            wrap: word-wrap;
+                            font-size: 11px;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    HorizontalBox {
                         Button {
                             text: "Start";
                             enabled: !root.recorder-running;
@@ -217,9 +488,16 @@ export component AppWindow inherits Window {
                         }
                     }
 
-                    Text {
-                        text: root.recorder-status-pill;
-                        font-size: 14px;
+                    HorizontalBox {
+                        alignment: start;
+                        RecordingLamp {
+                            lit: root.recorder-running;
+                        }
+                        Text {
+                            text: root.recorder-status-pill;
+                            font-size: 14px;
+                            vertical-alignment: center;
+                        }
                     }
                     Text {
                         text: root.recorder-status-text;
@@ -316,6 +594,24 @@ export component AppWindow inherits Window {
                             text: "Clear";
                             clicked => { root.export-clear-out-dir(); }
                         }
+                    }
+
+                    HorizontalBox {
+                        alignment: start;
+                        Button {
+                            text: "Save settings";
+                            clicked => { root.export-save(); }
+                        }
+                        Text {
+                            text: "Remembers the checkboxes above and the SQLite/output-folder paths for next time.";
+                            wrap: word-wrap;
+                            font-size: 11px;
+                            vertical-alignment: center;
+                        }
+                    }
+                    Text {
+                        text: root.export-settings-status;
+                        font-size: 11px;
                     }
 
                     HorizontalBox {
@@ -487,6 +783,24 @@ export component AppWindow inherits Window {
                     }
 
                     HorizontalBox {
+                        alignment: start;
+                        Button {
+                            text: "Save references";
+                            clicked => { root.track-match-save-refs(); }
+                        }
+                        Text {
+                            text: "Remembers the picked reference file(s)/folder for next launch.";
+                            wrap: word-wrap;
+                            font-size: 11px;
+                            vertical-alignment: center;
+                        }
+                    }
+                    Text {
+                        text: root.track-match-settings-status;
+                        font-size: 11px;
+                    }
+
+                    HorizontalBox {
                         CheckBox {
                             text: "Live (runs full sector timing until stopped)";
                             checked <=> root.track-match-live-mode;
@@ -508,9 +822,16 @@ export component AppWindow inherits Window {
                                 clicked => { root.track-match-stop(); }
                             }
                         }
-                        Text {
-                            text: root.track-match-status-pill;
-                            font-size: 14px;
+                        HorizontalBox {
+                            alignment: start;
+                            RecordingLamp {
+                                lit: root.track-match-running;
+                            }
+                            Text {
+                                text: root.track-match-status-pill;
+                                font-size: 14px;
+                                vertical-alignment: center;
+                            }
                         }
                         Text {
                             text: root.track-match-status-text;
@@ -547,6 +868,278 @@ export component AppWindow inherits Window {
                         height: 140px;
                         TextEdit {
                             text: root.track-match-log-text;
+                            read-only: true;
+                            wrap: word-wrap;
+                        }
+                    }
+                }
+            }
+
+            Tab {
+                title: "Plot Recording";
+                VerticalBox {
+                    alignment: start;
+
+                    Text {
+                        text: "Input";
+                        font-weight: 700;
+                    }
+                    HorizontalBox {
+                        Button {
+                            text: "Pick physics .rkyv file…";
+                            clicked => { root.plot-recording-pick-input(); }
+                        }
+                    }
+                    Text {
+                        text: root.plot-recording-input-path;
+                        wrap: word-wrap;
+                    }
+
+                    Text {
+                        text: "Output HTML (optional)";
+                        font-weight: 700;
+                    }
+                    Text {
+                        text: "Leave blank to write next to the input file (default).";
+                        wrap: word-wrap;
+                        font-size: 11px;
+                    }
+                    HorizontalBox {
+                        LineEdit {
+                            text <=> root.plot-recording-output-path;
+                            placeholder-text: "(same folder as input)";
+                        }
+                        Button {
+                            text: "Choose…";
+                            clicked => { root.plot-recording-pick-output(); }
+                        }
+                    }
+
+                    HorizontalBox {
+                        Button {
+                            text: root.plot-recording-running ? "Running…" : "Run";
+                            enabled: !root.plot-recording-running;
+                            clicked => { root.plot-recording-run(); }
+                        }
+                        Button {
+                            text: "Open plot";
+                            enabled: root.plot-recording-last-output != "";
+                            clicked => { root.plot-recording-open(); }
+                        }
+                    }
+
+                    Text {
+                        text: root.plot-recording-status;
+                        font-weight: 700;
+                    }
+
+                    TextEdit {
+                        text: root.plot-recording-log;
+                        read-only: true;
+                        height: 160px;
+                    }
+                }
+            }
+
+            Tab {
+                title: "Grip Estimator";
+                VerticalBox {
+                    alignment: start;
+
+                    HorizontalBox {
+                        CheckBox {
+                            text: "Use SQLite export instead of a raw .rkyv file";
+                            checked <=> root.grip-estimator-sqlite-mode;
+                        }
+                    }
+
+                    if root.grip-estimator-sqlite-mode: VerticalBox {
+                        alignment: start;
+                        HorizontalBox {
+                            Button {
+                                text: "Pick SQLite database…";
+                                clicked => { root.grip-estimator-pick-sqlite(); }
+                            }
+                        }
+                        Text {
+                            text: root.grip-estimator-sqlite-path == "" ? "No database selected." : root.grip-estimator-sqlite-path;
+                            wrap: word-wrap;
+                        }
+                        HorizontalBox {
+                            Text {
+                                text: "Recording ID (optional):";
+                                vertical-alignment: center;
+                            }
+                            LineEdit {
+                                text <=> root.grip-estimator-recording-id;
+                                placeholder-text: "(all recordings)";
+                                width: 120px;
+                            }
+                        }
+                    }
+
+                    if !root.grip-estimator-sqlite-mode: VerticalBox {
+                        alignment: start;
+                        HorizontalBox {
+                            Button {
+                                text: "Pick .rkyv recording…";
+                                clicked => { root.grip-estimator-pick-rkyv(); }
+                            }
+                        }
+                        Text {
+                            text: root.grip-estimator-rkyv-path == "" ? "No recording selected." : root.grip-estimator-rkyv-path;
+                            wrap: word-wrap;
+                        }
+                        HorizontalBox {
+                            Text {
+                                text: "Track:";
+                                vertical-alignment: center;
+                            }
+                            LineEdit {
+                                text <=> root.grip-estimator-track;
+                                placeholder-text: "unknown_track";
+                            }
+                            Text {
+                                text: "Car:";
+                                vertical-alignment: center;
+                            }
+                            LineEdit {
+                                text <=> root.grip-estimator-car;
+                                placeholder-text: "unknown_car";
+                            }
+                        }
+                    }
+
+                    HorizontalBox {
+                        Text {
+                            text: "Early phase (sec):";
+                            vertical-alignment: center;
+                        }
+                        LineEdit {
+                            text <=> root.grip-estimator-early-sec;
+                            width: 60px;
+                        }
+                        Text {
+                            text: "Correction phase (sec):";
+                            vertical-alignment: center;
+                        }
+                        LineEdit {
+                            text <=> root.grip-estimator-correction-sec;
+                            width: 60px;
+                        }
+                    }
+
+                    HorizontalBox {
+                        Button {
+                            text: root.grip-estimator-running ? "Running…" : "Run";
+                            enabled: !root.grip-estimator-running;
+                            clicked => { root.grip-estimator-run(); }
+                        }
+                    }
+
+                    Text {
+                        text: root.grip-estimator-status;
+                        font-weight: 700;
+                    }
+
+                    ScrollView {
+                        height: 160px;
+                        TextEdit {
+                            text: root.grip-estimator-results;
+                            read-only: true;
+                            wrap: no-wrap;
+                        }
+                    }
+                }
+            }
+
+            Tab {
+                title: "Telemetry Bridge";
+                VerticalBox {
+                    alignment: start;
+
+                    Text {
+                        text: "Serves live ACC/AC Rally telemetry over UDP and/or HTTP for a phone or second-screen dashboard. Start the sim and get to the main menu first — the bridge connects once at startup and does not retry.";
+                        wrap: word-wrap;
+                        font-size: 11px;
+                    }
+
+                    HorizontalBox {
+                        Text {
+                            text: "Rate (Hz):";
+                            vertical-alignment: center;
+                        }
+                        LineEdit {
+                            text <=> root.telemetry-bridge-rate-hz;
+                            width: 60px;
+                        }
+                        Text {
+                            text: "Temperature unit:";
+                            vertical-alignment: center;
+                        }
+                        ComboBox {
+                            model: ["c", "f", "k"];
+                            current-value <=> root.telemetry-bridge-temp-unit;
+                        }
+                    }
+
+                    HorizontalBox {
+                        CheckBox {
+                            text: "UDP";
+                            checked <=> root.telemetry-bridge-udp-enabled;
+                        }
+                        LineEdit {
+                            enabled: root.telemetry-bridge-udp-enabled;
+                            text <=> root.telemetry-bridge-udp-target;
+                            placeholder-text: "host:port";
+                        }
+                    }
+
+                    HorizontalBox {
+                        CheckBox {
+                            text: "HTTP dashboard";
+                            checked <=> root.telemetry-bridge-http-enabled;
+                        }
+                        LineEdit {
+                            enabled: root.telemetry-bridge-http-enabled;
+                            text <=> root.telemetry-bridge-http-addr;
+                            placeholder-text: "0.0.0.0:8080";
+                        }
+                    }
+
+                    HorizontalBox {
+                        Button {
+                            text: "Start";
+                            enabled: !root.telemetry-bridge-running;
+                            clicked => { root.telemetry-bridge-start(); }
+                        }
+                        Button {
+                            text: "Stop";
+                            enabled: root.telemetry-bridge-running;
+                            clicked => { root.telemetry-bridge-stop(); }
+                        }
+                    }
+
+                    HorizontalBox {
+                        alignment: start;
+                        RecordingLamp {
+                            lit: root.telemetry-bridge-running;
+                        }
+                        Text {
+                            text: root.telemetry-bridge-status-pill;
+                            font-size: 14px;
+                            vertical-alignment: center;
+                        }
+                    }
+                    Text {
+                        text: root.telemetry-bridge-status-text;
+                        wrap: word-wrap;
+                    }
+
+                    ScrollView {
+                        height: 140px;
+                        TextEdit {
+                            text: root.telemetry-bridge-log;
                             read-only: true;
                             wrap: word-wrap;
                         }

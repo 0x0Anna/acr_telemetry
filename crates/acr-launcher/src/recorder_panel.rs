@@ -144,7 +144,7 @@ fn config_file_path() -> PathBuf {
 /// with `toml::to_string_pretty`. Known trade-off (documented in
 /// docs/plans/acr-launcher-v1.md): this does not preserve comments or
 /// formatting in a hand-edited `acr_recorder.toml` — acceptable for v1.
-fn save_config(cfg: &acr_recorder::config::Config) -> std::io::Result<PathBuf> {
+pub(crate) fn save_config(cfg: &acr_recorder::config::Config) -> std::io::Result<PathBuf> {
     let path = config_file_path();
     let text = toml::to_string_pretty(cfg)
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;

@@ -13,7 +13,7 @@ use std::net::{SocketAddr, UdpSocket};
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
-use std::time::{Duration, SystemTime};
+use std::time::{Duration, Instant, SystemTime};
 
 use acc_shared_memory_rs::datatypes::Wheels;
 use acc_shared_memory_rs::maps::PhysicsMap;
@@ -394,6 +394,21 @@ fn run_http_server(
     }
 }
 
+/// Path to the bridge's own stop file: creating this file signals a
+/// running bridge to exit gracefully, the same convention
+/// `acr_track_match::stop_file_path` uses (same base directory,
+/// `dirs::config_dir()/acr_telemetry`) but under a distinct filename —
+/// the bridge is commonly run alongside `acr_recorder`/`acr_track_match`,
+/// and sharing one stop file would mean stopping one also stops the
+/// others. Public so `acr-launcher`'s Telemetry Bridge panel can write to
+/// the exact path this process polls for (the bridge is spawned hidden,
+/// with no shared console for Ctrl+C to reach).
+pub fn stop_file_path() -> PathBuf {
+    dirs::config_dir()
+        .map(|d| d.join("acr_telemetry").join("acr_telemetry_bridge_stop"))
+        .unwrap_or_else(|| PathBuf::from(".acr_telemetry_bridge_stop"))
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     ctrlc::set_handler(|| RUNNING.store(false, Ordering::Relaxed))?;
 
@@ -549,9 +564,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "k" | "kelvin" => "K",
         _ => "°C",
     };
+    // Stop-file polling (see `stop_file_path()`): checked at most once a
+    // second so it doesn't add per-iteration overhead to the read loop,
+    // mirroring `track_match_app.rs`'s `--live` loop.
+    let stop_path = stop_file_path();
+    if stop_path.exists() {
+        let _ = std::fs::remove_file(&stop_path);
+    }
+    let mut last_stop_check = Instant::now();
+
     eprintln!(
-        "Bridge running at {} Hz, temperatures in {}. Ctrl+C to stop.",
-        rate_hz, unit_label
+        "Bridge running at {} Hz, temperatures in {}. Ctrl+C to stop, or create {} to stop from the launcher.",
+        rate_hz, unit_label, stop_path.display()
     );
 
     // Min/max tracking for dashboard slot fields (since bridge start)
@@ -569,6 +593,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut detected_track_msg_cached: Option<String> = None;
 
     while RUNNING.load(Ordering::Relaxed) {
+        if last_stop_check.elapsed() >= Duration::from_secs(1) {
+            last_stop_check = Instant::now();
+            if stop_path.exists() {
+                let _ = std::fs::remove_file(&stop_path);
+                eprintln!("Stop file detected; shutting down...");
+                RUNNING.store(false, Ordering::Relaxed);
+                continue;
+            }
+        }
         match acc.read_shared_memory() {
             Ok(Some(data)) => {
                 // Only check recorder status every 2 seconds to minimize filesystem overhead

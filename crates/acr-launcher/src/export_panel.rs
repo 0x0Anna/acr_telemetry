@@ -89,6 +89,24 @@ pub(crate) fn init(window: &AppWindow, state: Rc<RefCell<AppState>>) {
     };
     window.set_export_out_dir(out_dir_default.into());
 
+    // Which export methods were checked last time — the sqlite/output-dir
+    // *paths* above already come from the shared acr_recorder.toml, but
+    // there's no natural home for two independent checkboxes there, so
+    // this bit of UI memory lives in the launcher-only acr_launcher.toml
+    // instead (see launcher_config.rs's ExportUiConfig doc comment).
+    let export_ui_cfg = crate::launcher_config::load().export;
+    window.set_export_do_csv(export_ui_cfg.do_csv);
+    window.set_export_do_sqlite(export_ui_cfg.do_sqlite);
+
+    {
+        let window_weak = window.as_weak();
+        let state = state.clone();
+        window.on_export_save(move || {
+            let Some(window) = window_weak.upgrade() else { return };
+            save_export_settings(&window, &state);
+        });
+    }
+
     {
         let window_weak = window.as_weak();
         window.on_export_pick_out_dir(move || {
@@ -178,6 +196,31 @@ pub(crate) fn init(window: &AppWindow, state: Rc<RefCell<AppState>>) {
             }
         });
     }
+}
+
+/// Persist the Export tab's settings so they survive a restart: the
+/// SQLite DB path and CSV/LD/SHP output-dir override go into the shared
+/// `acr_recorder.toml` (`[export]`, alongside whatever the Record tab last
+/// saved there — mirrors `recorder_panel.rs`'s `on_recorder_save`), while
+/// the CSV/SQLite checkboxes go into the launcher-only `acr_launcher.toml`
+/// since they have no natural home in the CLI tools' shared config.
+fn save_export_settings(window: &AppWindow, state: &Rc<RefCell<AppState>>) {
+    {
+        let mut app_state = state.borrow_mut();
+        app_state.config.export.sqlite_db_path = window.get_export_sqlite_path().to_string();
+        app_state.config.export.output_dir = window.get_export_out_dir().to_string();
+        if let Err(e) = crate::recorder_panel::save_config(&app_state.config) {
+            window.set_export_settings_status(format!("Save failed: {e}").into());
+            return;
+        }
+    }
+
+    let mut launcher_cfg = crate::launcher_config::load();
+    launcher_cfg.export.do_csv = window.get_export_do_csv();
+    launcher_cfg.export.do_sqlite = window.get_export_do_sqlite();
+    crate::launcher_config::save(&launcher_cfg);
+
+    window.set_export_settings_status("Saved.".into());
 }
 
 fn append_log(window: &AppWindow, line: &str) {

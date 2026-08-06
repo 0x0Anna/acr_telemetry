@@ -174,7 +174,7 @@ pub(crate) fn init(window: &AppWindow, _state: Rc<RefCell<AppState>>) {
     let manager = match GlobalHotKeyManager::new() {
         Ok(m) => Some(Rc::new(m)),
         Err(e) => {
-            eprintln!("hotkeys: GlobalHotKeyManager::new() failed, keyboard hotkeys disabled: {e}");
+            crate::process::log_err(format!("hotkeys: GlobalHotKeyManager::new() failed, keyboard hotkeys disabled: {e}"));
             None
         }
     };
@@ -436,11 +436,11 @@ fn apply_saved_key_binding(
                 bindings.insert(target, hotkey);
             }
             Err(e) => {
-                eprintln!("hotkeys: failed to register saved {target:?} binding {key_str:?}: {e}");
+                crate::process::log_err(format!("hotkeys: failed to register saved {target:?} binding {key_str:?}: {e}"));
             }
         },
         Err(e) => {
-            eprintln!("hotkeys: failed to parse saved {target:?} binding {key_str:?}: {e}");
+            crate::process::log_err(format!("hotkeys: failed to parse saved {target:?} binding {key_str:?}: {e}"));
         }
     }
 }
@@ -556,7 +556,7 @@ fn spawn_gilrs_poll(
         let mut gilrs = match Gilrs::new() {
             Ok(g) => g,
             Err(e) => {
-                eprintln!("hotkeys: Gilrs::new() failed, controller support disabled: {e}");
+                crate::process::log_err(format!("hotkeys: Gilrs::new() failed, controller support disabled: {e}"));
                 return;
             }
         };

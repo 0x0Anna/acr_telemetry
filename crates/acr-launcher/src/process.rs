@@ -12,11 +12,21 @@
 //! poll) — the recorder/export panel units are what call these.
 #![allow(dead_code)]
 
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader, Write};
 use std::os::windows::process::CommandExt;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::sync::mpsc::Sender;
+
+/// Diagnostic logging that can't panic. Built with `windows_subsystem =
+/// "windows"` (see `main.rs`), this app has no console attached, so
+/// `eprintln!`'s `.expect("failed printing to stdout")` would abort the
+/// process the first time a diagnostic line fires. Swallow the write
+/// error instead — there's nowhere for the line to go, but that's not
+/// worth crashing the GUI over.
+pub fn log_err(msg: impl std::fmt::Display) {
+    let _ = writeln!(std::io::stderr(), "{msg}");
+}
 
 /// Windows `CREATE_NO_WINDOW` process creation flag: suppresses the
 /// console window that would otherwise flash up for a console
@@ -121,4 +131,27 @@ pub fn stream_output(mut child: Child, sender: Sender<ChildOutput>) {
         let exit_code = child.wait().ok().and_then(|status| status.code());
         let _ = sender.send(ChildOutput::Exited(exit_code));
     });
+}
+
+/// Whether a process named `image_name` (e.g. `"acr.exe"`) currently
+/// appears in `tasklist`'s process list. Used for the Status tab's
+/// "Launch AC Rally" button instead of the ACC-shared-memory poll —
+/// overlay tools like SimHub keep the ACC-shaped shared memory segments
+/// (`Local\acpmf_physics` etc.) alive on their own, so shared-memory
+/// presence alone doesn't mean the game's own process is actually up.
+pub fn is_process_running(image_name: &str) -> bool {
+    let output = Command::new("tasklist")
+        .args(["/FI", &format!("IMAGENAME eq {image_name}"), "/NH", "/FO", "CSV"])
+        .stdin(Stdio::null())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .creation_flags(CREATE_NO_WINDOW)
+        .output();
+
+    match output {
+        Ok(out) => String::from_utf8_lossy(&out.stdout)
+            .to_lowercase()
+            .contains(&image_name.to_lowercase()),
+        Err(_) => false,
+    }
 }

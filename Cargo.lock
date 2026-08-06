@@ -142,6 +142,7 @@ version = "0.1.0"
 dependencies = [
  "acc_shared_memory_rs",
  "acr_recorder",
+ "dirs",
  "gilrs",
  "global-hotkey",
  "rfd",
