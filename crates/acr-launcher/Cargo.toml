@@ -1,12 +1,12 @@
 [package]
-name = "acr-launcher"
+name = "acr_launcher"
 version = "0.1.0"
 edition = "2024"
 description = "Slint GUI launcher for acr_telemetry's recorder/export/status tools."
 build = "build.rs"
 
 [[bin]]
-name = "acr-launcher"
+name = "acr_launcher"
 path = "src/main.rs"
 
 [dependencies]

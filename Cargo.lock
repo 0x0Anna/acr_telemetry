@@ -137,7 +137,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "acr-launcher"
+name = "acr_launcher"
 version = "0.1.0"
 dependencies = [
  "acc_shared_memory_rs",
