@@ -48,7 +48,9 @@ Outputs:
 
 
 
-CI: `pwsh install/build.ps1 -SkipCargoBuild` after `cargo build` (see `.github/workflows/release.yml`).
+`acr_launcher` lives in its own crate (`crates/acr-launcher`, no `acr_timing_bin` feature), so `build.ps1` builds it via a separate `cargo build -p acr_launcher` invocation from the root-package bins above.
+
+CI: `pwsh install/build.ps1 -SkipCargoBuild` after `cargo build` (see `.github/workflows/release.yml`) — CI's own workflow also builds `acr_launcher` as a separate step before `-SkipCargoBuild` staging.
 
 
 
@@ -60,9 +62,9 @@ CI: `pwsh install/build.ps1 -SkipCargoBuild` after `cargo build` (see `.github/w
 
 
 
-- `acr_recorder`, `acr_export`, `acr_motec`, `acr_telemetry_bridge`
+- `acr_launcher` (GUI wrapper for the tools below), `acr_recorder`, `acr_export`, `acr_motec`, `acr_telemetry_bridge`
 
-- `acr_analysis_export`, `acr_track_match`, `acr_timing`, `acr_rtss_osd`, `acr_analyze_timing_recording`
+- `acr_analysis_export`, `acr_track_match`, `acr_timing`, `acr_rtss_osd`, `acr_analyze_timing_recording`, `acr_grip_estimator`, `acr_plot_recording`
 
 
 
