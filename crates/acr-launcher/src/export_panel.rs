@@ -19,11 +19,10 @@
 use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
-use std::sync::mpsc;
 
 use slint::{ComponentHandle, Weak};
 
-use crate::process::{self, ChildOutput};
+use crate::process;
 use crate::{AppState, AppWindow};
 
 /// What the user picked as the export input, mirroring `acr_export`'s
@@ -224,12 +223,7 @@ fn save_export_settings(window: &AppWindow, state: &Rc<RefCell<AppState>>) {
 }
 
 fn append_log(window: &AppWindow, line: &str) {
-    let mut log = window.get_export_log().to_string();
-    if !log.is_empty() {
-        log.push('\n');
-    }
-    log.push_str(line);
-    window.set_export_log(log.into());
+    crate::append_line!(window, get_export_log, set_export_log, line);
 }
 
 /// Build the argv list(s) to run and kick off the sequential runner
@@ -305,13 +299,21 @@ fn run_queue(
     invocations: Vec<Vec<String>>,
     output_dir: String,
 ) {
-    let mut last_line = String::new();
-
     for args in &invocations {
         let arg_refs: Vec<&str> = args.iter().map(String::as_str).collect();
 
-        let child = match process::spawn_hidden(&binary, &arg_refs) {
-            Ok(child) => child,
+        let result = process::run_and_wait(&binary, &arg_refs, |_is_stderr, line| {
+            let window_weak = window_weak.clone();
+            let line = line.to_string();
+            let _ = slint::invoke_from_event_loop(move || {
+                if let Some(window) = window_weak.upgrade() {
+                    append_log(&window, &line);
+                }
+            });
+        });
+
+        let result = match result {
+            Ok(r) => r,
             Err(e) => {
                 let msg = format!("Failed to launch {}: {e}", binary.display());
                 finish(&window_weak, false, msg, String::new());
@@ -319,33 +321,8 @@ fn run_queue(
             }
         };
 
-        let (tx, rx) = mpsc::channel();
-        process::stream_output(child, tx);
-
-        let mut exit_code: Option<i32> = None;
-        for msg in rx {
-            match msg {
-                ChildOutput::Stdout(line) | ChildOutput::Stderr(line) => {
-                    last_line = line.clone();
-                    let window_weak = window_weak.clone();
-                    let _ = slint::invoke_from_event_loop(move || {
-                        if let Some(window) = window_weak.upgrade() {
-                            append_log(&window, &line);
-                        }
-                    });
-                }
-                ChildOutput::Exited(code) => {
-                    exit_code = code;
-                }
-            }
-        }
-
-        if exit_code != Some(0) {
-            let msg = match exit_code {
-                Some(code) => format!("acr_export exited with code {code}. Last output: {last_line}"),
-                None => format!("acr_export exited abnormally. Last output: {last_line}"),
-            };
-            finish(&window_weak, false, msg, String::new());
+        if !result.succeeded() {
+            finish(&window_weak, false, result.failure_message("acr_export"), String::new());
             return;
         }
     }

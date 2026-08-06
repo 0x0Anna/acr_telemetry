@@ -18,11 +18,10 @@
 use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
-use std::sync::mpsc;
 
 use slint::ComponentHandle;
 
-use crate::process::{self, ChildOutput};
+use crate::process;
 use crate::{AppState, AppWindow};
 
 pub(crate) fn init(window: &AppWindow, state: Rc<RefCell<AppState>>) {
@@ -175,46 +174,39 @@ fn start(window: &AppWindow) {
     window.set_telemetry_bridge_running(true);
     append_log(window, "Started acr_telemetry_bridge.exe");
 
-    let (tx, rx) = mpsc::channel();
-    process::stream_output(child, tx);
-
     let window_weak = window.as_weak();
     std::thread::spawn(move || {
-        for msg in rx {
+        // Substring-match the exact `eprintln!` lines
+        // `src/bin/acr_telemetry_bridge.rs` prints ("Bridge running at"
+        // once the read loop starts, "failed to bind" on a non-fatal HTTP
+        // bind failure — the UDP/state loop keeps going even then, so this
+        // doesn't flip the pill to stopped, only surfaces the error in the
+        // log — and this panel's own "Stop file detected" from the backend
+        // fix) for the status pill, and always append the line to the raw log.
+        let result = process::wait_for_output(child, |_is_stderr, line| {
             let window_weak = window_weak.clone();
+            let line = line.to_string();
             let _ = slint::invoke_from_event_loop(move || {
                 if let Some(window) = window_weak.upgrade() {
-                    handle_output(&window, msg);
+                    update_status_pill(&window, &line);
+                    append_log(&window, &line);
                 }
             });
-        }
-    });
-}
+        });
 
-/// Route one line of the bridge's output: substring-match the exact
-/// `eprintln!` lines `src/bin/acr_telemetry_bridge.rs` prints ("Bridge
-/// running at" once the read loop starts, "failed to bind" on a
-/// non-fatal HTTP bind failure — the UDP/state loop keeps going even
-/// then, so this doesn't flip the pill to stopped, only surfaces the
-/// error in the log — and this panel's own "Stop file detected" from the
-/// backend fix), and always append it to the raw log. `Exited` clears
-/// `telemetry-bridge-running` so Start/Stop flip back.
-fn handle_output(window: &AppWindow, msg: ChildOutput) {
-    match msg {
-        ChildOutput::Stdout(line) | ChildOutput::Stderr(line) => {
-            update_status_pill(window, &line);
-            append_log(window, &line);
-        }
-        ChildOutput::Exited(code) => {
-            window.set_telemetry_bridge_running(false);
-            let line = match code {
-                Some(code) => format!("Process exited (code {code})"),
-                None => "Process exited".to_string(),
-            };
-            append_log(window, &line);
-            window.set_telemetry_bridge_status_pill("Stopped".into());
-        }
-    }
+        let window_weak = window_weak.clone();
+        let _ = slint::invoke_from_event_loop(move || {
+            if let Some(window) = window_weak.upgrade() {
+                window.set_telemetry_bridge_running(false);
+                let line = match result.exit_code {
+                    Some(code) => format!("Process exited (code {code})"),
+                    None => "Process exited".to_string(),
+                };
+                append_log(&window, &line);
+                window.set_telemetry_bridge_status_pill("Stopped".into());
+            }
+        });
+    });
 }
 
 fn update_status_pill(window: &AppWindow, line: &str) {
@@ -228,10 +220,5 @@ fn update_status_pill(window: &AppWindow, line: &str) {
 }
 
 fn append_log(window: &AppWindow, line: &str) {
-    let mut text = window.get_telemetry_bridge_log().to_string();
-    if !text.is_empty() {
-        text.push('\n');
-    }
-    text.push_str(line);
-    window.set_telemetry_bridge_log(text.into());
+    crate::append_line!(window, get_telemetry_bridge_log, set_telemetry_bridge_log, line);
 }

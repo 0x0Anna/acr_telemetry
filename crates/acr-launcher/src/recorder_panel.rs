@@ -13,11 +13,10 @@
 use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
-use std::sync::mpsc;
 
 use slint::ComponentHandle;
 
-use crate::process::{self, ChildOutput};
+use crate::process;
 use crate::{AppState, AppWindow};
 
 pub(crate) fn init(window: &AppWindow, state: Rc<RefCell<AppState>>) {
@@ -180,46 +179,34 @@ fn start_recording(window: &AppWindow) {
     window.set_recorder_running(true);
     append_log(window, &format!("Started {binary_name}"));
 
-    let (tx, rx) = mpsc::channel();
-    process::stream_output(child, tx);
-
     let window_weak = window.as_weak();
     std::thread::spawn(move || {
-        for msg in rx {
+        let result = process::wait_for_output(child, |_is_stderr, line| {
             let window_weak = window_weak.clone();
+            let line = line.to_string();
             let _ = slint::invoke_from_event_loop(move || {
                 if let Some(window) = window_weak.upgrade() {
-                    handle_child_output(&window, msg);
+                    update_status_pill(&window, &line);
+                    append_log(&window, &line);
                 }
             });
-        }
-    });
-}
+        });
 
-/// Route one line of subprocess output: substring-match it for the
-/// status pill (see docs/plans/acr-launcher-v1.md's "Recording panel"
-/// section — "Waiting for ACC shared memory", "Connected to ACC shared
-/// memory", "Recording to:", "Done. Recorded"), and always append it to
-/// the raw log. `Exited` clears `recorder-running` so Start/Stop flip
-/// back.
-fn handle_child_output(window: &AppWindow, msg: ChildOutput) {
-    match msg {
-        ChildOutput::Stdout(line) | ChildOutput::Stderr(line) => {
-            update_status_pill(window, &line);
-            append_log(window, &line);
-        }
-        ChildOutput::Exited(code) => {
-            window.set_recorder_running(false);
-            let line = match code {
-                Some(code) => format!("Process exited (code {code})"),
-                None => "Process exited".to_string(),
-            };
-            append_log(window, &line);
-            if window.get_recorder_status_pill() != "Stopped" {
-                window.set_recorder_status_pill("Stopped".into());
+        let window_weak = window_weak.clone();
+        let _ = slint::invoke_from_event_loop(move || {
+            if let Some(window) = window_weak.upgrade() {
+                window.set_recorder_running(false);
+                let line = match result.exit_code {
+                    Some(code) => format!("Process exited (code {code})"),
+                    None => "Process exited".to_string(),
+                };
+                append_log(&window, &line);
+                if window.get_recorder_status_pill() != "Stopped" {
+                    window.set_recorder_status_pill("Stopped".into());
+                }
             }
-        }
-    }
+        });
+    });
 }
 
 fn update_status_pill(window: &AppWindow, line: &str) {
@@ -235,10 +222,5 @@ fn update_status_pill(window: &AppWindow, line: &str) {
 }
 
 fn append_log(window: &AppWindow, line: &str) {
-    let mut text = window.get_recorder_log_text().to_string();
-    if !text.is_empty() {
-        text.push('\n');
-    }
-    text.push_str(line);
-    window.set_recorder_log_text(text.into());
+    crate::append_line!(window, get_recorder_log_text, set_recorder_log_text, line);
 }

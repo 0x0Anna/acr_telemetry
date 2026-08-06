@@ -22,11 +22,10 @@
 use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
-use std::sync::mpsc;
 
 use slint::{ComponentHandle, Weak};
 
-use crate::process::{self, ChildOutput};
+use crate::process;
 use crate::{AppState, AppWindow};
 
 /// Register all `track-match-*` callbacks on `window`. Call once from
@@ -236,47 +235,32 @@ fn start_live(window: &AppWindow, refs_arg: String) {
     window.set_track_match_running(true);
     append_log(window, "Started acr_track_match.exe --live");
 
-    let (tx, rx) = mpsc::channel();
-    process::stream_output(child, tx);
-
     let window_weak = window.as_weak();
     std::thread::spawn(move || {
-        for msg in rx {
+        let result = process::wait_for_output(child, |_is_stderr, line| {
             let window_weak = window_weak.clone();
+            let line = line.to_string();
             let _ = slint::invoke_from_event_loop(move || {
                 if let Some(window) = window_weak.upgrade() {
-                    handle_live_output(&window, msg);
+                    update_status_pill(&window, &line);
+                    append_log(&window, &line);
                 }
             });
-        }
-    });
-}
+        });
 
-/// Route one line of the live child's output: substring-match it for the
-/// status pill (see `src/track_match_app.rs`'s `eprintln!` lines this
-/// mirrors — "live mode started" while waiting on ACC shared memory,
-/// "ACC telemetry active" once physics packets are flowing, "start
-/// armed:" when a timing session arms at a start anchor, "track locked:"
-/// once geometry match settles on a reference track, and this panel's own
-/// "Stop file detected" from the backend fix), and always append it to
-/// the raw log. `Exited` clears `track-match-running` so Start/Stop flip
-/// back.
-fn handle_live_output(window: &AppWindow, msg: ChildOutput) {
-    match msg {
-        ChildOutput::Stdout(line) | ChildOutput::Stderr(line) => {
-            update_status_pill(window, &line);
-            append_log(window, &line);
-        }
-        ChildOutput::Exited(code) => {
-            window.set_track_match_running(false);
-            let line = match code {
-                Some(code) => format!("Process exited (code {code})"),
-                None => "Process exited".to_string(),
-            };
-            append_log(window, &line);
-            window.set_track_match_status_pill("Stopped".into());
-        }
-    }
+        let window_weak = window_weak.clone();
+        let _ = slint::invoke_from_event_loop(move || {
+            if let Some(window) = window_weak.upgrade() {
+                window.set_track_match_running(false);
+                let line = match result.exit_code {
+                    Some(code) => format!("Process exited (code {code})"),
+                    None => "Process exited".to_string(),
+                };
+                append_log(&window, &line);
+                window.set_track_match_status_pill("Stopped".into());
+            }
+        });
+    });
 }
 
 fn update_status_pill(window: &AppWindow, line: &str) {
@@ -312,45 +296,23 @@ fn run_offline(window: &AppWindow, refs_arg: String, input: PathBuf) {
 fn run_offline_queue(window_weak: Weak<AppWindow>, binary: PathBuf, refs_arg: String, input: String) {
     let args = ["--refs", refs_arg.as_str(), "--input", input.as_str()];
 
-    let child = match process::spawn_hidden(&binary, &args) {
-        Ok(child) => child,
+    let result = process::run_and_wait(&binary, &args, |_is_stderr, line| {
+        let window_weak = window_weak.clone();
+        let line = line.to_string();
+        let _ = slint::invoke_from_event_loop(move || {
+            if let Some(window) = window_weak.upgrade() {
+                append_log(&window, &line);
+            }
+        });
+    });
+
+    match result {
+        Ok(r) if r.succeeded() => finish_offline(&window_weak, true, "Done.".to_string()),
+        Ok(r) => finish_offline(&window_weak, false, r.failure_message("acr_track_match")),
         Err(e) => {
             let msg = format!("Failed to launch {}: {e}", binary.display());
             finish_offline(&window_weak, false, msg);
-            return;
         }
-    };
-
-    let (tx, rx) = mpsc::channel();
-    process::stream_output(child, tx);
-
-    let mut exit_code: Option<i32> = None;
-    let mut last_line = String::new();
-    for msg in rx {
-        match msg {
-            ChildOutput::Stdout(line) | ChildOutput::Stderr(line) => {
-                last_line = line.clone();
-                let window_weak = window_weak.clone();
-                let _ = slint::invoke_from_event_loop(move || {
-                    if let Some(window) = window_weak.upgrade() {
-                        append_log(&window, &line);
-                    }
-                });
-            }
-            ChildOutput::Exited(code) => {
-                exit_code = code;
-            }
-        }
-    }
-
-    if exit_code == Some(0) {
-        finish_offline(&window_weak, true, "Done.".to_string());
-    } else {
-        let msg = match exit_code {
-            Some(code) => format!("acr_track_match exited with code {code}. Last output: {last_line}"),
-            None => format!("acr_track_match exited abnormally. Last output: {last_line}"),
-        };
-        finish_offline(&window_weak, false, msg);
     }
 }
 
@@ -367,10 +329,5 @@ fn finish_offline(window_weak: &Weak<AppWindow>, success: bool, status: String) 
 }
 
 fn append_log(window: &AppWindow, line: &str) {
-    let mut text = window.get_track_match_log_text().to_string();
-    if !text.is_empty() {
-        text.push('\n');
-    }
-    text.push_str(line);
-    window.set_track_match_log_text(text.into());
+    crate::append_line!(window, get_track_match_log_text, set_track_match_log_text, line);
 }

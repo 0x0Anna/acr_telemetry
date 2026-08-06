@@ -4,13 +4,15 @@
 //! streaming its stdout/stderr back into the GUI line-by-line.
 //!
 //! Deliberately generic — not specific to recording vs. exporting — so
-//! both the (not-yet-built) recorder panel and export panel can share it.
-//! See `docs/plans/acr-launcher-v1.md`'s "Recording panel"/"Export panel"
-//! sections for how each is expected to use this.
-//!
-//! Unused for now (this unit only wires up the window shell + status
-//! poll) — the recorder/export panel units are what call these.
-#![allow(dead_code)]
+//! every panel (recorder, export, track match, grip estimator, plot
+//! recording, telemetry bridge) shares the same spawn/stream/wait
+//! plumbing rather than re-implementing it. [`run_and_wait`]/
+//! [`wait_for_output`] are the two entry points panels actually call;
+//! [`spawn_hidden`]/[`stream_output`] are their building blocks, exposed
+//! separately for the handful of panels (recorder, track match live,
+//! telemetry bridge) that need to spawn synchronously on the UI thread
+//! for immediate "failed to start" feedback before handing the child off
+//! to a background thread.
 
 use std::io::{BufRead, BufReader, Write};
 use std::os::windows::process::CommandExt;
@@ -134,24 +136,144 @@ pub fn stream_output(mut child: Child, sender: Sender<ChildOutput>) {
 }
 
 /// Whether a process named `image_name` (e.g. `"acr.exe"`) currently
-/// appears in `tasklist`'s process list. Used for the Status tab's
-/// "Launch AC Rally" button instead of the ACC-shared-memory poll —
-/// overlay tools like SimHub keep the ACC-shaped shared memory segments
+/// appears in a process snapshot. Used for the Status tab's "Launch AC
+/// Rally" button instead of the ACC-shared-memory poll — overlay tools
+/// like SimHub keep the ACC-shaped shared memory segments
 /// (`Local\acpmf_physics` etc.) alive on their own, so shared-memory
 /// presence alone doesn't mean the game's own process is actually up.
+///
+/// Walks a `CreateToolhelp32Snapshot` process list in-process rather than
+/// spawning `tasklist.exe` — this runs once a second for the launcher's
+/// whole lifetime (see `main.rs`'s `spawn_status_poll`), and shelling out
+/// to a fresh process every second is unnecessary process-creation
+/// overhead for what's a simple name lookup.
 pub fn is_process_running(image_name: &str) -> bool {
-    let output = Command::new("tasklist")
-        .args(["/FI", &format!("IMAGENAME eq {image_name}"), "/NH", "/FO", "CSV"])
-        .stdin(Stdio::null())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::null())
-        .creation_flags(CREATE_NO_WINDOW)
-        .output();
+    use std::ffi::CStr;
+    use winapi::um::handleapi::{CloseHandle, INVALID_HANDLE_VALUE};
+    use winapi::um::tlhelp32::{
+        CreateToolhelp32Snapshot, Process32First, Process32Next, PROCESSENTRY32,
+        TH32CS_SNAPPROCESS,
+    };
 
-    match output {
-        Ok(out) => String::from_utf8_lossy(&out.stdout)
-            .to_lowercase()
-            .contains(&image_name.to_lowercase()),
-        Err(_) => false,
+    // SAFETY: `CreateToolhelp32Snapshot`/`Process32First`/`Process32Next`
+    // are called per their documented contract — the snapshot handle is
+    // checked against `INVALID_HANDLE_VALUE` before use and always closed
+    // on every return path, and `entry` is a plain `#[repr(C)]` struct
+    // zero-initialized before being handed to the Win32 calls that fill it in.
+    unsafe {
+        let snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+        if snapshot == INVALID_HANDLE_VALUE {
+            return false;
+        }
+
+        let mut entry: PROCESSENTRY32 = std::mem::zeroed();
+        entry.dwSize = std::mem::size_of::<PROCESSENTRY32>() as u32;
+
+        let mut found = false;
+        if Process32First(snapshot, &mut entry) != 0 {
+            loop {
+                let name = CStr::from_ptr(entry.szExeFile.as_ptr())
+                    .to_string_lossy();
+                if name.eq_ignore_ascii_case(image_name) {
+                    found = true;
+                    break;
+                }
+                if Process32Next(snapshot, &mut entry) == 0 {
+                    break;
+                }
+            }
+        }
+
+        CloseHandle(snapshot);
+        found
     }
+}
+
+/// The outcome of a child process run to completion via [`wait_for_output`]
+/// / [`run_and_wait`]: its exit code (if any) and the last output line
+/// seen on either stream, for building the "X exited with code N. Last
+/// output: ..." messages every fire-and-forget panel used to hand-roll.
+#[derive(Debug, Clone)]
+pub struct RunResult {
+    pub exit_code: Option<i32>,
+    pub last_line: String,
+}
+
+impl RunResult {
+    pub fn succeeded(&self) -> bool {
+        self.exit_code == Some(0)
+    }
+
+    /// `"{program} exited with code N. Last output: ..."`, or "exited
+    /// abnormally" if no exit code was available (see [`ChildOutput::Exited`]).
+    pub fn failure_message(&self, program: &str) -> String {
+        match self.exit_code {
+            Some(code) => format!(
+                "{program} exited with code {code}. Last output: {}",
+                self.last_line
+            ),
+            None => format!("{program} exited abnormally. Last output: {}", self.last_line),
+        }
+    }
+}
+
+/// Stream `child`'s output to completion on the calling thread, invoking
+/// `on_line(is_stderr, line)` for each line as it arrives and returning
+/// once the process exits. Blocks the caller — every current caller
+/// already runs this from its own background thread (see
+/// `recorder_panel::start_recording` for the "spawn synchronously on the
+/// UI thread, then hand the child to a background thread" shape this is
+/// meant for).
+pub fn wait_for_output(child: Child, mut on_line: impl FnMut(bool, &str)) -> RunResult {
+    let (tx, rx) = std::sync::mpsc::channel();
+    stream_output(child, tx);
+
+    let mut exit_code = None;
+    let mut last_line = String::new();
+    for msg in rx {
+        match msg {
+            ChildOutput::Stdout(line) => {
+                last_line = line.clone();
+                on_line(false, &line);
+            }
+            ChildOutput::Stderr(line) => {
+                last_line = line.clone();
+                on_line(true, &line);
+            }
+            ChildOutput::Exited(code) => exit_code = code,
+        }
+    }
+    RunResult { exit_code, last_line }
+}
+
+/// [`spawn_hidden`] + [`wait_for_output`] in one call, for the
+/// fire-and-forget panels (export, track match offline, grip estimator,
+/// plot recording) that spawn from inside a background thread already and
+/// so don't need the two steps split apart for synchronous "failed to
+/// launch" feedback.
+pub fn run_and_wait(
+    binary: &Path,
+    args: &[&str],
+    on_line: impl FnMut(bool, &str),
+) -> std::io::Result<RunResult> {
+    let child = spawn_hidden(binary, args)?;
+    Ok(wait_for_output(child, on_line))
+}
+
+/// Append `$line` to a Slint text property, prefixing it with a newline
+/// unless the property is currently empty — the "get, push newline if
+/// nonempty, push line, set" dance every panel's log/results property
+/// needs. A macro rather than a function since Slint's generated
+/// getters/setters (`get_export_log`/`set_export_log`, etc.) are distinct
+/// methods per property with no common trait to write one function against.
+#[macro_export]
+macro_rules! append_line {
+    ($window:expr, $get:ident, $set:ident, $line:expr) => {{
+        let mut text = $window.$get().to_string();
+        if !text.is_empty() {
+            text.push('\n');
+        }
+        text.push_str($line);
+        $window.$set(text.into());
+    }};
 }

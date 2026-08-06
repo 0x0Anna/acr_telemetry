@@ -13,11 +13,10 @@
 use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
-use std::sync::mpsc;
 
 use slint::{ComponentHandle, Weak};
 
-use crate::process::{self, ChildOutput};
+use crate::process;
 use crate::{AppState, AppWindow};
 
 pub(crate) fn init(window: &AppWindow, state: Rc<RefCell<AppState>>) {
@@ -147,55 +146,31 @@ fn save_settings(window: &AppWindow) {
 fn run_child(window_weak: Weak<AppWindow>, binary: PathBuf, args: Vec<String>) {
     let arg_refs: Vec<&str> = args.iter().map(String::as_str).collect();
 
-    let child = match process::spawn_hidden(&binary, &arg_refs) {
-        Ok(child) => child,
-        Err(e) => {
-            let msg = format!("Failed to launch {}: {e}", binary.display());
-            finish(&window_weak, false, msg);
+    // Only stdout carries the tool's actual (batch-printed) CSV output —
+    // stderr is still tracked for `RunResult::failure_message`'s "Last
+    // output" but never shown in the results panel.
+    let mut has_output = false;
+    let result = process::run_and_wait(&binary, &arg_refs, |is_stderr, line| {
+        if is_stderr {
             return;
         }
-    };
+        has_output = true;
+        let window_weak = window_weak.clone();
+        let line = line.to_string();
+        let _ = slint::invoke_from_event_loop(move || {
+            if let Some(window) = window_weak.upgrade() {
+                append_results(&window, &line);
+            }
+        });
+    });
 
-    let (tx, rx) = mpsc::channel();
-    process::stream_output(child, tx);
-
-    let mut exit_code: Option<i32> = None;
-    let mut stdout_lines: Vec<String> = Vec::new();
-    let mut last_line = String::new();
-    for msg in rx {
-        match msg {
-            ChildOutput::Stdout(line) => {
-                last_line = line.clone();
-                stdout_lines.push(line.clone());
-                let window_weak = window_weak.clone();
-                let _ = slint::invoke_from_event_loop(move || {
-                    if let Some(window) = window_weak.upgrade() {
-                        append_results(&window, &line);
-                    }
-                });
-            }
-            ChildOutput::Stderr(line) => {
-                last_line = line;
-            }
-            ChildOutput::Exited(code) => {
-                exit_code = code;
-            }
+    match result {
+        Ok(r) if r.succeeded() => {
+            let status = if has_output { "Done." } else { "Done (no output)." };
+            finish(&window_weak, true, status.to_string());
         }
-    }
-
-    if exit_code == Some(0) {
-        let status = if stdout_lines.is_empty() {
-            "Done (no output).".to_string()
-        } else {
-            "Done.".to_string()
-        };
-        finish(&window_weak, true, status);
-    } else {
-        let msg = match exit_code {
-            Some(code) => format!("acr_grip_estimator exited with code {code}. Last output: {last_line}"),
-            None => format!("acr_grip_estimator exited abnormally. Last output: {last_line}"),
-        };
-        finish(&window_weak, false, msg);
+        Ok(r) => finish(&window_weak, false, r.failure_message("acr_grip_estimator")),
+        Err(e) => finish(&window_weak, false, format!("Failed to launch {}: {e}", binary.display())),
     }
 }
 
@@ -212,10 +187,5 @@ fn finish(window_weak: &Weak<AppWindow>, success: bool, status: String) {
 }
 
 fn append_results(window: &AppWindow, line: &str) {
-    let mut text = window.get_grip_estimator_results().to_string();
-    if !text.is_empty() {
-        text.push('\n');
-    }
-    text.push_str(line);
-    window.set_grip_estimator_results(text.into());
+    crate::append_line!(window, get_grip_estimator_results, set_grip_estimator_results, line);
 }

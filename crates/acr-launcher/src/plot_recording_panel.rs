@@ -15,11 +15,10 @@
 use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
-use std::sync::mpsc;
 
 use slint::{ComponentHandle, Weak};
 
-use crate::process::{self, ChildOutput};
+use crate::process;
 use crate::{AppState, AppWindow};
 
 pub(crate) fn init(window: &AppWindow, state: Rc<RefCell<AppState>>) {
@@ -127,45 +126,23 @@ fn run_child(
         args.push(output_arg.as_str());
     }
 
-    let child = match process::spawn_hidden(&binary, &args) {
-        Ok(child) => child,
+    let result = process::run_and_wait(&binary, &args, |_is_stderr, line| {
+        let window_weak = window_weak.clone();
+        let line = line.to_string();
+        let _ = slint::invoke_from_event_loop(move || {
+            if let Some(window) = window_weak.upgrade() {
+                append_log(&window, &line);
+            }
+        });
+    });
+
+    match result {
+        Ok(r) if r.succeeded() => finish(&window_weak, true, "Done.".to_string(), resolved_output),
+        Ok(r) => finish(&window_weak, false, r.failure_message("acr_plot_recording"), String::new()),
         Err(e) => {
             let msg = format!("Failed to launch {}: {e}", binary.display());
             finish(&window_weak, false, msg, String::new());
-            return;
         }
-    };
-
-    let (tx, rx) = mpsc::channel();
-    process::stream_output(child, tx);
-
-    let mut exit_code: Option<i32> = None;
-    let mut last_line = String::new();
-    for msg in rx {
-        match msg {
-            ChildOutput::Stdout(line) | ChildOutput::Stderr(line) => {
-                last_line = line.clone();
-                let window_weak = window_weak.clone();
-                let _ = slint::invoke_from_event_loop(move || {
-                    if let Some(window) = window_weak.upgrade() {
-                        append_log(&window, &line);
-                    }
-                });
-            }
-            ChildOutput::Exited(code) => {
-                exit_code = code;
-            }
-        }
-    }
-
-    if exit_code == Some(0) {
-        finish(&window_weak, true, "Done.".to_string(), resolved_output);
-    } else {
-        let msg = match exit_code {
-            Some(code) => format!("acr_plot_recording exited with code {code}. Last output: {last_line}"),
-            None => format!("acr_plot_recording exited abnormally. Last output: {last_line}"),
-        };
-        finish(&window_weak, false, msg, String::new());
     }
 }
 
@@ -185,10 +162,5 @@ fn finish(window_weak: &Weak<AppWindow>, success: bool, status: String, output_p
 }
 
 fn append_log(window: &AppWindow, line: &str) {
-    let mut text = window.get_plot_recording_log().to_string();
-    if !text.is_empty() {
-        text.push('\n');
-    }
-    text.push_str(line);
-    window.set_plot_recording_log(text.into());
+    crate::append_line!(window, get_plot_recording_log, set_plot_recording_log, line);
 }
