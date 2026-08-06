@@ -107,8 +107,7 @@ struct BridgeTomlOut {
     temperature_unit: String,
 }
 
-fn write_bridge_config(window: &AppWindow) -> std::io::Result<PathBuf> {
-    let rate_hz: u64 = window.get_telemetry_bridge_rate_hz().parse().unwrap_or(5).max(1);
+fn write_bridge_config(window: &AppWindow, rate_hz: u64) -> std::io::Result<PathBuf> {
     let udp_target = if window.get_telemetry_bridge_udp_enabled() {
         let t = window.get_telemetry_bridge_udp_target().to_string();
         if t.trim().is_empty() { None } else { Some(t) }
@@ -134,10 +133,10 @@ fn write_bridge_config(window: &AppWindow) -> std::io::Result<PathBuf> {
 /// Persist the UI's settings into `acr_launcher.toml` so they pre-fill
 /// next launch (independent of `acr_telemetry_bridge.toml`, which gets
 /// overwritten fresh from these same values on every Start).
-fn save_ui_settings(window: &AppWindow) {
+fn save_ui_settings(window: &AppWindow, rate_hz: u64) {
     let mut cfg = crate::launcher_config::load();
     let b = &mut cfg.telemetry_bridge;
-    b.rate_hz = window.get_telemetry_bridge_rate_hz().parse().unwrap_or(b.rate_hz).max(1);
+    b.rate_hz = rate_hz;
     b.udp_enabled = window.get_telemetry_bridge_udp_enabled();
     b.udp_target = window.get_telemetry_bridge_udp_target().to_string();
     b.http_enabled = window.get_telemetry_bridge_http_enabled();
@@ -147,9 +146,20 @@ fn save_ui_settings(window: &AppWindow) {
 }
 
 fn start(window: &AppWindow) {
-    save_ui_settings(window);
+    let rate_hz_text = window.get_telemetry_bridge_rate_hz().to_string();
+    let rate_hz: u64 = match rate_hz_text.trim().parse() {
+        Ok(hz) if hz >= 1 => hz,
+        _ => {
+            window.set_telemetry_bridge_status_text(
+                format!("Error: rate (Hz) \"{rate_hz_text}\" must be a whole number of 1 or more.").into(),
+            );
+            return;
+        }
+    };
 
-    if let Err(e) = write_bridge_config(window) {
+    save_ui_settings(window, rate_hz);
+
+    if let Err(e) = write_bridge_config(window, rate_hz) {
         window.set_telemetry_bridge_status_text(
             format!("Failed to write acr_telemetry_bridge.toml: {e}").into(),
         );

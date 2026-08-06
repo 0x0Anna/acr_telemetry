@@ -30,10 +30,15 @@ pub(crate) fn init(window: &AppWindow, state: Rc<RefCell<AppState>>) {
                 return;
             };
             let mut app_state = state.borrow_mut();
-            apply_ui_to_config(&window, &mut app_state.config);
+            let warning = apply_ui_to_config(&window, &mut app_state.config);
             match save_config(&app_state.config) {
-                Ok(path) => window
-                    .set_recorder_status_text(format!("Saved to {}", path.display()).into()),
+                Ok(path) => {
+                    let mut status = format!("Saved to {}", path.display());
+                    if let Some(w) = warning {
+                        status = format!("{status} ({w})");
+                    }
+                    window.set_recorder_status_text(status.into());
+                }
                 Err(e) => window.set_recorder_status_text(format!("Save failed: {e}").into()),
             }
         });
@@ -52,16 +57,17 @@ pub(crate) fn init(window: &AppWindow, state: Rc<RefCell<AppState>>) {
                 return;
             }
 
-            {
+            let warning = {
                 let mut app_state = state.borrow_mut();
-                apply_ui_to_config(&window, &mut app_state.config);
+                let warning = apply_ui_to_config(&window, &mut app_state.config);
                 if let Err(e) = save_config(&app_state.config) {
                     window.set_recorder_status_text(format!("Save failed: {e}").into());
                     return;
                 }
-            }
+                warning
+            };
 
-            start_recording(&window);
+            start_recording(&window, warning);
         });
     }
 
@@ -104,8 +110,10 @@ fn sync_config_to_ui(window: &AppWindow, cfg: &acr_recorder::config::Config) {
 
 /// Read the Record tab's editable properties back into `cfg.recorder`.
 /// Leaves fields the panel doesn't expose (distance-reset tuning, etc.)
-/// untouched.
-fn apply_ui_to_config(window: &AppWindow, cfg: &mut acr_recorder::config::Config) {
+/// untouched. Returns a warning to surface alongside the save/start
+/// status if `ring_slots` didn't parse — the old value is kept rather
+/// than silently discarding the user's edit without saying so.
+fn apply_ui_to_config(window: &AppWindow, cfg: &mut acr_recorder::config::Config) -> Option<String> {
     let r = &mut cfg.recorder;
     r.raw_output_dir = window.get_recorder_raw_output_dir().to_string();
 
@@ -119,14 +127,24 @@ fn apply_ui_to_config(window: &AppWindow, cfg: &mut acr_recorder::config::Config
     r.record_graphics = window.get_recorder_record_graphics();
     r.ring_mode = window.get_recorder_ring_mode();
 
-    if let Ok(slots) = window.get_recorder_ring_slots().parse::<usize>() {
-        r.ring_slots = slots.max(2);
+    let mut warning = None;
+    let slots_text = window.get_recorder_ring_slots().to_string();
+    match slots_text.parse::<usize>() {
+        Ok(slots) => r.ring_slots = slots.max(2),
+        Err(_) => {
+            warning = Some(format!(
+                "ring slots \"{slots_text}\" isn't a number; kept {}",
+                r.ring_slots
+            ));
+        }
     }
 
     let prefix = window.get_recorder_ring_prefix().to_string();
     if !prefix.trim().is_empty() {
         r.ring_prefix = prefix;
     }
+
+    warning
 }
 
 /// Where `acr_recorder.toml` is written back to: next to the launcher's
@@ -153,8 +171,11 @@ pub(crate) fn save_config(cfg: &acr_recorder::config::Config) -> std::io::Result
 
 /// Spawn the chosen binary (`acr_motec.exe` if "Record directly to
 /// MoTeC" is checked, `acr_recorder.exe` otherwise) and start tailing its
-/// output into the log panel / status pill.
-fn start_recording(window: &AppWindow) {
+/// output into the log panel / status pill. `config_warning` (e.g. an
+/// unparseable ring-slots value) is logged once recording starts rather
+/// than shown in `status_text`, which this function clears immediately
+/// below.
+fn start_recording(window: &AppWindow, config_warning: Option<String>) {
     let motec_mode = window.get_recorder_motec_mode();
     let binary_name = if motec_mode {
         "acr_motec.exe"
@@ -178,6 +199,9 @@ fn start_recording(window: &AppWindow) {
     window.set_recorder_status_pill("Starting…".into());
     window.set_recorder_running(true);
     append_log(window, &format!("Started {binary_name}"));
+    if let Some(w) = config_warning {
+        append_log(window, &format!("Warning: {w}"));
+    }
 
     let window_weak = window.as_weak();
     std::thread::spawn(move || {

@@ -248,8 +248,11 @@ fn run_export(window: &AppWindow, state: &Rc<RefCell<AppState>>) {
         return;
     }
 
-    let sqlite_path = window.get_export_sqlite_path().to_string();
-    let out_dir_override = window.get_export_out_dir().to_string();
+    // Trimmed so a field containing only whitespace is treated the same
+    // as an empty one, rather than being forwarded to acr_export as a
+    // (garbage) --output-dir/--sqlite path argument.
+    let sqlite_path = window.get_export_sqlite_path().to_string().trim().to_string();
+    let out_dir_override = window.get_export_out_dir().to_string().trim().to_string();
     let base_args = input.base_args();
 
     let mut invocations: Vec<Vec<String>> = Vec::new();
