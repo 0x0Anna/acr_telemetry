@@ -106,6 +106,7 @@ fn sync_config_to_ui(window: &AppWindow, cfg: &acr_recorder::config::Config) {
     window.set_recorder_ring_mode(r.ring_mode);
     window.set_recorder_ring_slots(r.ring_slots.to_string().into());
     window.set_recorder_ring_prefix(r.ring_prefix.clone().into());
+    window.set_recorder_motec_profile(cfg.export.motec.profile.clone().into());
 }
 
 /// Read the Record tab's editable properties back into `cfg.recorder`.
@@ -142,6 +143,11 @@ fn apply_ui_to_config(window: &AppWindow, cfg: &mut acr_recorder::config::Config
     let prefix = window.get_recorder_ring_prefix().to_string();
     if !prefix.trim().is_empty() {
         r.ring_prefix = prefix;
+    }
+
+    let profile = window.get_recorder_motec_profile().to_string();
+    if !profile.trim().is_empty() {
+        cfg.export.motec.profile = profile;
     }
 
     warning

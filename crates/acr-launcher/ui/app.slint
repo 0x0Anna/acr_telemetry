@@ -168,6 +168,9 @@ export component AppWindow inherits Window {
     in-out property <string> recorder-ring-slots: "8";
     in-out property <string> recorder-ring-prefix: "acc_ring";
     in-out property <bool> recorder-motec-mode: false;
+    // MoTeC channel profile ([export.motec].profile in acr_recorder.toml) —
+    // shared by acr_motec, `acr_recorder --motec`, and acr_export's LD write.
+    in-out property <string> recorder-motec-profile: "rbr";
 
     // Recording status: whether a child process is currently spawned
     // (drives Start/Stop enablement), a short status pill driven by
@@ -458,6 +461,23 @@ export component AppWindow inherits Window {
                         CheckBox {
                             text: "Record directly to MoTeC (no rkyv)";
                             checked <=> root.recorder-motec-mode;
+                        }
+                    }
+
+                    HorizontalBox {
+                        Text {
+                            text: "MoTeC profile:";
+                            vertical-alignment: center;
+                        }
+                        ComboBox {
+                            model: ["rbr", "rally", "all_data"];
+                            current-value <=> root.recorder-motec-profile;
+                        }
+                        Text {
+                            text: "Channel set for .ld export (acr_motec, --motec, and Export's CSV/LD).";
+                            wrap: word-wrap;
+                            font-size: 11px;
+                            vertical-alignment: center;
                         }
                     }
 
