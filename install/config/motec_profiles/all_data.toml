@@ -1,4 +1,28 @@
 # Shipped with install; copy of config/motec_profiles/all_data.toml — edit in {app}\motec_profiles\
+#
+# Some channels below always read 0 in AC Rally / ACC as of this writing because
+# the game's shared memory never populates them (confirmed against a live capture,
+# see docs/FIELDS.md for the per-field breakdown): tyre_wear_pct, turbo_boost,
+# brake_pressure (rarely populated), ride_height, car_damage, camber_rad,
+# suspension_damage, front/rear_brake_compound, tyre_dirty_level, tyre_temp_i/m/o,
+# tc_in_action, abs_in_action, pit_limiter_on, is_ai_controlled, drs, cg_height,
+# number_of_tyres_out, kers_*, ballast, air_density, performance_meter,
+# engine_brake, ers_*, drs_available/enabled, p2p_*, kerb_vibration,
+# autoshifter_on.
+#
+# Each of those is tagged `skip_if_zero = true` below: build_ld_channels() omits
+# the channel from a given .ld only if every sample in that recording is exactly
+# 0.0. This keeps today's .ld files free of dead columns (smaller file, less for
+# downstream tools like shakedown-engineer to chew through) while staying
+# self-healing — if a future sim/game update starts returning real values, the
+# channel reappears in the export automatically, with no profile edit needed.
+#
+# tyre_temp_extra is populated, but its value is numerically identical to
+# tyre_core_temp on every wheel in testing — treat it as a probable duplicate of
+# the core temp slot, not an independent measurement.
+#
+# pad_life / disc_life are populated but vary by ~1e-5 (car-constant, negligible
+# in-session change) — real data, just easy to mistake for zero when rounded.
 
 description = "All currently supported MoTeC exporter sources"
 
@@ -246,21 +270,25 @@ source = "brake_temp_c_rr"
 name = "tyre_wear_pct_fl"
 unit = "%"
 source = "tyre_wear_pct_fl"
+skip_if_zero = true
 
 [[channels]]
 name = "tyre_wear_pct_fr"
 unit = "%"
 source = "tyre_wear_pct_fr"
+skip_if_zero = true
 
 [[channels]]
 name = "tyre_wear_pct_rl"
 unit = "%"
 source = "tyre_wear_pct_rl"
+skip_if_zero = true
 
 [[channels]]
 name = "tyre_wear_pct_rr"
 unit = "%"
 source = "tyre_wear_pct_rr"
+skip_if_zero = true
 
 [[channels]]
 name = "wheel_speed_kmh_fl"
@@ -339,6 +367,7 @@ source = "abs"
 name = "turbo_boost"
 unit = "bar"
 source = "turbo_boost"
+skip_if_zero = true
 
 [[channels]]
 name = "air_temp"
@@ -374,21 +403,25 @@ source = "roll"
 name = "brake_pressure_fl"
 unit = ""
 source = "brake_pressure_fl"
+skip_if_zero = true
 
 [[channels]]
 name = "brake_pressure_fr"
 unit = ""
 source = "brake_pressure_fr"
+skip_if_zero = true
 
 [[channels]]
 name = "brake_pressure_rl"
 unit = ""
 source = "brake_pressure_rl"
+skip_if_zero = true
 
 [[channels]]
 name = "brake_pressure_rr"
 unit = ""
 source = "brake_pressure_rr"
+skip_if_zero = true
 
 [[channels]]
 name = "slip_angle_fl"
@@ -414,33 +447,735 @@ source = "slip_angle_rr"
 name = "ride_height_front"
 unit = "m"
 source = "ride_height_front"
+skip_if_zero = true
 
 [[channels]]
 name = "ride_height_rear"
 unit = "m"
 source = "ride_height_rear"
+skip_if_zero = true
 
 [[channels]]
 name = "car_damage_front"
 unit = ""
 source = "car_damage_front"
+skip_if_zero = true
 
 [[channels]]
 name = "car_damage_rear"
 unit = ""
 source = "car_damage_rear"
+skip_if_zero = true
 
 [[channels]]
 name = "car_damage_left"
 unit = ""
 source = "car_damage_left"
+skip_if_zero = true
 
 [[channels]]
 name = "car_damage_right"
 unit = ""
 source = "car_damage_right"
+skip_if_zero = true
 
 [[channels]]
 name = "car_damage_center"
 unit = ""
 source = "car_damage_center"
+skip_if_zero = true
+
+[[channels]]
+name = "wheel_load_fl"
+unit = "N"
+source = "wheel_load_fl"
+
+[[channels]]
+name = "wheel_load_fr"
+unit = "N"
+source = "wheel_load_fr"
+
+[[channels]]
+name = "wheel_load_rl"
+unit = "N"
+source = "wheel_load_rl"
+
+[[channels]]
+name = "wheel_load_rr"
+unit = "N"
+source = "wheel_load_rr"
+
+[[channels]]
+name = "wheel_slip_fl"
+unit = "deg"
+source = "wheel_slip_fl"
+
+[[channels]]
+name = "wheel_slip_fr"
+unit = "deg"
+source = "wheel_slip_fr"
+
+[[channels]]
+name = "wheel_slip_rl"
+unit = "deg"
+source = "wheel_slip_rl"
+
+[[channels]]
+name = "wheel_slip_rr"
+unit = "deg"
+source = "wheel_slip_rr"
+
+[[channels]]
+name = "camber_rad_fl"
+unit = "rad"
+source = "camber_rad_fl"
+skip_if_zero = true
+
+[[channels]]
+name = "camber_rad_fr"
+unit = "rad"
+source = "camber_rad_fr"
+skip_if_zero = true
+
+[[channels]]
+name = "camber_rad_rl"
+unit = "rad"
+source = "camber_rad_rl"
+skip_if_zero = true
+
+[[channels]]
+name = "camber_rad_rr"
+unit = "rad"
+source = "camber_rad_rr"
+skip_if_zero = true
+
+[[channels]]
+name = "suspension_damage_fl"
+unit = ""
+source = "suspension_damage_fl"
+skip_if_zero = true
+
+[[channels]]
+name = "suspension_damage_fr"
+unit = ""
+source = "suspension_damage_fr"
+skip_if_zero = true
+
+[[channels]]
+name = "suspension_damage_rl"
+unit = ""
+source = "suspension_damage_rl"
+skip_if_zero = true
+
+[[channels]]
+name = "suspension_damage_rr"
+unit = ""
+source = "suspension_damage_rr"
+skip_if_zero = true
+
+[[channels]]
+name = "slip_ratio_fl"
+unit = ""
+source = "slip_ratio_fl"
+
+[[channels]]
+name = "slip_ratio_fr"
+unit = ""
+source = "slip_ratio_fr"
+
+[[channels]]
+name = "slip_ratio_rl"
+unit = ""
+source = "slip_ratio_rl"
+
+[[channels]]
+name = "slip_ratio_rr"
+unit = ""
+source = "slip_ratio_rr"
+
+[[channels]]
+name = "pad_life_fl"
+unit = "%"
+source = "pad_life_fl"
+
+[[channels]]
+name = "pad_life_fr"
+unit = "%"
+source = "pad_life_fr"
+
+[[channels]]
+name = "pad_life_rl"
+unit = "%"
+source = "pad_life_rl"
+
+[[channels]]
+name = "pad_life_rr"
+unit = "%"
+source = "pad_life_rr"
+
+[[channels]]
+name = "disc_life_fl"
+unit = "%"
+source = "disc_life_fl"
+
+[[channels]]
+name = "disc_life_fr"
+unit = "%"
+source = "disc_life_fr"
+
+[[channels]]
+name = "disc_life_rl"
+unit = "%"
+source = "disc_life_rl"
+
+[[channels]]
+name = "disc_life_rr"
+unit = "%"
+source = "disc_life_rr"
+
+[[channels]]
+name = "front_brake_compound"
+unit = ""
+source = "front_brake_compound"
+skip_if_zero = true
+
+[[channels]]
+name = "rear_brake_compound"
+unit = ""
+source = "rear_brake_compound"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_dirty_level_fl"
+unit = ""
+source = "tyre_dirty_level_fl"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_dirty_level_fr"
+unit = ""
+source = "tyre_dirty_level_fr"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_dirty_level_rl"
+unit = ""
+source = "tyre_dirty_level_rl"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_dirty_level_rr"
+unit = ""
+source = "tyre_dirty_level_rr"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_temp_i_fl"
+unit = "C"
+source = "tyre_temp_i_fl"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_temp_i_fr"
+unit = "C"
+source = "tyre_temp_i_fr"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_temp_i_rl"
+unit = "C"
+source = "tyre_temp_i_rl"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_temp_i_rr"
+unit = "C"
+source = "tyre_temp_i_rr"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_temp_m_fl"
+unit = "C"
+source = "tyre_temp_m_fl"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_temp_m_fr"
+unit = "C"
+source = "tyre_temp_m_fr"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_temp_m_rl"
+unit = "C"
+source = "tyre_temp_m_rl"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_temp_m_rr"
+unit = "C"
+source = "tyre_temp_m_rr"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_temp_o_fl"
+unit = "C"
+source = "tyre_temp_o_fl"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_temp_o_fr"
+unit = "C"
+source = "tyre_temp_o_fr"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_temp_o_rl"
+unit = "C"
+source = "tyre_temp_o_rl"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_temp_o_rr"
+unit = "C"
+source = "tyre_temp_o_rr"
+skip_if_zero = true
+
+[[channels]]
+name = "tyre_temp_extra_fl"
+unit = ""
+source = "tyre_temp_extra_fl"
+
+[[channels]]
+name = "tyre_temp_extra_fr"
+unit = ""
+source = "tyre_temp_extra_fr"
+
+[[channels]]
+name = "tyre_temp_extra_rl"
+unit = ""
+source = "tyre_temp_extra_rl"
+
+[[channels]]
+name = "tyre_temp_extra_rr"
+unit = ""
+source = "tyre_temp_extra_rr"
+
+[[channels]]
+name = "tyre_contact_normal_x_fl"
+unit = ""
+source = "tyre_contact_normal_x_fl"
+
+[[channels]]
+name = "tyre_contact_normal_y_fl"
+unit = ""
+source = "tyre_contact_normal_y_fl"
+
+[[channels]]
+name = "tyre_contact_normal_z_fl"
+unit = ""
+source = "tyre_contact_normal_z_fl"
+
+[[channels]]
+name = "tyre_contact_normal_x_fr"
+unit = ""
+source = "tyre_contact_normal_x_fr"
+
+[[channels]]
+name = "tyre_contact_normal_y_fr"
+unit = ""
+source = "tyre_contact_normal_y_fr"
+
+[[channels]]
+name = "tyre_contact_normal_z_fr"
+unit = ""
+source = "tyre_contact_normal_z_fr"
+
+[[channels]]
+name = "tyre_contact_normal_x_rl"
+unit = ""
+source = "tyre_contact_normal_x_rl"
+
+[[channels]]
+name = "tyre_contact_normal_y_rl"
+unit = ""
+source = "tyre_contact_normal_y_rl"
+
+[[channels]]
+name = "tyre_contact_normal_z_rl"
+unit = ""
+source = "tyre_contact_normal_z_rl"
+
+[[channels]]
+name = "tyre_contact_normal_x_rr"
+unit = ""
+source = "tyre_contact_normal_x_rr"
+
+[[channels]]
+name = "tyre_contact_normal_y_rr"
+unit = ""
+source = "tyre_contact_normal_y_rr"
+
+[[channels]]
+name = "tyre_contact_normal_z_rr"
+unit = ""
+source = "tyre_contact_normal_z_rr"
+
+[[channels]]
+name = "tyre_contact_heading_x_fl"
+unit = ""
+source = "tyre_contact_heading_x_fl"
+
+[[channels]]
+name = "tyre_contact_heading_y_fl"
+unit = ""
+source = "tyre_contact_heading_y_fl"
+
+[[channels]]
+name = "tyre_contact_heading_z_fl"
+unit = ""
+source = "tyre_contact_heading_z_fl"
+
+[[channels]]
+name = "tyre_contact_heading_x_fr"
+unit = ""
+source = "tyre_contact_heading_x_fr"
+
+[[channels]]
+name = "tyre_contact_heading_y_fr"
+unit = ""
+source = "tyre_contact_heading_y_fr"
+
+[[channels]]
+name = "tyre_contact_heading_z_fr"
+unit = ""
+source = "tyre_contact_heading_z_fr"
+
+[[channels]]
+name = "tyre_contact_heading_x_rl"
+unit = ""
+source = "tyre_contact_heading_x_rl"
+
+[[channels]]
+name = "tyre_contact_heading_y_rl"
+unit = ""
+source = "tyre_contact_heading_y_rl"
+
+[[channels]]
+name = "tyre_contact_heading_z_rl"
+unit = ""
+source = "tyre_contact_heading_z_rl"
+
+[[channels]]
+name = "tyre_contact_heading_x_rr"
+unit = ""
+source = "tyre_contact_heading_x_rr"
+
+[[channels]]
+name = "tyre_contact_heading_y_rr"
+unit = ""
+source = "tyre_contact_heading_y_rr"
+
+[[channels]]
+name = "tyre_contact_heading_z_rr"
+unit = ""
+source = "tyre_contact_heading_z_rr"
+
+[[channels]]
+name = "velocity_x"
+unit = "m/s"
+source = "velocity_x"
+
+[[channels]]
+name = "velocity_y"
+unit = "m/s"
+source = "velocity_y"
+
+[[channels]]
+name = "velocity_z"
+unit = "m/s"
+source = "velocity_z"
+
+[[channels]]
+name = "local_velocity_x"
+unit = "m/s"
+source = "local_velocity_x"
+
+[[channels]]
+name = "local_velocity_y"
+unit = "m/s"
+source = "local_velocity_y"
+
+[[channels]]
+name = "local_velocity_z"
+unit = "m/s"
+source = "local_velocity_z"
+
+[[channels]]
+name = "local_angular_vel_x"
+unit = "rad/s"
+source = "local_angular_vel_x"
+
+[[channels]]
+name = "local_angular_vel_y"
+unit = "rad/s"
+source = "local_angular_vel_y"
+
+[[channels]]
+name = "local_angular_vel_z"
+unit = "rad/s"
+source = "local_angular_vel_z"
+
+[[channels]]
+name = "final_ff"
+unit = ""
+source = "final_ff"
+
+[[channels]]
+name = "brake_bias"
+unit = ""
+source = "brake_bias"
+
+[[channels]]
+name = "tc_in_action"
+unit = ""
+source = "tc_in_action"
+skip_if_zero = true
+
+[[channels]]
+name = "abs_in_action"
+unit = ""
+source = "abs_in_action"
+skip_if_zero = true
+
+[[channels]]
+name = "pit_limiter_on"
+unit = ""
+source = "pit_limiter_on"
+skip_if_zero = true
+
+[[channels]]
+name = "is_ai_controlled"
+unit = ""
+source = "is_ai_controlled"
+skip_if_zero = true
+
+[[channels]]
+name = "drs"
+unit = ""
+source = "drs"
+skip_if_zero = true
+
+[[channels]]
+name = "cg_height"
+unit = "m"
+source = "cg_height"
+skip_if_zero = true
+
+[[channels]]
+name = "number_of_tyres_out"
+unit = ""
+source = "number_of_tyres_out"
+skip_if_zero = true
+
+[[channels]]
+name = "kers_charge"
+unit = ""
+source = "kers_charge"
+skip_if_zero = true
+
+[[channels]]
+name = "kers_input"
+unit = ""
+source = "kers_input"
+skip_if_zero = true
+
+[[channels]]
+name = "kers_current_kj"
+unit = "kJ"
+source = "kers_current_kj"
+skip_if_zero = true
+
+[[channels]]
+name = "ballast"
+unit = "kg"
+source = "ballast"
+skip_if_zero = true
+
+[[channels]]
+name = "air_density"
+unit = "kg/m3"
+source = "air_density"
+skip_if_zero = true
+
+[[channels]]
+name = "performance_meter"
+unit = ""
+source = "performance_meter"
+skip_if_zero = true
+
+[[channels]]
+name = "engine_brake"
+unit = ""
+source = "engine_brake"
+skip_if_zero = true
+
+[[channels]]
+name = "ers_recovery_level"
+unit = ""
+source = "ers_recovery_level"
+skip_if_zero = true
+
+[[channels]]
+name = "ers_power_level"
+unit = ""
+source = "ers_power_level"
+skip_if_zero = true
+
+[[channels]]
+name = "ers_heat_charging"
+unit = ""
+source = "ers_heat_charging"
+skip_if_zero = true
+
+[[channels]]
+name = "ers_is_charging"
+unit = ""
+source = "ers_is_charging"
+skip_if_zero = true
+
+[[channels]]
+name = "drs_available"
+unit = ""
+source = "drs_available"
+skip_if_zero = true
+
+[[channels]]
+name = "drs_enabled"
+unit = ""
+source = "drs_enabled"
+skip_if_zero = true
+
+[[channels]]
+name = "p2p_activation"
+unit = ""
+source = "p2p_activation"
+skip_if_zero = true
+
+[[channels]]
+name = "p2p_status"
+unit = ""
+source = "p2p_status"
+skip_if_zero = true
+
+[[channels]]
+name = "current_max_rpm"
+unit = "rpm"
+source = "current_max_rpm"
+
+[[channels]]
+name = "mz_fl"
+unit = "Nm"
+source = "mz_fl"
+
+[[channels]]
+name = "mz_fr"
+unit = "Nm"
+source = "mz_fr"
+
+[[channels]]
+name = "mz_rl"
+unit = "Nm"
+source = "mz_rl"
+
+[[channels]]
+name = "mz_rr"
+unit = "Nm"
+source = "mz_rr"
+
+[[channels]]
+name = "fz_fl"
+unit = "N"
+source = "fz_fl"
+
+[[channels]]
+name = "fz_fr"
+unit = "N"
+source = "fz_fr"
+
+[[channels]]
+name = "fz_rl"
+unit = "N"
+source = "fz_rl"
+
+[[channels]]
+name = "fz_rr"
+unit = "N"
+source = "fz_rr"
+
+[[channels]]
+name = "my_fl"
+unit = "Nm"
+source = "my_fl"
+
+[[channels]]
+name = "my_fr"
+unit = "Nm"
+source = "my_fr"
+
+[[channels]]
+name = "my_rl"
+unit = "Nm"
+source = "my_rl"
+
+[[channels]]
+name = "my_rr"
+unit = "Nm"
+source = "my_rr"
+
+[[channels]]
+name = "kerb_vibration"
+unit = ""
+source = "kerb_vibration"
+skip_if_zero = true
+
+[[channels]]
+name = "slip_vibration"
+unit = ""
+source = "slip_vibration"
+
+[[channels]]
+name = "g_vibration"
+unit = ""
+source = "g_vibration"
+
+[[channels]]
+name = "abs_vibration"
+unit = ""
+source = "abs_vibration"
+
+[[channels]]
+name = "autoshifter_on"
+unit = ""
+source = "autoshifter_on"
+skip_if_zero = true
+
+[[channels]]
+name = "ignition_on"
+unit = ""
+source = "ignition_on"
+
+[[channels]]
+name = "starter_engine_on"
+unit = ""
+source = "starter_engine_on"
+
+[[channels]]
+name = "is_engine_running"
+unit = ""
+source = "is_engine_running"
+
+[[channels]]
+name = "packet_id"
+unit = ""
+source = "packet_id"
