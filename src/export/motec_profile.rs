@@ -32,6 +32,12 @@ struct ChannelSpecFile {
     offset: f32,
     #[serde(default)]
     graphics: bool,
+    /// Omit this channel from the .ld if every sample in this recording is exactly
+    /// 0.0. Meant for sources the game currently never populates (see all_data.toml
+    /// comments); if a future game/sim update starts returning real values, the
+    /// channel reappears automatically without editing the profile.
+    #[serde(default)]
+    skip_if_zero: bool,
 }
 
 fn default_scale() -> f32 {
@@ -53,6 +59,7 @@ pub struct ProfileChannel {
     pub scale: f32,
     pub offset: f32,
     pub graphics_only: bool,
+    pub skip_if_zero: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -119,6 +126,161 @@ pub enum ChannelSource {
     GraphicsPosX,
     GraphicsPosY,
     GraphicsPosZ,
+    Clutch,
+    Fuel,
+    Tc,
+    Abs,
+    TurboBoost,
+    AirTemp,
+    RoadTemp,
+    WaterTemp,
+    Heading,
+    Pitch,
+    Roll,
+    BrakePressureFl,
+    BrakePressureFr,
+    BrakePressureRl,
+    BrakePressureRr,
+    SlipAngleFl,
+    SlipAngleFr,
+    SlipAngleRl,
+    SlipAngleRr,
+    RideHeightFront,
+    RideHeightRear,
+    CarDamageFront,
+    CarDamageRear,
+    CarDamageLeft,
+    CarDamageRight,
+    CarDamageCenter,
+    WheelLoadFl,
+    WheelLoadFr,
+    WheelLoadRl,
+    WheelLoadRr,
+    WheelSlipFl,
+    WheelSlipFr,
+    WheelSlipRl,
+    WheelSlipRr,
+    CamberRadFl,
+    CamberRadFr,
+    CamberRadRl,
+    CamberRadRr,
+    SuspensionDamageFl,
+    SuspensionDamageFr,
+    SuspensionDamageRl,
+    SuspensionDamageRr,
+    SlipRatioFl,
+    SlipRatioFr,
+    SlipRatioRl,
+    SlipRatioRr,
+    PadLifeFl,
+    PadLifeFr,
+    PadLifeRl,
+    PadLifeRr,
+    DiscLifeFl,
+    DiscLifeFr,
+    DiscLifeRl,
+    DiscLifeRr,
+    FrontBrakeCompound,
+    RearBrakeCompound,
+    TyreDirtyLevelFl,
+    TyreDirtyLevelFr,
+    TyreDirtyLevelRl,
+    TyreDirtyLevelRr,
+    TyreTempIFl,
+    TyreTempIFr,
+    TyreTempIRl,
+    TyreTempIRr,
+    TyreTempMFl,
+    TyreTempMFr,
+    TyreTempMRl,
+    TyreTempMRr,
+    TyreTempOFl,
+    TyreTempOFr,
+    TyreTempORl,
+    TyreTempORr,
+    TyreTempExtraFl,
+    TyreTempExtraFr,
+    TyreTempExtraRl,
+    TyreTempExtraRr,
+    TyreContactNormalXFl,
+    TyreContactNormalYFl,
+    TyreContactNormalZFl,
+    TyreContactNormalXFr,
+    TyreContactNormalYFr,
+    TyreContactNormalZFr,
+    TyreContactNormalXRl,
+    TyreContactNormalYRl,
+    TyreContactNormalZRl,
+    TyreContactNormalXRr,
+    TyreContactNormalYRr,
+    TyreContactNormalZRr,
+    TyreContactHeadingXFl,
+    TyreContactHeadingYFl,
+    TyreContactHeadingZFl,
+    TyreContactHeadingXFr,
+    TyreContactHeadingYFr,
+    TyreContactHeadingZFr,
+    TyreContactHeadingXRl,
+    TyreContactHeadingYRl,
+    TyreContactHeadingZRl,
+    TyreContactHeadingXRr,
+    TyreContactHeadingYRr,
+    TyreContactHeadingZRr,
+    VelocityX,
+    VelocityY,
+    VelocityZ,
+    LocalVelocityX,
+    LocalVelocityY,
+    LocalVelocityZ,
+    LocalAngularVelX,
+    LocalAngularVelY,
+    LocalAngularVelZ,
+    FinalFf,
+    BrakeBias,
+    TcInAction,
+    AbsInAction,
+    PitLimiterOn,
+    IsAiControlled,
+    Drs,
+    CgHeight,
+    NumberOfTyresOut,
+    KersCharge,
+    KersInput,
+    KersCurrentKj,
+    Ballast,
+    AirDensity,
+    PerformanceMeter,
+    EngineBrake,
+    ErsRecoveryLevel,
+    ErsPowerLevel,
+    ErsHeatCharging,
+    ErsIsCharging,
+    DrsAvailable,
+    DrsEnabled,
+    P2pActivation,
+    P2pStatus,
+    CurrentMaxRpm,
+    MzFl,
+    MzFr,
+    MzRl,
+    MzRr,
+    FzFl,
+    FzFr,
+    FzRl,
+    FzRr,
+    MyFl,
+    MyFr,
+    MyRl,
+    MyRr,
+    KerbVibration,
+    SlipVibration,
+    GVibration,
+    AbsVibration,
+    AutoshifterOn,
+    IgnitionOn,
+    StarterEngineOn,
+    IsEngineRunning,
+    PacketId,
 }
 
 impl ChannelSource {
@@ -187,6 +349,161 @@ impl ChannelSource {
             "graphics_pos_x" => GraphicsPosX,
             "graphics_pos_y" => GraphicsPosY,
             "graphics_pos_z" => GraphicsPosZ,
+            "clutch" => Clutch,
+            "fuel" => Fuel,
+            "tc" => Tc,
+            "abs" => Abs,
+            "turbo_boost" => TurboBoost,
+            "air_temp" => AirTemp,
+            "road_temp" => RoadTemp,
+            "water_temp" => WaterTemp,
+            "heading" => Heading,
+            "pitch" => Pitch,
+            "roll" => Roll,
+            "brake_pressure_fl" => BrakePressureFl,
+            "brake_pressure_fr" => BrakePressureFr,
+            "brake_pressure_rl" => BrakePressureRl,
+            "brake_pressure_rr" => BrakePressureRr,
+            "slip_angle_fl" => SlipAngleFl,
+            "slip_angle_fr" => SlipAngleFr,
+            "slip_angle_rl" => SlipAngleRl,
+            "slip_angle_rr" => SlipAngleRr,
+            "ride_height_front" => RideHeightFront,
+            "ride_height_rear" => RideHeightRear,
+            "car_damage_front" => CarDamageFront,
+            "car_damage_rear" => CarDamageRear,
+            "car_damage_left" => CarDamageLeft,
+            "car_damage_right" => CarDamageRight,
+            "car_damage_center" => CarDamageCenter,
+            "wheel_load_fl" => WheelLoadFl,
+            "wheel_load_fr" => WheelLoadFr,
+            "wheel_load_rl" => WheelLoadRl,
+            "wheel_load_rr" => WheelLoadRr,
+            "wheel_slip_fl" => WheelSlipFl,
+            "wheel_slip_fr" => WheelSlipFr,
+            "wheel_slip_rl" => WheelSlipRl,
+            "wheel_slip_rr" => WheelSlipRr,
+            "camber_rad_fl" => CamberRadFl,
+            "camber_rad_fr" => CamberRadFr,
+            "camber_rad_rl" => CamberRadRl,
+            "camber_rad_rr" => CamberRadRr,
+            "suspension_damage_fl" => SuspensionDamageFl,
+            "suspension_damage_fr" => SuspensionDamageFr,
+            "suspension_damage_rl" => SuspensionDamageRl,
+            "suspension_damage_rr" => SuspensionDamageRr,
+            "slip_ratio_fl" => SlipRatioFl,
+            "slip_ratio_fr" => SlipRatioFr,
+            "slip_ratio_rl" => SlipRatioRl,
+            "slip_ratio_rr" => SlipRatioRr,
+            "pad_life_fl" => PadLifeFl,
+            "pad_life_fr" => PadLifeFr,
+            "pad_life_rl" => PadLifeRl,
+            "pad_life_rr" => PadLifeRr,
+            "disc_life_fl" => DiscLifeFl,
+            "disc_life_fr" => DiscLifeFr,
+            "disc_life_rl" => DiscLifeRl,
+            "disc_life_rr" => DiscLifeRr,
+            "front_brake_compound" => FrontBrakeCompound,
+            "rear_brake_compound" => RearBrakeCompound,
+            "tyre_dirty_level_fl" => TyreDirtyLevelFl,
+            "tyre_dirty_level_fr" => TyreDirtyLevelFr,
+            "tyre_dirty_level_rl" => TyreDirtyLevelRl,
+            "tyre_dirty_level_rr" => TyreDirtyLevelRr,
+            "tyre_temp_i_fl" => TyreTempIFl,
+            "tyre_temp_i_fr" => TyreTempIFr,
+            "tyre_temp_i_rl" => TyreTempIRl,
+            "tyre_temp_i_rr" => TyreTempIRr,
+            "tyre_temp_m_fl" => TyreTempMFl,
+            "tyre_temp_m_fr" => TyreTempMFr,
+            "tyre_temp_m_rl" => TyreTempMRl,
+            "tyre_temp_m_rr" => TyreTempMRr,
+            "tyre_temp_o_fl" => TyreTempOFl,
+            "tyre_temp_o_fr" => TyreTempOFr,
+            "tyre_temp_o_rl" => TyreTempORl,
+            "tyre_temp_o_rr" => TyreTempORr,
+            "tyre_temp_extra_fl" => TyreTempExtraFl,
+            "tyre_temp_extra_fr" => TyreTempExtraFr,
+            "tyre_temp_extra_rl" => TyreTempExtraRl,
+            "tyre_temp_extra_rr" => TyreTempExtraRr,
+            "tyre_contact_normal_x_fl" => TyreContactNormalXFl,
+            "tyre_contact_normal_y_fl" => TyreContactNormalYFl,
+            "tyre_contact_normal_z_fl" => TyreContactNormalZFl,
+            "tyre_contact_normal_x_fr" => TyreContactNormalXFr,
+            "tyre_contact_normal_y_fr" => TyreContactNormalYFr,
+            "tyre_contact_normal_z_fr" => TyreContactNormalZFr,
+            "tyre_contact_normal_x_rl" => TyreContactNormalXRl,
+            "tyre_contact_normal_y_rl" => TyreContactNormalYRl,
+            "tyre_contact_normal_z_rl" => TyreContactNormalZRl,
+            "tyre_contact_normal_x_rr" => TyreContactNormalXRr,
+            "tyre_contact_normal_y_rr" => TyreContactNormalYRr,
+            "tyre_contact_normal_z_rr" => TyreContactNormalZRr,
+            "tyre_contact_heading_x_fl" => TyreContactHeadingXFl,
+            "tyre_contact_heading_y_fl" => TyreContactHeadingYFl,
+            "tyre_contact_heading_z_fl" => TyreContactHeadingZFl,
+            "tyre_contact_heading_x_fr" => TyreContactHeadingXFr,
+            "tyre_contact_heading_y_fr" => TyreContactHeadingYFr,
+            "tyre_contact_heading_z_fr" => TyreContactHeadingZFr,
+            "tyre_contact_heading_x_rl" => TyreContactHeadingXRl,
+            "tyre_contact_heading_y_rl" => TyreContactHeadingYRl,
+            "tyre_contact_heading_z_rl" => TyreContactHeadingZRl,
+            "tyre_contact_heading_x_rr" => TyreContactHeadingXRr,
+            "tyre_contact_heading_y_rr" => TyreContactHeadingYRr,
+            "tyre_contact_heading_z_rr" => TyreContactHeadingZRr,
+            "velocity_x" => VelocityX,
+            "velocity_y" => VelocityY,
+            "velocity_z" => VelocityZ,
+            "local_velocity_x" => LocalVelocityX,
+            "local_velocity_y" => LocalVelocityY,
+            "local_velocity_z" => LocalVelocityZ,
+            "local_angular_vel_x" => LocalAngularVelX,
+            "local_angular_vel_y" => LocalAngularVelY,
+            "local_angular_vel_z" => LocalAngularVelZ,
+            "final_ff" => FinalFf,
+            "brake_bias" => BrakeBias,
+            "tc_in_action" => TcInAction,
+            "abs_in_action" => AbsInAction,
+            "pit_limiter_on" => PitLimiterOn,
+            "is_ai_controlled" => IsAiControlled,
+            "drs" => Drs,
+            "cg_height" => CgHeight,
+            "number_of_tyres_out" => NumberOfTyresOut,
+            "kers_charge" => KersCharge,
+            "kers_input" => KersInput,
+            "kers_current_kj" => KersCurrentKj,
+            "ballast" => Ballast,
+            "air_density" => AirDensity,
+            "performance_meter" => PerformanceMeter,
+            "engine_brake" => EngineBrake,
+            "ers_recovery_level" => ErsRecoveryLevel,
+            "ers_power_level" => ErsPowerLevel,
+            "ers_heat_charging" => ErsHeatCharging,
+            "ers_is_charging" => ErsIsCharging,
+            "drs_available" => DrsAvailable,
+            "drs_enabled" => DrsEnabled,
+            "p2p_activation" => P2pActivation,
+            "p2p_status" => P2pStatus,
+            "current_max_rpm" => CurrentMaxRpm,
+            "mz_fl" => MzFl,
+            "mz_fr" => MzFr,
+            "mz_rl" => MzRl,
+            "mz_rr" => MzRr,
+            "fz_fl" => FzFl,
+            "fz_fr" => FzFr,
+            "fz_rl" => FzRl,
+            "fz_rr" => FzRr,
+            "my_fl" => MyFl,
+            "my_fr" => MyFr,
+            "my_rl" => MyRl,
+            "my_rr" => MyRr,
+            "kerb_vibration" => KerbVibration,
+            "slip_vibration" => SlipVibration,
+            "g_vibration" => GVibration,
+            "abs_vibration" => AbsVibration,
+            "autoshifter_on" => AutoshifterOn,
+            "ignition_on" => IgnitionOn,
+            "starter_engine_on" => StarterEngineOn,
+            "is_engine_running" => IsEngineRunning,
+            "packet_id" => PacketId,
             other => return Err(format!("unknown MoTeC channel source '{other}'")),
         };
         Ok(v)
@@ -249,6 +566,7 @@ fn parse_profile_text(id: &str, text: &str) -> Result<MotecProfile, String> {
             scale: ch.scale,
             offset: ch.offset,
             graphics_only: ch.graphics,
+            skip_if_zero: ch.skip_if_zero,
         });
     }
     Ok(MotecProfile {
@@ -293,6 +611,9 @@ pub fn build_ld_channels(
             for v in &mut data {
                 *v = *v * ch.scale + ch.offset;
             }
+        }
+        if ch.skip_if_zero && data.iter().all(|&v| v == 0.0) {
+            continue;
         }
         out.push((ch.name.clone(), ch.unit.clone(), data));
     }
@@ -550,6 +871,320 @@ fn extract_channel(
             let (g, _) = graphics.ok_or("graphics_pos_z requires graphics sidecar")?;
             resample_graphics_to_len(g, n, |rec| rec.car_coordinates_z)
         }
+        ChannelSource::Clutch => records.iter().map(|r| r.clutch).collect(),
+        ChannelSource::Fuel => records.iter().map(|r| r.fuel).collect(),
+        ChannelSource::Tc => records.iter().map(|r| r.tc).collect(),
+        ChannelSource::Abs => records.iter().map(|r| r.abs).collect(),
+        ChannelSource::TurboBoost => records.iter().map(|r| r.turbo_boost).collect(),
+        ChannelSource::AirTemp => records.iter().map(|r| r.air_temp).collect(),
+        ChannelSource::RoadTemp => records.iter().map(|r| r.road_temp).collect(),
+        ChannelSource::WaterTemp => records.iter().map(|r| r.water_temp).collect(),
+        ChannelSource::Heading => records.iter().map(|r| r.heading).collect(),
+        ChannelSource::Pitch => records.iter().map(|r| r.pitch).collect(),
+        ChannelSource::Roll => records.iter().map(|r| r.roll).collect(),
+        ChannelSource::BrakePressureFl => records
+            .iter()
+            .map(|r| r.brake_pressure.front_left)
+            .collect(),
+        ChannelSource::BrakePressureFr => records
+            .iter()
+            .map(|r| r.brake_pressure.front_right)
+            .collect(),
+        ChannelSource::BrakePressureRl => records
+            .iter()
+            .map(|r| r.brake_pressure.rear_left)
+            .collect(),
+        ChannelSource::BrakePressureRr => records
+            .iter()
+            .map(|r| r.brake_pressure.rear_right)
+            .collect(),
+        ChannelSource::SlipAngleFl => records.iter().map(|r| r.slip_angle.front_left).collect(),
+        ChannelSource::SlipAngleFr => records.iter().map(|r| r.slip_angle.front_right).collect(),
+        ChannelSource::SlipAngleRl => records.iter().map(|r| r.slip_angle.rear_left).collect(),
+        ChannelSource::SlipAngleRr => records.iter().map(|r| r.slip_angle.rear_right).collect(),
+        ChannelSource::RideHeightFront => records.iter().map(|r| r.ride_height_front).collect(),
+        ChannelSource::RideHeightRear => records.iter().map(|r| r.ride_height_rear).collect(),
+        ChannelSource::CarDamageFront => records.iter().map(|r| r.car_damage.front).collect(),
+        ChannelSource::CarDamageRear => records.iter().map(|r| r.car_damage.rear).collect(),
+        ChannelSource::CarDamageLeft => records.iter().map(|r| r.car_damage.left).collect(),
+        ChannelSource::CarDamageRight => records.iter().map(|r| r.car_damage.right).collect(),
+        ChannelSource::CarDamageCenter => records.iter().map(|r| r.car_damage.center).collect(),
+        ChannelSource::WheelLoadFl => records.iter().map(|r| r.wheel_load.front_left).collect(),
+        ChannelSource::WheelLoadFr => records.iter().map(|r| r.wheel_load.front_right).collect(),
+        ChannelSource::WheelLoadRl => records.iter().map(|r| r.wheel_load.rear_left).collect(),
+        ChannelSource::WheelLoadRr => records.iter().map(|r| r.wheel_load.rear_right).collect(),
+        ChannelSource::WheelSlipFl => records.iter().map(|r| r.wheel_slip.front_left).collect(),
+        ChannelSource::WheelSlipFr => records.iter().map(|r| r.wheel_slip.front_right).collect(),
+        ChannelSource::WheelSlipRl => records.iter().map(|r| r.wheel_slip.rear_left).collect(),
+        ChannelSource::WheelSlipRr => records.iter().map(|r| r.wheel_slip.rear_right).collect(),
+        ChannelSource::CamberRadFl => records.iter().map(|r| r.camber_rad.front_left).collect(),
+        ChannelSource::CamberRadFr => records.iter().map(|r| r.camber_rad.front_right).collect(),
+        ChannelSource::CamberRadRl => records.iter().map(|r| r.camber_rad.rear_left).collect(),
+        ChannelSource::CamberRadRr => records.iter().map(|r| r.camber_rad.rear_right).collect(),
+        ChannelSource::SuspensionDamageFl => records
+            .iter()
+            .map(|r| r.suspension_damage.front_left)
+            .collect(),
+        ChannelSource::SuspensionDamageFr => records
+            .iter()
+            .map(|r| r.suspension_damage.front_right)
+            .collect(),
+        ChannelSource::SuspensionDamageRl => records
+            .iter()
+            .map(|r| r.suspension_damage.rear_left)
+            .collect(),
+        ChannelSource::SuspensionDamageRr => records
+            .iter()
+            .map(|r| r.suspension_damage.rear_right)
+            .collect(),
+        ChannelSource::SlipRatioFl => records.iter().map(|r| r.slip_ratio.front_left).collect(),
+        ChannelSource::SlipRatioFr => records.iter().map(|r| r.slip_ratio.front_right).collect(),
+        ChannelSource::SlipRatioRl => records.iter().map(|r| r.slip_ratio.rear_left).collect(),
+        ChannelSource::SlipRatioRr => records.iter().map(|r| r.slip_ratio.rear_right).collect(),
+        ChannelSource::PadLifeFl => records.iter().map(|r| r.pad_life.front_left).collect(),
+        ChannelSource::PadLifeFr => records.iter().map(|r| r.pad_life.front_right).collect(),
+        ChannelSource::PadLifeRl => records.iter().map(|r| r.pad_life.rear_left).collect(),
+        ChannelSource::PadLifeRr => records.iter().map(|r| r.pad_life.rear_right).collect(),
+        ChannelSource::DiscLifeFl => records.iter().map(|r| r.disc_life.front_left).collect(),
+        ChannelSource::DiscLifeFr => records.iter().map(|r| r.disc_life.front_right).collect(),
+        ChannelSource::DiscLifeRl => records.iter().map(|r| r.disc_life.rear_left).collect(),
+        ChannelSource::DiscLifeRr => records.iter().map(|r| r.disc_life.rear_right).collect(),
+        ChannelSource::FrontBrakeCompound => records
+            .iter()
+            .map(|r| r.front_brake_compound as f32)
+            .collect(),
+        ChannelSource::RearBrakeCompound => records
+            .iter()
+            .map(|r| r.rear_brake_compound as f32)
+            .collect(),
+        ChannelSource::TyreDirtyLevelFl => records
+            .iter()
+            .map(|r| r.tyre_dirty_level.front_left)
+            .collect(),
+        ChannelSource::TyreDirtyLevelFr => records
+            .iter()
+            .map(|r| r.tyre_dirty_level.front_right)
+            .collect(),
+        ChannelSource::TyreDirtyLevelRl => records
+            .iter()
+            .map(|r| r.tyre_dirty_level.rear_left)
+            .collect(),
+        ChannelSource::TyreDirtyLevelRr => records
+            .iter()
+            .map(|r| r.tyre_dirty_level.rear_right)
+            .collect(),
+        ChannelSource::TyreTempIFl => records.iter().map(|r| r.tyre_temp_i.front_left).collect(),
+        ChannelSource::TyreTempIFr => records.iter().map(|r| r.tyre_temp_i.front_right).collect(),
+        ChannelSource::TyreTempIRl => records.iter().map(|r| r.tyre_temp_i.rear_left).collect(),
+        ChannelSource::TyreTempIRr => records.iter().map(|r| r.tyre_temp_i.rear_right).collect(),
+        ChannelSource::TyreTempMFl => records.iter().map(|r| r.tyre_temp_m.front_left).collect(),
+        ChannelSource::TyreTempMFr => records.iter().map(|r| r.tyre_temp_m.front_right).collect(),
+        ChannelSource::TyreTempMRl => records.iter().map(|r| r.tyre_temp_m.rear_left).collect(),
+        ChannelSource::TyreTempMRr => records.iter().map(|r| r.tyre_temp_m.rear_right).collect(),
+        ChannelSource::TyreTempOFl => records.iter().map(|r| r.tyre_temp_o.front_left).collect(),
+        ChannelSource::TyreTempOFr => records.iter().map(|r| r.tyre_temp_o.front_right).collect(),
+        ChannelSource::TyreTempORl => records.iter().map(|r| r.tyre_temp_o.rear_left).collect(),
+        ChannelSource::TyreTempORr => records.iter().map(|r| r.tyre_temp_o.rear_right).collect(),
+        ChannelSource::TyreTempExtraFl => records
+            .iter()
+            .map(|r| r.tyre_temp_extra.front_left)
+            .collect(),
+        ChannelSource::TyreTempExtraFr => records
+            .iter()
+            .map(|r| r.tyre_temp_extra.front_right)
+            .collect(),
+        ChannelSource::TyreTempExtraRl => records
+            .iter()
+            .map(|r| r.tyre_temp_extra.rear_left)
+            .collect(),
+        ChannelSource::TyreTempExtraRr => records
+            .iter()
+            .map(|r| r.tyre_temp_extra.rear_right)
+            .collect(),
+        ChannelSource::TyreContactNormalXFl => records
+            .iter()
+            .map(|r| r.tyre_contact_normal.front_left.x)
+            .collect(),
+        ChannelSource::TyreContactNormalYFl => records
+            .iter()
+            .map(|r| r.tyre_contact_normal.front_left.y)
+            .collect(),
+        ChannelSource::TyreContactNormalZFl => records
+            .iter()
+            .map(|r| r.tyre_contact_normal.front_left.z)
+            .collect(),
+        ChannelSource::TyreContactNormalXFr => records
+            .iter()
+            .map(|r| r.tyre_contact_normal.front_right.x)
+            .collect(),
+        ChannelSource::TyreContactNormalYFr => records
+            .iter()
+            .map(|r| r.tyre_contact_normal.front_right.y)
+            .collect(),
+        ChannelSource::TyreContactNormalZFr => records
+            .iter()
+            .map(|r| r.tyre_contact_normal.front_right.z)
+            .collect(),
+        ChannelSource::TyreContactNormalXRl => records
+            .iter()
+            .map(|r| r.tyre_contact_normal.rear_left.x)
+            .collect(),
+        ChannelSource::TyreContactNormalYRl => records
+            .iter()
+            .map(|r| r.tyre_contact_normal.rear_left.y)
+            .collect(),
+        ChannelSource::TyreContactNormalZRl => records
+            .iter()
+            .map(|r| r.tyre_contact_normal.rear_left.z)
+            .collect(),
+        ChannelSource::TyreContactNormalXRr => records
+            .iter()
+            .map(|r| r.tyre_contact_normal.rear_right.x)
+            .collect(),
+        ChannelSource::TyreContactNormalYRr => records
+            .iter()
+            .map(|r| r.tyre_contact_normal.rear_right.y)
+            .collect(),
+        ChannelSource::TyreContactNormalZRr => records
+            .iter()
+            .map(|r| r.tyre_contact_normal.rear_right.z)
+            .collect(),
+        ChannelSource::TyreContactHeadingXFl => records
+            .iter()
+            .map(|r| r.tyre_contact_heading.front_left.x)
+            .collect(),
+        ChannelSource::TyreContactHeadingYFl => records
+            .iter()
+            .map(|r| r.tyre_contact_heading.front_left.y)
+            .collect(),
+        ChannelSource::TyreContactHeadingZFl => records
+            .iter()
+            .map(|r| r.tyre_contact_heading.front_left.z)
+            .collect(),
+        ChannelSource::TyreContactHeadingXFr => records
+            .iter()
+            .map(|r| r.tyre_contact_heading.front_right.x)
+            .collect(),
+        ChannelSource::TyreContactHeadingYFr => records
+            .iter()
+            .map(|r| r.tyre_contact_heading.front_right.y)
+            .collect(),
+        ChannelSource::TyreContactHeadingZFr => records
+            .iter()
+            .map(|r| r.tyre_contact_heading.front_right.z)
+            .collect(),
+        ChannelSource::TyreContactHeadingXRl => records
+            .iter()
+            .map(|r| r.tyre_contact_heading.rear_left.x)
+            .collect(),
+        ChannelSource::TyreContactHeadingYRl => records
+            .iter()
+            .map(|r| r.tyre_contact_heading.rear_left.y)
+            .collect(),
+        ChannelSource::TyreContactHeadingZRl => records
+            .iter()
+            .map(|r| r.tyre_contact_heading.rear_left.z)
+            .collect(),
+        ChannelSource::TyreContactHeadingXRr => records
+            .iter()
+            .map(|r| r.tyre_contact_heading.rear_right.x)
+            .collect(),
+        ChannelSource::TyreContactHeadingYRr => records
+            .iter()
+            .map(|r| r.tyre_contact_heading.rear_right.y)
+            .collect(),
+        ChannelSource::TyreContactHeadingZRr => records
+            .iter()
+            .map(|r| r.tyre_contact_heading.rear_right.z)
+            .collect(),
+        ChannelSource::VelocityX => records.iter().map(|r| r.velocity.x).collect(),
+        ChannelSource::VelocityY => records.iter().map(|r| r.velocity.y).collect(),
+        ChannelSource::VelocityZ => records.iter().map(|r| r.velocity.z).collect(),
+        ChannelSource::LocalVelocityX => records.iter().map(|r| r.local_velocity.x).collect(),
+        ChannelSource::LocalVelocityY => records.iter().map(|r| r.local_velocity.y).collect(),
+        ChannelSource::LocalVelocityZ => records.iter().map(|r| r.local_velocity.z).collect(),
+        ChannelSource::LocalAngularVelX => records.iter().map(|r| r.local_angular_vel.x).collect(),
+        ChannelSource::LocalAngularVelY => records.iter().map(|r| r.local_angular_vel.y).collect(),
+        ChannelSource::LocalAngularVelZ => records.iter().map(|r| r.local_angular_vel.z).collect(),
+        ChannelSource::FinalFf => records.iter().map(|r| r.final_ff).collect(),
+        ChannelSource::BrakeBias => records.iter().map(|r| r.brake_bias).collect(),
+        ChannelSource::TcInAction => records
+            .iter()
+            .map(|r| if r.tc_in_action { 1.0 } else { 0.0 })
+            .collect(),
+        ChannelSource::AbsInAction => records
+            .iter()
+            .map(|r| if r.abs_in_action { 1.0 } else { 0.0 })
+            .collect(),
+        ChannelSource::PitLimiterOn => records
+            .iter()
+            .map(|r| if r.pit_limiter_on { 1.0 } else { 0.0 })
+            .collect(),
+        ChannelSource::IsAiControlled => records
+            .iter()
+            .map(|r| if r.is_ai_controlled { 1.0 } else { 0.0 })
+            .collect(),
+        ChannelSource::Drs => records.iter().map(|r| r.drs as f32).collect(),
+        ChannelSource::CgHeight => records.iter().map(|r| r.cg_height).collect(),
+        ChannelSource::NumberOfTyresOut => records
+            .iter()
+            .map(|r| r.number_of_tyres_out as f32)
+            .collect(),
+        ChannelSource::KersCharge => records.iter().map(|r| r.kers_charge).collect(),
+        ChannelSource::KersInput => records.iter().map(|r| r.kers_input).collect(),
+        ChannelSource::KersCurrentKj => records.iter().map(|r| r.kers_current_kj).collect(),
+        ChannelSource::Ballast => records.iter().map(|r| r.ballast).collect(),
+        ChannelSource::AirDensity => records.iter().map(|r| r.air_density).collect(),
+        ChannelSource::PerformanceMeter => records.iter().map(|r| r.performance_meter).collect(),
+        ChannelSource::EngineBrake => records.iter().map(|r| r.engine_brake as f32).collect(),
+        ChannelSource::ErsRecoveryLevel => records
+            .iter()
+            .map(|r| r.ers_recovery_level as f32)
+            .collect(),
+        ChannelSource::ErsPowerLevel => records.iter().map(|r| r.ers_power_level as f32).collect(),
+        ChannelSource::ErsHeatCharging => records
+            .iter()
+            .map(|r| r.ers_heat_charging as f32)
+            .collect(),
+        ChannelSource::ErsIsCharging => records.iter().map(|r| r.ers_is_charging as f32).collect(),
+        ChannelSource::DrsAvailable => records.iter().map(|r| r.drs_available as f32).collect(),
+        ChannelSource::DrsEnabled => records.iter().map(|r| r.drs_enabled as f32).collect(),
+        ChannelSource::P2pActivation => records.iter().map(|r| r.p2p_activation as f32).collect(),
+        ChannelSource::P2pStatus => records.iter().map(|r| r.p2p_status as f32).collect(),
+        ChannelSource::CurrentMaxRpm => records.iter().map(|r| r.current_max_rpm as f32).collect(),
+        ChannelSource::MzFl => records.iter().map(|r| r.mz.front_left).collect(),
+        ChannelSource::MzFr => records.iter().map(|r| r.mz.front_right).collect(),
+        ChannelSource::MzRl => records.iter().map(|r| r.mz.rear_left).collect(),
+        ChannelSource::MzRr => records.iter().map(|r| r.mz.rear_right).collect(),
+        ChannelSource::FzFl => records.iter().map(|r| r.fz.front_left).collect(),
+        ChannelSource::FzFr => records.iter().map(|r| r.fz.front_right).collect(),
+        ChannelSource::FzRl => records.iter().map(|r| r.fz.rear_left).collect(),
+        ChannelSource::FzRr => records.iter().map(|r| r.fz.rear_right).collect(),
+        ChannelSource::MyFl => records.iter().map(|r| r.my.front_left).collect(),
+        ChannelSource::MyFr => records.iter().map(|r| r.my.front_right).collect(),
+        ChannelSource::MyRl => records.iter().map(|r| r.my.rear_left).collect(),
+        ChannelSource::MyRr => records.iter().map(|r| r.my.rear_right).collect(),
+        ChannelSource::KerbVibration => records.iter().map(|r| r.kerb_vibration).collect(),
+        ChannelSource::SlipVibration => records.iter().map(|r| r.slip_vibration).collect(),
+        ChannelSource::GVibration => records.iter().map(|r| r.g_vibration).collect(),
+        ChannelSource::AbsVibration => records.iter().map(|r| r.abs_vibration).collect(),
+        ChannelSource::AutoshifterOn => records
+            .iter()
+            .map(|r| if r.autoshifter_on { 1.0 } else { 0.0 })
+            .collect(),
+        ChannelSource::IgnitionOn => records
+            .iter()
+            .map(|r| if r.ignition_on { 1.0 } else { 0.0 })
+            .collect(),
+        ChannelSource::StarterEngineOn => records
+            .iter()
+            .map(|r| if r.starter_engine_on { 1.0 } else { 0.0 })
+            .collect(),
+        ChannelSource::IsEngineRunning => records
+            .iter()
+            .map(|r| if r.is_engine_running { 1.0 } else { 0.0 })
+            .collect(),
+        ChannelSource::PacketId => records.iter().map(|r| r.packet_id as f32).collect(),
     })
 }
 
@@ -585,6 +1220,71 @@ mod tests {
             let p = load_profile(id, None).expect(id);
             assert!(!p.channels.is_empty(), "{id}");
         }
+    }
+
+    #[test]
+    fn all_data_profile_drops_flagged_channels_when_recording_is_all_zero() {
+        let profile = load_profile("all_data", None).expect("all_data");
+        let total = profile.channels.len();
+        let flagged = profile.channels.iter().filter(|c| c.skip_if_zero).count();
+        let graphics_only = profile.channels.iter().filter(|c| c.graphics_only).count();
+        let mut zero_record = minimal_physics_record();
+        zero_record.speed_kmh = 120.0;
+        zero_record.rpm = 6000;
+        let out = build_ld_channels(&profile, &[zero_record], 300, None).unwrap();
+        assert_eq!(out.len(), total - flagged - graphics_only);
+    }
+
+    #[test]
+    fn skip_if_zero_channel_omitted_when_all_zero_present_otherwise() {
+        let profile = MotecProfile {
+            id: "test".into(),
+            description: String::new(),
+            channels: vec![
+                ProfileChannel {
+                    name: "camber_rad_fl".into(),
+                    unit: "rad".into(),
+                    source: ChannelSource::CamberRadFl,
+                    scale: 1.0,
+                    offset: 0.0,
+                    graphics_only: false,
+                    skip_if_zero: true,
+                },
+                ProfileChannel {
+                    name: "speed_kmh".into(),
+                    unit: "km/h".into(),
+                    source: ChannelSource::SpeedKmh,
+                    scale: 1.0,
+                    offset: 0.0,
+                    graphics_only: false,
+                    skip_if_zero: true,
+                },
+            ],
+        };
+
+        let mut zero_record = minimal_physics_record();
+        zero_record.speed_kmh = 0.0;
+        let out = build_ld_channels(&profile, &[zero_record], 300, None).unwrap();
+        assert!(
+            out.iter().all(|(name, _, _)| name != "camber_rad_fl"),
+            "all-zero skip_if_zero channel should be omitted"
+        );
+        assert!(
+            out.iter().all(|(name, _, _)| name != "speed_kmh"),
+            "speed_kmh is also all-zero here, so it should be omitted too"
+        );
+
+        let mut nonzero_record = minimal_physics_record();
+        nonzero_record.speed_kmh = 120.0;
+        let out = build_ld_channels(&profile, &[nonzero_record], 300, None).unwrap();
+        assert!(
+            out.iter().all(|(name, _, _)| name != "camber_rad_fl"),
+            "camber_rad_fl is still all-zero and should stay omitted"
+        );
+        assert!(
+            out.iter().any(|(name, _, _)| name == "speed_kmh"),
+            "speed_kmh has nonzero data and should be included"
+        );
     }
 
     #[test]

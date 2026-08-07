@@ -102,3 +102,78 @@ source = "suspension_travel_mm_rl"
 name = "Damper Pos RR"
 unit = "mm"
 source = "suspension_travel_mm_rr"
+
+[[channels]]
+name = "Clutch Pos"
+unit = "%"
+source = "clutch"
+scale = 100.0
+
+[[channels]]
+name = "Fuel Level"
+unit = "L"
+source = "fuel"
+
+[[channels]]
+name = "TC Active"
+unit = ""
+source = "tc"
+
+[[channels]]
+name = "ABS Active"
+unit = ""
+source = "abs"
+
+[[channels]]
+name = "Air Temp"
+unit = "C"
+source = "air_temp"
+
+[[channels]]
+name = "Road Temp"
+unit = "C"
+source = "road_temp"
+
+[[channels]]
+name = "Water Temp"
+unit = "C"
+source = "water_temp"
+
+[[channels]]
+name = "Heading"
+unit = "rad"
+source = "heading"
+
+[[channels]]
+name = "Pitch"
+unit = "rad"
+source = "pitch"
+
+[[channels]]
+name = "Roll"
+unit = "rad"
+source = "roll"
+
+[[channels]]
+name = "Brake Pres FL"
+unit = "%"
+source = "brake_pressure_fl"
+scale = 100.0
+
+[[channels]]
+name = "Brake Pres FR"
+unit = "%"
+source = "brake_pressure_fr"
+scale = 100.0
+
+[[channels]]
+name = "Brake Pres RL"
+unit = "%"
+source = "brake_pressure_rl"
+scale = 100.0
+
+[[channels]]
+name = "Brake Pres RR"
+unit = "%"
+source = "brake_pressure_rr"
+scale = 100.0
