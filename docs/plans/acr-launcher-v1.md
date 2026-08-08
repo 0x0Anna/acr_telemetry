@@ -340,3 +340,18 @@ just captured so it isn't re-discovered from scratch next time):
   dashboard for this analysis.db" becomes one click instead of the ~5 manual steps above
   — would need a Grafana API token/URL configured in the launcher first, out of scope to
   size properly right now.
+
+## Update (2026-08-07, third follow-up: stop-on-exit for long-running children)
+
+User testing left an `acr_analysis_export --serve` child running after the launcher
+window had already been closed, orphaned and locking `target/release/acr_analysis_export.exe`
+for the next build. Turned out none of the launcher's four long-running-child panels
+(Record, Track Match live, Telemetry Bridge, Analysis Export serve) stopped their child
+on window close — Stop was always a manual button, never wired to app exit. Fixed with a
+single `window.window().on_close_requested(...)` handler in `main.rs` that writes the
+stop file for whichever of the four is currently `running`, right before the window
+closes (`stop_running_children`). `telemetry_bridge_panel::stop_file_path` and
+`analysis_export_panel::serve_stop_file_path` were made `pub(crate)` so `main.rs` could
+reuse them instead of re-deriving the path a third/fourth time. Best-effort: doesn't wait
+for the children to actually exit (they each poll for the stop file on their own ~1s
+schedule), but that matches every existing Stop button's behavior already.

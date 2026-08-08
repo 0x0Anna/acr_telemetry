@@ -103,8 +103,10 @@ fn dashboard_url(addr: &str) -> String {
 /// resolves to — duplicated here (rather than imported) because the
 /// bridge is a standalone `src/bin/` binary, not a `lib.rs` module like
 /// `acr_recorder::track_match_app`, so there's nothing for the launcher to
-/// `use`. Keep both copies in sync if the convention changes.
-fn stop_file_path() -> PathBuf {
+/// `use`. Keep both copies in sync if the convention changes. `pub(crate)`
+/// so `main.rs`'s on-close handler can write it too, to stop an orphaned
+/// bridge child rather than leaving it running past window close.
+pub(crate) fn stop_file_path() -> PathBuf {
     dirs::config_dir()
         .map(|d| d.join("acr_telemetry").join("acr_telemetry_bridge_stop"))
         .unwrap_or_else(|| PathBuf::from(".acr_telemetry_bridge_stop"))

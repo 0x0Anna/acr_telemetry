@@ -175,6 +175,17 @@ fn main() -> Result<(), slint::PlatformError> {
     let poll_running = Arc::new(AtomicBool::new(true));
     spawn_status_poll(&window, poll_running.clone());
 
+    {
+        let state = state.clone();
+        let window_weak = window.as_weak();
+        window.window().on_close_requested(move || {
+            if let Some(window) = window_weak.upgrade() {
+                stop_running_children(&window, &state);
+            }
+            slint::CloseRequestResponse::HideWindow
+        });
+    }
+
     window.run()?;
 
     // Let the poll thread's `while running` loop notice and exit rather
@@ -182,4 +193,29 @@ fn main() -> Result<(), slint::PlatformError> {
     poll_running.store(false, Ordering::Relaxed);
 
     Ok(())
+}
+
+/// Write the stop file for every long-running child that's still marked
+/// `running` when the window is closing, so closing the launcher doesn't
+/// orphan a recording/bridge/live-match/analysis-export-serve process —
+/// each of those is spawned hidden with no shared console for Ctrl+C to
+/// reach, so a stop file is the only way anything but the launcher itself
+/// can ask them to exit. Best-effort: this fires once on close, doesn't
+/// wait for the children to actually finish exiting (they poll for the
+/// stop file on their own schedule, up to ~1s), and any write failure is
+/// silently ignored since there's no UI left to surface it to.
+fn stop_running_children(window: &AppWindow, state: &Rc<RefCell<AppState>>) {
+    if window.get_recorder_running() {
+        let cfg = state.borrow().config.clone();
+        let _ = std::fs::write(acr_recorder::config::resolve_stop_file_path(&cfg.recorder), b"");
+    }
+    if window.get_track_match_running() {
+        let _ = std::fs::write(acr_recorder::track_match_app::stop_file_path(), b"");
+    }
+    if window.get_telemetry_bridge_running() {
+        let _ = std::fs::write(telemetry_bridge_panel::stop_file_path(), b"");
+    }
+    if window.get_analysis_export_serve_running() {
+        let _ = std::fs::write(analysis_export_panel::serve_stop_file_path(), b"");
+    }
 }

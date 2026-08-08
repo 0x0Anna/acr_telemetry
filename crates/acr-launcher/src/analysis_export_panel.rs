@@ -147,8 +147,10 @@ pub(crate) fn init(window: &AppWindow, state: Rc<RefCell<AppState>>) {
 /// resolves to — duplicated here (rather than imported) because it's a
 /// standalone `src/bin/` binary, not a `lib.rs` module, so there's
 /// nothing for the launcher to `use`. Keep both copies in sync if the
-/// convention changes.
-fn serve_stop_file_path() -> PathBuf {
+/// convention changes. `pub(crate)` so `main.rs`'s on-close handler can
+/// write it too, to stop an orphaned `--serve` child rather than leaving
+/// it running past window close.
+pub(crate) fn serve_stop_file_path() -> PathBuf {
     dirs::config_dir()
         .map(|d| d.join("acr_telemetry").join("acr_analysis_export_stop"))
         .unwrap_or_else(|| PathBuf::from(".acr_analysis_export_stop"))
