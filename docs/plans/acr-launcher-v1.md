@@ -204,3 +204,139 @@ up to two more agents for {B} and {C+D combined, since they're both "spawn a pro
 stream output" and share `process.rs`} — or three-way B/C/D in parallel if `process.rs`
 is factored out as part of A's skeleton instead (cheap to do while A is already touching
 `Cargo.toml`/module wiring).
+
+## Status (2026-08-07 review)
+
+v1 is done — Status/Record/Export tabs, the `acr_recorder` shared-memory-wait backend
+fix, and units A–D are all merged into `acr-launcher-v1`. Phase 2
+(`acr-launcher-phase2.md`: MoTeC channel coverage, hotkeys, Track Match tab) and phase 3
+(`acr-launcher-phase3.md`: Grip Estimator, Plot Recording, Telemetry Bridge tabs) are
+also both done — see each doc's own status section. `cargo build -p acr_launcher` is
+clean as of this review. The launcher now wraps every `acr_*` tool named across all
+three plans; `git log` since shows further hardening on top (`f3b721a` replaced
+`tasklist.exe` polling with in-process snapshotting, `d84d06a` fixed silently-discarded
+invalid form input, `be65805` added a MoTeC profile picker to the Record tab) rather than
+new tool coverage.
+
+**Open backlog, carried from v1/phase2 and not yet picked up by any later phase:**
+- **Comment-preserving TOML edits**: still plain `toml::to_string_pretty` round-trips
+  (`recorder_panel.rs` and others) — hand-edited comments in `acr_recorder.toml` etc.
+  are lost on Save from the GUI. `toml_edit` migration not started.
+- **Structured `--status-json` output**: recorder/track-match/bridge status is still
+  parsed via stderr/stdout substring matching, not a real structured channel.
+- **Further tool tabs**: `acr_timing` and `acr_analysis_export` are the two remaining
+  CLI tools with no launcher tab (everything else named across v1/phase2/phase3 is now
+  wrapped).
+- **HID device-sharing with the game**: phase 2 flagged that `gilrs` may not see
+  controller/button-box input while the game holds exclusive capture — documented as a
+  known trade-off in the Hotkeys tab copy, not solved.
+
+No new work was picked up in this review pass — next session should pick from the open
+backlog above based on priority (comment-preserving TOML and the two remaining tool tabs
+are the most likely next batch; status-JSON and HID-sharing are lower-value/harder).
+
+## Update (2026-08-07, same-day follow-up batch)
+
+Picked up two of the four open-backlog items above:
+
+- **Comment-preserving TOML edits**: done, via `toml_edit` (already resolved
+  transitively through `toml 0.8`, so added as a direct dep at the same version —
+  no new dependency weight). `recorder_panel.rs::save_config` now patches only the
+  `[recorder]`/`[export.motec]` keys the Record tab actually edits into the existing
+  document, leaving every other key/table/comment in a hand-edited `acr_recorder.toml`
+  untouched. `telemetry_bridge_panel.rs::write_bridge_config` got the same treatment —
+  this also fixed a real (if minor) bug: the old full-struct overwrite silently erased
+  any hand-added `dashboard_slots`/`telemetry_colors` table in `acr_telemetry_bridge.toml`
+  every time Start ran, since those fields aren't in the UI-driven output struct at all.
+- **`acr_timing` tab**: investigated, then explicitly decided *not* to build. Turned out
+  `src/bin/acr_timing.rs` and `src/bin/acr_track_match.rs` are byte-identical (`fn main()`
+  calling `acr_recorder::track_match_app::run()`), differing only in the Cargo feature
+  the release build uses (`acr_timing_bin` disables pacenotes). Track Match's existing
+  "Live" mode already spawns this exact code path against the same
+  `acr_track_match.toml`, so a separate "Timing" tab would just be the same Start/Stop UI
+  pointed at a differently-named `.exe` with identical args — user confirmed skipping it
+  rather than building a duplicate tab.
+- **`acr_analysis_export` tab**: done. New `crates/acr-launcher/src/analysis_export_panel.rs`
+  (one-shot, mirrors `grip_estimator_panel.rs`'s shape) — recording ID field plus optional
+  `--grafana-db`/`--telemetry-db`/`--analysis-db` path overrides, results captured from
+  stderr into a log panel. Deliberately does **not** wrap the tool's `--serve` HTTP mode:
+  it runs forever with no stop-file support (the same class of gap `track_match_app.rs`/
+  `acr_telemetry_bridge.rs` had before their stop-file fixes), so wrapping it today would
+  mean either killing the process or breaking the launcher's established
+  "never kill children, always use a stop file" convention. Packaging
+  (`install/build.ps1`/`.iss`, `.github/workflows/release.yml`) already listed
+  `acr_analysis_export` — no packaging gap this time.
+
+`cargo build --release` (whole workspace) is clean after all three changes.
+
+**Backlog now**: structured `--status-json` output, HID device-sharing with the game
+(both unchanged from above).
+
+## Update (2026-08-07, second follow-up: Analysis Export serve mode + user-testing fixes)
+
+Live user testing turned up two things worth recording:
+
+1. **`grafana/AC Rally full-dashboard.json` already has a built-in "Export Annotation
+   ranges to analysis" link** wired to `http://localhost:9876/export?recording_id=$
+   {recording_id}` — i.e. the dashboard was already designed around
+   `acr_analysis_export --serve` being the primary trigger, not the one-shot CLI mode.
+   This wasn't visible from reading `src/bin/acr_analysis_export.rs` alone (no comment
+   pointed at the dashboard JSON), so the earlier same-day decision to skip wrapping
+   `--serve` was based on incomplete information. Corrected: added the stop-file backend
+   fix (`stop_file_path()` in `src/bin/acr_analysis_export.rs`, `--serve`'s loop now uses
+   `Server::recv_timeout` instead of the blocking `incoming_requests()` iterator so it can
+   poll for the stop file once a second — same convention as the `acr_track_match`/
+   `acr_telemetry_bridge` fixes) and Start/Stop in the launcher tab, alongside the
+   existing one-shot Run button (kept for ad-hoc exports without `--serve` running).
+   `AnalysisExportUiConfig` gained `last_serve_port` (default `9876`, matching both the
+   tool's own default and the port baked into the dashboard link).
+2. **Two Grafana concepts look similar but are different**: the dashboard's "Driver
+   annotations" toggle queries `telemetry.db`'s own `annotations` table (populated by
+   `acr_marker_good.bat`/etc. during recording) — unrelated to the Grafana-*native*
+   annotation (tagged `rid_<recording_id>`) that `acr_analysis_export` actually reads
+   from `grafana.db`. Worth flagging if this trips someone up again; no code change, just
+   a documentation gap in `grafana/ANNOTATIONS.md` that wasn't touched this pass.
+
+Also fixed two smaller UX gaps found in the same testing session:
+- **Grip Estimator** and **Analysis Export** (one-shot mode) both surface their tool's
+  actual result line as the status text now, instead of a generic "Done." — e.g. "No
+  sessions found with enough usable samples." or "OK: No annotations with tag rid_1 –
+  analysis.db cleared for recording 1" are no longer indistinguishable from a real
+  success at a glance.
+- **Telemetry Bridge** tab got an "Open dashboard" button (enabled when running + HTTP
+  is on) that opens `http://localhost:<port>` in the default browser, translating a
+  `0.0.0.0` bind address to `localhost` since browsers can't navigate to the former
+  reliably.
+
+`cargo build --release` is clean; `target/release/acr_launcher.exe` and
+`acr_analysis_export.exe` rebuilt and current as of this pass.
+
+### New backlog item: launcher help for the analysis.db comparison workflow
+
+Live-testing this end to end (with the user) surfaced the full intended workflow, which
+today has no launcher support past creating `analysis.db` itself:
+
+1. Tag a time range in Grafana with a **Ctrl+drag** (not a plain drag, which zooms, and
+   not Ctrl+click alone, which makes a zero-width point annotation that exports 0 rows)
+   → tag it `rid_<recording_id>`.
+2. Export (via the launcher's Serve mode + the dashboard link, or the one-shot Run) →
+   `analysis.db`.
+3. **Manual, undocumented-in-the-launcher steps from here**: add `analysis.db` as a
+   *second* Grafana SQLite datasource, import `grafana/AC Rally compare-
+   1772042640439.json` (the `id_a`/`id_b`-variable dashboard built specifically to
+   compare two recordings/segments), and swap its datasource UID — i.e. repeat the same
+   fiddly manual setup `DASHBOARD_SETUP.md` describes for the *first* dashboard, a second
+   time, by hand.
+
+Step 3 is the gap worth closing. Candidate launcher features (not scoped/estimated,
+just captured so it isn't re-discovered from scratch next time):
+- An "Open analysis.db in Explorer" / "Copy path" button next to the Analysis Export
+  tab's results, so the datasource-add step at least starts from the right file without
+  hunting for it.
+- Documentation string or a "Setup guide" link inside the tab pointing at
+  `grafana/ANALYSIS_RANGES.md`, since today a user has to already know that file exists.
+- Further out, a genuinely bigger lift: scripting the Grafana HTTP API (datasource
+  create + dashboard import + UID substitution) from the launcher, so "set up the compare
+  dashboard for this analysis.db" becomes one click instead of the ~5 manual steps above
+  — would need a Grafana API token/URL configured in the launcher first, out of scope to
+  size properly right now.

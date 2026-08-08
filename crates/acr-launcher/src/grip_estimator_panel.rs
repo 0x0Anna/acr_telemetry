@@ -166,8 +166,21 @@ fn run_child(window_weak: Weak<AppWindow>, binary: PathBuf, args: Vec<String>) {
 
     match result {
         Ok(r) if r.succeeded() => {
-            let status = if has_output { "Done." } else { "Done (no output)." };
-            finish(&window_weak, true, status.to_string());
+            // `read_scores_from_sqlite`/`read_scores_from_rkyv` print exactly
+            // one line ("No sessions found with enough usable samples.") on
+            // stdout instead of a CSV table when the picked recording/window
+            // yields no scoreable data (see `src/bin/acr_grip_estimator.rs`'s
+            // `print_results`) — surface that in the status line too, not
+            // just the results panel below it, so a genuinely empty result
+            // doesn't read the same as "ran fine, nothing to report".
+            let status = if !has_output {
+                "Done (no output).".to_string()
+            } else if r.last_line.contains("No sessions found") {
+                r.last_line.clone()
+            } else {
+                "Done.".to_string()
+            };
+            finish(&window_weak, true, status);
         }
         Ok(r) => finish(&window_weak, false, r.failure_message("acr_grip_estimator")),
         Err(e) => finish(&window_weak, false, format!("Failed to launch {}: {e}", binary.display())),

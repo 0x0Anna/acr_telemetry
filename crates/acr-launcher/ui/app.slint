@@ -333,6 +333,35 @@ export component AppWindow inherits Window {
 
     callback telemetry-bridge-start();
     callback telemetry-bridge-stop();
+    callback telemetry-bridge-open-dashboard();
+
+    // --- Analysis Export tab state (src/analysis_export_panel.rs owns
+    // the logic). One-shot: slices a recording's physics/graphics into
+    // analysis.db by Grafana annotation tag. Path fields are optional
+    // overrides — left blank, the tool resolves its own defaults. ---
+    in-out property <string> analysis-export-recording-id: "";
+    in-out property <string> analysis-export-grafana-db: "";
+    in-out property <string> analysis-export-telemetry-db: "";
+    in-out property <string> analysis-export-analysis-db: "";
+    in-out property <bool> analysis-export-running: false;
+    in-out property <string> analysis-export-status: "Idle.";
+    in-out property <string> analysis-export-results: "";
+
+    // `--serve` mode: long-running HTTP server the existing Grafana
+    // dashboards' "Export Annotation ranges to analysis" link is wired to
+    // (see grafana/AC Rally full-dashboard.json). Start/Stop lifecycle
+    // like Record/Telemetry Bridge.
+    in-out property <string> analysis-export-serve-port: "9876";
+    in-out property <bool> analysis-export-serve-running: false;
+    in-out property <string> analysis-export-serve-status-pill: "Idle";
+    in-out property <string> analysis-export-serve-log: "";
+
+    callback analysis-export-pick-grafana-db();
+    callback analysis-export-pick-telemetry-db();
+    callback analysis-export-pick-analysis-db();
+    callback analysis-export-run();
+    callback analysis-export-serve-start();
+    callback analysis-export-serve-stop();
 
     VerticalBox {
         Text {
@@ -1138,6 +1167,11 @@ export component AppWindow inherits Window {
                             enabled: root.telemetry-bridge-running;
                             clicked => { root.telemetry-bridge-stop(); }
                         }
+                        Button {
+                            text: "Open dashboard";
+                            enabled: root.telemetry-bridge-running && root.telemetry-bridge-http-enabled;
+                            clicked => { root.telemetry-bridge-open-dashboard(); }
+                        }
                     }
 
                     HorizontalBox {
@@ -1162,6 +1196,156 @@ export component AppWindow inherits Window {
                             text: root.telemetry-bridge-log;
                             read-only: true;
                             wrap: word-wrap;
+                        }
+                    }
+                }
+            }
+
+            Tab {
+                title: "Analysis Export";
+                VerticalBox {
+                    alignment: start;
+
+                    Text {
+                        text: "Slices a recording's physics/graphics by Grafana annotation tag (rid_<recording id>) out of telemetry.db and writes them into analysis.db. Telemetry/Analysis DB fields are optional (the tool resolves its own defaults); Grafana DB is required unless a GRAFANA_DB environment variable is set.";
+                        wrap: word-wrap;
+                        font-size: 11px;
+                    }
+
+                    HorizontalBox {
+                        Text {
+                            text: "Recording ID:";
+                            vertical-alignment: center;
+                        }
+                        LineEdit {
+                            text <=> root.analysis-export-recording-id;
+                            placeholder-text: "e.g. 42";
+                            width: 100px;
+                        }
+                    }
+
+                    Text {
+                        text: "Grafana DB (required):";
+                        font-weight: 700;
+                    }
+                    HorizontalBox {
+                        LineEdit {
+                            text <=> root.analysis-export-grafana-db;
+                            placeholder-text: "path to grafana.db";
+                        }
+                        Button {
+                            text: "Choose…";
+                            clicked => { root.analysis-export-pick-grafana-db(); }
+                        }
+                    }
+
+                    Text {
+                        text: "Telemetry DB (optional):";
+                        font-weight: 700;
+                    }
+                    HorizontalBox {
+                        LineEdit {
+                            text <=> root.analysis-export-telemetry-db;
+                            placeholder-text: "(from acr_recorder.toml)";
+                        }
+                        Button {
+                            text: "Choose…";
+                            clicked => { root.analysis-export-pick-telemetry-db(); }
+                        }
+                    }
+
+                    Text {
+                        text: "Analysis DB (optional):";
+                        font-weight: 700;
+                    }
+                    HorizontalBox {
+                        LineEdit {
+                            text <=> root.analysis-export-analysis-db;
+                            placeholder-text: "(next to telemetry DB)";
+                        }
+                        Button {
+                            text: "Choose…";
+                            clicked => { root.analysis-export-pick-analysis-db(); }
+                        }
+                    }
+
+                    Text {
+                        text: "Serve mode (recommended)";
+                        font-weight: 700;
+                    }
+                    Text {
+                        text: "Runs a small HTTP server that the Grafana dashboard's \"Export Annotation ranges to analysis\" link triggers directly — start it once, then click that link in Grafana whenever you want to export.";
+                        wrap: word-wrap;
+                        font-size: 11px;
+                    }
+                    HorizontalBox {
+                        Text {
+                            text: "Port:";
+                            vertical-alignment: center;
+                        }
+                        LineEdit {
+                            text <=> root.analysis-export-serve-port;
+                            width: 80px;
+                        }
+                        Button {
+                            text: "Start";
+                            enabled: !root.analysis-export-serve-running;
+                            clicked => { root.analysis-export-serve-start(); }
+                        }
+                        Button {
+                            text: "Stop";
+                            enabled: root.analysis-export-serve-running;
+                            clicked => { root.analysis-export-serve-stop(); }
+                        }
+                    }
+                    HorizontalBox {
+                        alignment: start;
+                        RecordingLamp {
+                            lit: root.analysis-export-serve-running;
+                        }
+                        Text {
+                            text: root.analysis-export-serve-status-pill;
+                            font-size: 14px;
+                            vertical-alignment: center;
+                        }
+                    }
+                    ScrollView {
+                        height: 100px;
+                        TextEdit {
+                            text: root.analysis-export-serve-log;
+                            read-only: true;
+                            wrap: word-wrap;
+                        }
+                    }
+
+                    Text {
+                        text: "One-shot export";
+                        font-weight: 700;
+                    }
+                    Text {
+                        text: "Runs a single export for the recording ID above and exits — useful without Serve mode running.";
+                        wrap: word-wrap;
+                        font-size: 11px;
+                    }
+                    HorizontalBox {
+                        Button {
+                            text: root.analysis-export-running ? "Running…" : "Run";
+                            enabled: !root.analysis-export-running;
+                            clicked => { root.analysis-export-run(); }
+                        }
+                    }
+
+                    Text {
+                        text: root.analysis-export-status;
+                        font-weight: 700;
+                    }
+
+                    ScrollView {
+                        height: 100px;
+                        TextEdit {
+                            text: root.analysis-export-results;
+                            read-only: true;
+                            wrap: no-wrap;
                         }
                     }
                 }

@@ -163,16 +163,60 @@ fn config_file_path() -> PathBuf {
         .unwrap_or_else(|| PathBuf::from("acr_recorder.toml"))
 }
 
-/// Serialize the full `Config` (both `[recorder]` and `[export]`) back out
-/// with `toml::to_string_pretty`. Known trade-off (documented in
-/// docs/plans/acr-launcher-v1.md): this does not preserve comments or
-/// formatting in a hand-edited `acr_recorder.toml` — acceptable for v1.
+/// Write only the fields the Record tab actually edits
+/// (`[recorder]`'s `raw_output_dir`/`notes_dir`/`record_graphics`/
+/// `ring_mode`/`ring_slots`/`ring_prefix` and `[export.motec]`'s
+/// `profile`) into the on-disk `acr_recorder.toml` via `toml_edit`,
+/// rather than round-tripping the whole `Config` through
+/// `toml::to_string_pretty`. Every other key/table/comment already in the
+/// file — including sections this GUI doesn't expose, like distance-reset
+/// tuning — passes through untouched, closing the comment/formatting-loss
+/// trade-off the v1 plan flagged as a known limitation.
 pub(crate) fn save_config(cfg: &acr_recorder::config::Config) -> std::io::Result<PathBuf> {
     let path = config_file_path();
-    let text = toml::to_string_pretty(cfg)
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
-    std::fs::write(&path, &text)?;
+    let mut doc = load_document(&path);
+
+    let recorder = doc["recorder"]
+        .or_insert(toml_edit::table())
+        .as_table_mut()
+        .expect("recorder section must be a table");
+    recorder["raw_output_dir"] = toml_edit::value(cfg.recorder.raw_output_dir.clone());
+    match &cfg.recorder.notes_dir {
+        Some(dir) => recorder["notes_dir"] = toml_edit::value(dir.clone()),
+        None => {
+            recorder.remove("notes_dir");
+        }
+    }
+    recorder["record_graphics"] = toml_edit::value(cfg.recorder.record_graphics);
+    recorder["ring_mode"] = toml_edit::value(cfg.recorder.ring_mode);
+    recorder["ring_slots"] = toml_edit::value(cfg.recorder.ring_slots as i64);
+    recorder["ring_prefix"] = toml_edit::value(cfg.recorder.ring_prefix.clone());
+
+    let export = doc["export"]
+        .or_insert(toml_edit::table())
+        .as_table_mut()
+        .expect("export section must be a table");
+    let motec = export["motec"]
+        .or_insert(toml_edit::table())
+        .as_table_mut()
+        .expect("export.motec section must be a table");
+    motec["profile"] = toml_edit::value(cfg.export.motec.profile.clone());
+
+    std::fs::write(&path, doc.to_string())?;
     Ok(path)
+}
+
+/// Parse the existing `acr_recorder.toml` (if any) into an editable
+/// `toml_edit` document so [`save_config`] can patch specific keys in
+/// place. Falls back to a fresh, empty document if the file doesn't exist
+/// yet or fails to parse (e.g. was hand-corrupted) — `save_config` then
+/// writes only the keys it knows about, and `load_config` fills in
+/// everything else from `Config`'s `#[serde(default)]`s on next read.
+fn load_document(path: &std::path::Path) -> toml_edit::DocumentMut {
+    std::fs::read_to_string(path)
+        .ok()
+        .and_then(|text| text.parse::<toml_edit::DocumentMut>().ok())
+        .unwrap_or_default()
 }
 
 /// Spawn the chosen binary (`acr_motec.exe` if "Record directly to

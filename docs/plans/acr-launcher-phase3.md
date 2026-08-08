@@ -106,3 +106,22 @@ TOML-only, same "config-first, don't expose everything" precedent as Track Match
 5. `install/build.ps1` (or the CI workflow) — confirms `acr_grip_estimator.exe` and
    `acr_plot_recording.exe` are present in both the portable zip and the Inno Setup
    install directory.
+
+## Status (2026-08-07 review)
+
+All three tabs, the bridge stop-file fix, and the packaging updates are implemented and
+merged into `acr-launcher-v1` (`abdc789` added the tabs + status/persistence work,
+`d84d06a`/`f3b721a`/`be65805` are post-merge hardening on top). Confirmed by reading
+current source, not just commit messages:
+
+- `crates/acr-launcher/src/{grip_estimator_panel,plot_recording_panel,
+  telemetry_bridge_panel}.rs` all exist; `launcher_config.rs` carries their UI-state
+  tables (now consolidated into `acr_launcher.toml` per `b634ca8`, superseding this
+  doc's earlier "own `[section]` table" framing — same idea, one file).
+- `install/build.ps1`, `install/ACR_Recorder.iss`, and `.github/workflows/release.yml`
+  all reference `acr_grip_estimator`/`acr_plot_recording` — packaging gap closed.
+- `cargo build -p acr_launcher` is clean as of this review.
+
+Phase 3 is done. No open items from this doc remain — see `acr-launcher-v1.md`'s status
+section for the cross-phase backlog that's still open (comment-preserving TOML edits,
+structured status-JSON, further tool tabs).

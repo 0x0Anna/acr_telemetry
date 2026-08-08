@@ -153,3 +153,25 @@ merge pattern already used successfully for the Record/Export panels.
    track file, confirm scores print into the log. Run `--live` mode (requires the game
    running), confirm Start/Stop works via the new stop-file mechanism rather than a
    hard kill.
+
+## Status (2026-08-07 review)
+
+All three items are implemented and merged into `acr-launcher-v1`, confirmed against
+current source:
+
+1. **MoTeC channels**: `src/export/motec_profile.rs` has `Clutch`, `Fuel`, `Tc`/`Abs`
+   (check exact names if needed), `TurboBoost`, `AirTemp`, `RoadTemp`, `WaterTemp`,
+   `Heading`, `Pitch`, `Roll`, `BrakePressureFl/Fr/Rl/Rr`, `SlipAngleFl/Fr/Rl/Rr`,
+   `RideHeightFront/Rear`, and `CarDamageFront/Rear/Left/Right/Center` — the full ~26-
+   channel set this doc scoped, each with `parse`/`extract_channel` wiring. Profile TOML
+   assignment across `all_data`/`rally`/`rbr` not re-verified line-by-line in this pass;
+   spot-check before relying on a specific profile having a specific new channel.
+2. **Hotkeys**: `crates/acr-launcher/src/hotkeys.rs` exists; later commits
+   (`ff78148`, `7ee10c3`, `50923e3`) simplified to a single toggle binding per action
+   (start/stop, plus a Track Match toggle) rather than the original two-binding design —
+   an intentional simplification made during implementation, not a gap.
+3. **Track Match tab**: `track_match_panel.rs` exists; `6efacd5` added the stop-file
+   support this doc called out as a backend gap.
+
+Phase 2 is done. Cross-phase backlog (comment-preserving TOML, structured status-JSON)
+tracked in `acr-launcher-v1.md`'s status section.

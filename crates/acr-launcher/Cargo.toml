@@ -15,6 +15,7 @@ acc_shared_memory_rs = { path = "../../vendor/acc_shared_memory_rs" }
 slint = "1.17"
 rfd = "0.17"
 toml = "0.8"
+toml_edit = "0.22"
 global-hotkey = "0.8.0"
 gilrs = "0.11.2"
 serde = { version = "1.0.229", features = ["derive"] }

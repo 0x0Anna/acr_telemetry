@@ -45,6 +45,8 @@ pub(crate) struct LauncherConfig {
     pub(crate) grip_estimator: GripEstimatorUiConfig,
     #[serde(default)]
     pub(crate) telemetry_bridge: TelemetryBridgeUiConfig,
+    #[serde(default)]
+    pub(crate) analysis_export: AnalysisExportUiConfig,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -139,6 +141,44 @@ fn default_bridge_http_addr() -> String {
 
 fn default_bridge_unit() -> String {
     "c".to_string()
+}
+
+/// Last-used recording ID + path overrides (Analysis Export tab) — the
+/// tool itself takes no config file of its own (all flags, see
+/// `src/bin/acr_analysis_export.rs`), so this is the only persistence for
+/// it, same shape as `GripEstimatorUiConfig`.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub(crate) struct AnalysisExportUiConfig {
+    #[serde(default)]
+    pub(crate) last_recording_id: Option<String>,
+    #[serde(default)]
+    pub(crate) last_grafana_db: Option<String>,
+    #[serde(default)]
+    pub(crate) last_telemetry_db: Option<String>,
+    #[serde(default)]
+    pub(crate) last_analysis_db: Option<String>,
+    /// `--serve` mode's last-used port — matches the tool's own default
+    /// (`9876`, see `src/bin/acr_analysis_export.rs`) and the port baked
+    /// into `grafana/AC Rally full-dashboard.json`'s "Export Annotation
+    /// ranges to analysis" link, so the two stay in sync unless changed.
+    #[serde(default = "default_serve_port")]
+    pub(crate) last_serve_port: u16,
+}
+
+impl Default for AnalysisExportUiConfig {
+    fn default() -> Self {
+        Self {
+            last_recording_id: None,
+            last_grafana_db: None,
+            last_telemetry_db: None,
+            last_analysis_db: None,
+            last_serve_port: default_serve_port(),
+        }
+    }
+}
+
+fn default_serve_port() -> u16 {
+    9876
 }
 
 /// Next to the launcher's own executable, same convention

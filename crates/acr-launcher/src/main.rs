@@ -22,6 +22,7 @@ use std::time::Duration;
 use acc_shared_memory_rs::{ACCError, ACCSharedMemory};
 use slint::ComponentHandle;
 
+pub mod analysis_export_panel;
 pub mod export_panel;
 pub mod grip_estimator_panel;
 pub mod hotkeys;
@@ -169,6 +170,7 @@ fn main() -> Result<(), slint::PlatformError> {
     plot_recording_panel::init(&window, state.clone());
     grip_estimator_panel::init(&window, state.clone());
     telemetry_bridge_panel::init(&window, state.clone());
+    analysis_export_panel::init(&window, state.clone());
 
     let poll_running = Arc::new(AtomicBool::new(true));
     spawn_status_poll(&window, poll_running.clone());
