@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 
 use crate::color_config::ColorConfig;
 
-#[derive(Debug, Clone, serde::Deserialize, Default)]
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, Default)]
 pub struct Config {
     #[serde(default)]
     pub recorder: RecorderConfig,
@@ -104,7 +104,7 @@ fn default_temperature_unit() -> String {
     "c".into()
 }
 
-#[derive(Debug, Clone, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct RecorderConfig {
     /// Directory for raw .rkyv recordings (relative to executable directory or absolute).
     #[serde(default = "default_raw_output_dir")]
@@ -188,7 +188,7 @@ impl Default for RecorderConfig {
     }
 }
 
-#[derive(Debug, Clone, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct ExportConfig {
     /// Default export method: "csv" or "sqlite"
     #[serde(default = "default_export_method")]
@@ -196,6 +196,10 @@ pub struct ExportConfig {
     /// Default path for SQLite database (relative to executable directory or absolute).
     #[serde(default = "default_sqlite_path")]
     pub sqlite_db_path: String,
+    /// Directory for CSV/LD/SHP export outputs (relative to executable directory or
+    /// absolute). Empty = same directory as the source .rkyv file (previous behavior).
+    #[serde(default)]
+    pub output_dir: String,
     #[serde(default)]
     pub motec: MotecExportConfig,
 }
@@ -205,13 +209,14 @@ impl Default for ExportConfig {
         Self {
             default_method: default_export_method(),
             sqlite_db_path: default_sqlite_path(),
+            output_dir: String::new(),
             motec: MotecExportConfig::default(),
         }
     }
 }
 
 /// MoTeC `.ld` export (acr_export, acr_motec, acr_recorder --motec).
-#[derive(Debug, Clone, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct MotecExportConfig {
     /// Profile name: TOML file `motec_profiles/<profile>.toml` (e.g. `rally`, `rbr`).
     #[serde(default = "default_motec_profile")]

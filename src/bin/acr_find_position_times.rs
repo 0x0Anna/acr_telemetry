@@ -11,7 +11,12 @@ struct Target {
     dist_m: f64,
     wx: f64,
     wz: f64,
+    // Reference graphics-space coordinates, kept alongside wx/wz for
+    // cross-checking against the physics-space fields when debugging by
+    // hand; not read programmatically.
+    #[allow(dead_code)]
     gx: f64,
+    #[allow(dead_code)]
     gz: f64,
 }
 
@@ -52,7 +57,7 @@ fn closest_wheel_by_xz(
             best = Some((i, d, p.speed_kmh));
         }
     }
-    best.map(|(i, d, spd)| {
+    best.map(|(i, _d, spd)| {
         let t_rec = i as f64 / tl.hz_p_eff;
         let t_game = (i as f64 - tl.movement_phy_idx as f64).max(0.0) / tl.hz_p_eff;
         (i, t_rec, t_game, spd)

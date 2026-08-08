@@ -26,7 +26,7 @@ fn find_pkt(phy: &[PhysicsRecord], target: i32) -> Option<usize> {
         })
 }
 
-fn scan_gaps(phy: &[PhysicsRecord], lo: usize, hi: usize, hz: f64) {
+fn scan_gaps(phy: &[PhysicsRecord], lo: usize, hi: usize, _hz: f64) {
     let mut max_jump = 0i32;
     let mut max_at = 0usize;
     let mut neg = 0usize;

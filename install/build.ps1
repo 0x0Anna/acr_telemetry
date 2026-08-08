@@ -32,16 +32,25 @@ $Bins = @(
     'acr_track_match',
     'acr_timing',
     'acr_rtss_osd',
-    'acr_analyze_timing_recording'
+    'acr_analyze_timing_recording',
+    'acr_grip_estimator',
+    'acr_plot_recording',
+    'acr_launcher'
 )
 
 if (-not $SkipCargoBuild) {
     Write-Host "==> cargo build --release (version $Version)"
     $cargoArgs = @('build', '--release', '--features', 'acr_timing_bin')
-    foreach ($bin in $Bins) { $cargoArgs += @('--bin', $bin) }
+    foreach ($bin in $Bins) {
+        if ($bin -ne 'acr_launcher') { $cargoArgs += @('--bin', $bin) }
+    }
     Push-Location $Root
     try {
         & cargo @cargoArgs
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        # acr_launcher lives in its own crate (no acr_timing_bin feature), so it
+        # needs a separate cargo invocation from the root-package bins above.
+        & cargo build --release -p acr_launcher --bin acr_launcher
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     } finally { Pop-Location }
 } else {

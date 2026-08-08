@@ -48,6 +48,7 @@ Name: "{app}\assets\split_sounds"; Permissions: users-modify
 
 [Files]
 Source: "staging\acr_recorder.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "staging\acr_launcher.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "staging\acr_export.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "staging\acr_motec.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "staging\acr_telemetry_bridge.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -55,6 +56,9 @@ Source: "staging\acr_analysis_export.exe"; DestDir: "{app}"; Flags: ignoreversio
 Source: "staging\acr_track_match.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "staging\acr_timing.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "staging\acr_rtss_osd.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "staging\acr_analyze_timing_recording.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "staging\acr_grip_estimator.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "staging\acr_plot_recording.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "staging\acr_recorder.toml"; DestDir: "{app}"; Flags: onlyifdoesntexist ignoreversion
 Source: "staging\acr_motec.toml"; DestDir: "{app}"; Flags: onlyifdoesntexist ignoreversion
 Source: "staging\acr_timing.toml"; DestDir: "{app}"; Flags: onlyifdoesntexist ignoreversion
@@ -73,6 +77,7 @@ Source: "staging\assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recurs
 Source: "staging\voices\*"; DestDir: "{app}\voices"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*.md"
 
 [Icons]
+Name: "{group}\ACR Launcher"; Filename: "{app}\acr_launcher.exe"; WorkingDir: "{app}"
 Name: "{group}\ACR Recorder"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
 Name: "{group}\ACR MoTeC (live .ld)"; Filename: "{app}\acr_motec.exe"; WorkingDir: "{app}"
 Name: "{group}\ACR Export"; Filename: "{app}\acr_export.exe"; WorkingDir: "{app}"
@@ -81,6 +86,7 @@ Name: "{group}\ACR Track Match"; Filename: "{app}\acr_track_match.exe"; WorkingD
 Name: "{group}\{#MyAppName} README"; Filename: "{app}\README.txt"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\ACR Recorder"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
+Name: "{autodesktop}\ACR Launcher"; Filename: "{app}\acr_launcher.exe"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "Start ACR Recorder"; Flags: nowait postinstall skipifsilent; Tasks: launchrecorder; WorkingDir: "{app}"

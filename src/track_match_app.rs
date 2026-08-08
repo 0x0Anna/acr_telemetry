@@ -3094,6 +3094,13 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
     let eval_interval = Duration::from_millis((1000 / cfg.live_rate_hz.max(1)) as u64);
     let mut last_eval = Instant::now();
     let mut last_no_data_log = Instant::now();
+    // Stop-file polling (see `stop_file_path()`): checked at most once a
+    // second so it doesn't add per-frame overhead to the physics loop.
+    let live_stop_path = stop_file_path();
+    if live_stop_path.exists() {
+        let _ = std::fs::remove_file(&live_stop_path);
+    }
+    let mut last_stop_check = Instant::now();
     let mut have_physics_frame = false; // first successful new physics read from shared memory
     let mut last_physics_debug_at = Instant::now() - Duration::from_secs(1);
     let mut last_pt: Option<Point2> = None;
@@ -3183,8 +3190,21 @@ fn run_live(refs: &[ReferenceTrack], cfg: &CliConfig) -> Result<(), Box<dyn std:
     }
     push_rtss_osd(cfg, "")?;
     eprintln!("live mode started; waiting for ACC shared memory...");
+    eprintln!(
+        "Ctrl+C to stop, or create {} to stop from the launcher.",
+        live_stop_path.display()
+    );
 
     while RUNNING.load(Ordering::Relaxed) {
+        if last_stop_check.elapsed() >= Duration::from_secs(1) {
+            last_stop_check = Instant::now();
+            if live_stop_path.exists() {
+                let _ = std::fs::remove_file(&live_stop_path);
+                eprintln!("Stop file detected; shutting down...");
+                RUNNING.store(false, Ordering::Relaxed);
+                continue;
+            }
+        }
         if let Some(data) = acc.read_shared_memory()? {
             no_data_since = None;
             if !have_physics_frame {
@@ -5871,6 +5891,20 @@ fn ctrlc_handler() {
         RUNNING.store(false, Ordering::Relaxed);
     })
     .expect("could not set Ctrl+C handler");
+}
+
+/// Path to acr_track_match's own stop file: creating this file signals a
+/// `--live` run to exit gracefully, the same convention
+/// `config::resolve_stop_file_path` uses for `acr_recorder` (same base
+/// directory, `dirs::config_dir()/acr_telemetry`) but under a distinct
+/// filename — `acr_track_match` and `acr_recorder` are commonly run at the
+/// same time, and sharing one stop file would mean stopping one also
+/// stops the other. Public so `acr-launcher`'s Track Match panel can write
+/// to the exact path this process polls for.
+pub fn stop_file_path() -> PathBuf {
+    dirs::config_dir()
+        .map(|d| d.join("acr_telemetry").join("acr_track_match_stop"))
+        .unwrap_or_else(|| PathBuf::from(".acr_track_match_stop"))
 }
 
 fn load_labels(cfg: &CliConfig) -> Result<std::collections::HashMap<String, String>, Box<dyn std::error::Error>> {

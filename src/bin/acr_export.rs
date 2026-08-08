@@ -273,10 +273,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::process::exit(1);
     }
 
-    let cfg = config::load_config();
+    let mut cfg = config::load_config();
 
-    let (use_raw_dir, path_arg, do_sqlite, do_csv, do_shp, sqlite_db, downsample, subtiming) =
+    let (use_raw_dir, path_arg, do_sqlite, do_csv, do_shp, sqlite_db, downsample, subtiming, output_dir) =
         parse_args(&args, &cfg)?;
+    if let Some(dir) = output_dir {
+        cfg.export.output_dir = dir;
+    }
     let input: PathBuf = if use_raw_dir {
         config::resolve_path(&cfg.recorder.raw_output_dir)
     } else if let Some(p) = path_arg {
@@ -302,6 +305,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             true,
             downsample,
             subtiming.as_ref(),
+            &cfg,
         )?;
     } else if input.extension().map_or(false, |e| e == "rkyv") {
         export_single(
@@ -314,6 +318,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             false,
             downsample,
             subtiming.as_ref(),
+            &cfg,
         )?;
     } else {
         return Err(format!("Expected .rkyv file or directory: {}", input.display()).into());
@@ -335,6 +340,7 @@ fn parse_args(
         String,
         usize,
         Option<SubtimingParams>,
+        Option<String>,
     ),
     Box<dyn std::error::Error>,
 > {
@@ -345,6 +351,7 @@ fn parse_args(
     let mut do_shp = false;
     let mut sqlite_db = String::new();
     let mut downsample: usize = 10;
+    let mut output_dir: Option<String> = None;
     let mut subtiming: Option<SubtimingParams> = None;
     let mut i = 1;
 
@@ -405,6 +412,10 @@ fn parse_args(
             i += 1;
         } else if a == "--subtiming-temporal-merge" {
             subtiming.get_or_insert_with(SubtimingParams::default).use_chain_order_merge = false;
+        } else if a == "--output-dir" {
+            let v = args.get(i + 1).ok_or("--output-dir requires a directory path")?;
+            output_dir = Some(v.clone());
+            i += 1;
         } else if a == "--downsample" {
             if i + 1 >= args.len() {
                 return Err("--downsample requires a positive integer value".into());
@@ -463,11 +474,13 @@ fn parse_args(
         sqlite_db,
         downsample,
         subtiming,
+        output_dir,
     ))
 }
 
 fn print_usage() {
-    eprintln!("Usage: acr_export [--rawDir] [<input.rkyv|directory>] [--csv | --sqlite [db_path] | --shp] [--downsample N]");
+    eprintln!("Usage: acr_export [--rawDir] [<input.rkyv|directory>] [--csv | --sqlite [db_path] | --shp] [--output-dir DIR] [--downsample N]");
+    eprintln!("       --output-dir DIR: write CSV/LD/SHP outputs to DIR instead of next to the source .rkyv (overrides [export] output_dir in config)");
     eprintln!("       --rawDir: use configured raw_output_dir, batch export (skips already exported)");
     eprintln!("       Batch: pass directory (or --rawDir) to export all .rkyv");
     eprintln!("       Single: pass .rkyv file");
@@ -483,6 +496,20 @@ fn print_usage() {
     eprintln!("       Config: ./acr_recorder.toml or ~/.config/acr_recorder/config.toml");
 }
 
+/// Directory export outputs (CSV/graphics.csv/LD/SHP) are written to:
+/// `cfg.export.output_dir` if set (created if missing), else the input
+/// file's own directory (previous behavior). SQLite already has its own
+/// separately configurable path (`sqlite_db_path`) and isn't affected.
+fn export_out_dir(cfg: &config::Config, input: &Path) -> Result<PathBuf, Box<dyn std::error::Error>> {
+    if cfg.export.output_dir.trim().is_empty() {
+        Ok(input.parent().unwrap_or(Path::new(".")).to_path_buf())
+    } else {
+        let dir = config::resolve_path(&cfg.export.output_dir);
+        std::fs::create_dir_all(&dir)?;
+        Ok(dir)
+    }
+}
+
 fn batch_export(
     dir: &Path,
     do_sqlite: bool,
@@ -493,6 +520,7 @@ fn batch_export(
     batch_mode: bool,
     downsample: usize,
     subtiming: Option<&SubtimingParams>,
+    cfg: &config::Config,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut rkyv_files: Vec<PathBuf> = std::fs::read_dir(dir)?
         .filter_map(|e| e.ok())
@@ -520,8 +548,9 @@ fn batch_export(
                 continue;
             }
         }
+        let stem = input.file_stem().and_then(|s| s.to_str()).unwrap_or("export");
         if do_csv {
-            let csv_path = input.with_extension("csv");
+            let csv_path = export_out_dir(cfg, input)?.join(format!("{}.csv", stem));
             if csv_path.exists() {
                 eprintln!("Skip (CSV exists): {}", input.display());
                 skipped += 1;
@@ -529,7 +558,7 @@ fn batch_export(
             }
         }
         if do_shp {
-            let shp_path = input.with_extension("points.shp");
+            let shp_path = export_out_dir(cfg, input)?.join(format!("{}.points.shp", stem));
             if shp_path.exists() {
                 eprintln!("Skip (SHP exists): {}", input.display());
                 skipped += 1;
@@ -547,6 +576,7 @@ fn batch_export(
             batch_mode,
             downsample,
             subtiming,
+            cfg,
         ) {
             Ok(()) => exported += 1,
             Err(e) => {
@@ -574,6 +604,7 @@ fn export_single(
     batch_mode: bool,
     downsample: usize,
     subtiming: Option<&SubtimingParams>,
+    cfg: &config::Config,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let statics = acr_recorder::export::rkyv_format::load_statics(input);
 
@@ -732,7 +763,7 @@ fn export_single(
     }
 
     let stem = input.file_stem().and_then(|s| s.to_str()).unwrap_or("export");
-    let out_dir = input.parent().unwrap_or(Path::new("."));
+    let out_dir = export_out_dir(cfg, input)?;
 
     if do_csv {
         let csv_path = out_dir.join(format!("{}.csv", stem));
@@ -761,7 +792,7 @@ fn export_single(
         }
         // LD always with CSV for single-file
         let ld_path = out_dir.join(format!("{}.ld", stem));
-        let motec_profile = config::load_config().export.motec.profile;
+        let motec_profile = &cfg.export.motec.profile;
         if let Some((graphics_records, graphics_sample_rate)) = ld_graphics.as_ref() {
             acr_recorder::export::motec_ld::write_ld_with_graphics(
                 &ld_path,
@@ -780,7 +811,7 @@ fn export_single(
     }
 
     if do_shp {
-        export_shapefile_points(input, downsample, subtiming)?;
+        export_shapefile_points(input, downsample, subtiming, &out_dir, stem)?;
     }
 
     Ok(())
@@ -790,6 +821,8 @@ fn export_shapefile_points(
     input: &Path,
     downsample: usize,
     subtiming: Option<&SubtimingParams>,
+    out_dir: &Path,
+    stem: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let graphics_path = input.with_extension("graphics.rkyv");
     if !graphics_path.exists() {
@@ -810,7 +843,7 @@ fn export_shapefile_points(
         return Err("No physics records in file".into());
     }
 
-    let shp_path = input.with_extension("points.shp");
+    let shp_path = out_dir.join(format!("{}.points.shp", stem));
     let table_builder = TableWriterBuilder::new()
         .add_numeric_field("idx".try_into()?, 12, 0)
         .add_numeric_field("t_sec".try_into()?, 12, 3)
@@ -883,7 +916,7 @@ fn export_shapefile_points(
 
     if let Some(st) = subtiming {
         let markers = compute_subtiming_markers(&sub_samples, st);
-        let sub_path = input.with_extension("subtiming.shp");
+        let sub_path = out_dir.join(format!("{}.subtiming.shp", stem));
         write_subtiming_shapefile(&sub_path, &markers)?;
         eprintln!(
             "Wrote {} subtiming marker(s) to {}",

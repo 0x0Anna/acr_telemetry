@@ -1,0 +1,28 @@
+[package]
+name = "acr_launcher"
+version = "0.1.0"
+edition = "2024"
+description = "Slint GUI launcher for acr_telemetry's recorder/export/status tools."
+build = "build.rs"
+
+[[bin]]
+name = "acr_launcher"
+path = "src/main.rs"
+
+[dependencies]
+acr_recorder = { path = "../.." }
+acc_shared_memory_rs = { path = "../../vendor/acc_shared_memory_rs" }
+slint = "1.17"
+rfd = "0.17"
+toml = "0.8"
+toml_edit = "0.22"
+global-hotkey = "0.8.0"
+gilrs = "0.11.2"
+serde = { version = "1.0.229", features = ["derive"] }
+dirs = "5.0"
+
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["tlhelp32", "handleapi", "minwindef"] }
+
+[build-dependencies]
+slint-build = "1.17"

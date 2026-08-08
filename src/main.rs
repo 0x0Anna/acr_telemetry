@@ -13,9 +13,9 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
-use acc_shared_memory_rs::{ACCError, ACCSharedMemory};
+use acc_shared_memory_rs::ACCError;
 
-use acr_recorder::{config, record::{GraphicsRecord, PhysicsRecord, StaticsRecord}, recorder::Recorder};
+use acr_recorder::{acc_wait::open_or_wait, config, record::{GraphicsRecord, PhysicsRecord, StaticsRecord}, recorder::Recorder};
 
 static RUNNING: AtomicBool = AtomicBool::new(true);
 
@@ -136,8 +136,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     eprintln!("Ctrl+C to stop, or run acr_stop.bat / create {} to stop from game.", stop_path.display());
 
-    let mut acc = ACCSharedMemory::new()?;
-    
+    let Some(mut acc) = open_or_wait(&RUNNING, &stop_path)? else {
+        return Ok(());
+    };
+
     // Capture statics once at start
     let mut statics = acc.read_shared_memory()?
         .map(|data| StaticsRecord::from_statics(&data.statics));

@@ -8,6 +8,7 @@ members = [
     "crates/acr-timing-store",
     "crates/acr-timing-engine",
     "crates/acr-timing-presenter",
+    "crates/acr-launcher",
 ]
 resolver = "2"
 

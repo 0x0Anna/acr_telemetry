@@ -348,6 +348,21 @@ fn run_export(
     Ok(msg)
 }
 
+/// Path to `--serve` mode's own stop file: creating this file signals a
+/// running server to exit gracefully, same convention as
+/// `acr_track_match::stop_file_path`/`acr_telemetry_bridge::stop_file_path`
+/// (`dirs::config_dir()/acr_telemetry`) but under its own filename — this
+/// tool commonly runs alongside the recorder/bridge/track-match, and a
+/// shared stop file would mean stopping one also stops the others. Public
+/// so `acr-launcher`'s Analysis Export panel can write to the exact path
+/// this process polls for (spawned hidden, no shared console for Ctrl+C
+/// to reach).
+pub fn stop_file_path() -> std::path::PathBuf {
+    dirs::config_dir()
+        .map(|d| d.join("acr_telemetry").join("acr_analysis_export_stop"))
+        .unwrap_or_else(|| std::path::PathBuf::from(".acr_analysis_export_stop"))
+}
+
 fn parse_paths(args: &[String]) -> (Option<std::path::PathBuf>, Option<std::path::PathBuf>, Option<std::path::PathBuf>) {
     let cfg = config::load_config();
     let mut telemetry_db = Some(config::resolve_path(&cfg.export.sqlite_db_path));
@@ -406,30 +421,60 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let analysis_db = analysis_db.ok_or("--analysis-db PATH or telemetry-db required")?;
 
         let server = Server::http(("0.0.0.0", port)).map_err(|e| format!("bind :{}: {}", port, e))?;
-        eprintln!("acr_analysis_export on http://localhost:{}/export?recording_id=X", port);
 
-        for mut req in server.incoming_requests() {
-            let _ = std::io::Read::read_to_end(&mut req.as_reader(), &mut vec![]);
-            let path = req.url().split('?').next().unwrap_or("");
-            let query: Option<&str> = req.url().split('?').nth(1);
-            let recording_id = query
-                .and_then(|q| q.split('&').find(|p| p.starts_with("recording_id=")))
-                .and_then(|p| p.strip_prefix("recording_id="))
-                .and_then(|v| v.parse::<i64>().ok());
+        // Stop-file polling, same convention as `track_match_app.rs`'s
+        // `--live` loop / `acr_telemetry_bridge.rs`'s read loop: launched
+        // hidden by the launcher with no shared console for Ctrl+C to
+        // reach, so a stop file is the only way to ask this to exit
+        // cleanly. `recv_timeout` (rather than the blocking
+        // `incoming_requests()` iterator) lets the loop wake up once a
+        // second even with no requests arriving, to check for the file.
+        let stop_path = stop_file_path();
+        if stop_path.exists() {
+            let _ = std::fs::remove_file(&stop_path);
+        }
+        eprintln!(
+            "acr_analysis_export on http://localhost:{}/export?recording_id=X. Ctrl+C to stop, or create {} to stop from the launcher.",
+            port, stop_path.display()
+        );
 
-            let (status, body) = if path == "/export" {
-                match recording_id {
-                    Some(rid) => match run_export(rid, &grafana_db, &telemetry_db, &analysis_db) {
-                        Ok(msg) => (200, format!("<html><body>{}</body></html>", msg)),
-                        Err(e) => (500, format!("<html><body>Error: {}</body></html>", e)),
-                    },
-                    None => (400, "<html><body>Missing recording_id</body></html>".into()),
+        loop {
+            match server.recv_timeout(std::time::Duration::from_secs(1)) {
+                Ok(Some(mut req)) => {
+                    let _ = std::io::Read::read_to_end(&mut req.as_reader(), &mut vec![]);
+                    let path = req.url().split('?').next().unwrap_or("");
+                    let query: Option<&str> = req.url().split('?').nth(1);
+                    let recording_id = query
+                        .and_then(|q| q.split('&').find(|p| p.starts_with("recording_id=")))
+                        .and_then(|p| p.strip_prefix("recording_id="))
+                        .and_then(|v| v.parse::<i64>().ok());
+
+                    let (status, body) = if path == "/export" {
+                        match recording_id {
+                            Some(rid) => match run_export(rid, &grafana_db, &telemetry_db, &analysis_db) {
+                                Ok(msg) => (200, format!("<html><body>{}</body></html>", msg)),
+                                Err(e) => (500, format!("<html><body>Error: {}</body></html>", e)),
+                            },
+                            None => (400, "<html><body>Missing recording_id</body></html>".into()),
+                        }
+                    } else {
+                        (404, "<html><body>Not found. Use /export?recording_id=X</body></html>".into())
+                    };
+
+                    let _ = req.respond(Response::from_string(body).with_status_code(status));
                 }
-            } else {
-                (404, "<html><body>Not found. Use /export?recording_id=X</body></html>".into())
-            };
+                Ok(None) => {}
+                Err(e) => {
+                    eprintln!("acr_analysis_export: server error: {e}");
+                    break;
+                }
+            }
 
-            let _ = req.respond(Response::from_string(body).with_status_code(status));
+            if stop_path.exists() {
+                let _ = std::fs::remove_file(&stop_path);
+                eprintln!("Stop file detected; shutting down...");
+                break;
+            }
         }
         return Ok(());
     }

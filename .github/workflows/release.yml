@@ -35,7 +35,11 @@ jobs:
           --bin acr_recorder --bin acr_export --bin acr_motec
           --bin acr_telemetry_bridge --bin acr_analysis_export
           --bin acr_track_match --bin acr_timing --bin acr_rtss_osd
-          --bin acr_analyze_timing_recording
+          --bin acr_analyze_timing_recording --bin acr_grip_estimator
+          --bin acr_plot_recording
+
+      - name: Build launcher (separate crate, no acr_timing_bin feature)
+        run: cargo build --release -p acr_launcher --bin acr_launcher
 
       - name: Install Inno Setup
         run: choco install innosetup -y

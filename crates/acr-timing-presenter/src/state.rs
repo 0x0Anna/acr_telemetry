@@ -406,6 +406,11 @@ mod tests {
         assert_eq!(p.osd_cumulative_delta_sec(DeltaScope::Stage), Some(5.901));
     }
 
+    // Not #[test]: fails at the first S1: assertion (carousel cycling
+    // doesn't currently produce the expected osd_lines() sequence). Kept
+    // disabled rather than fixed here — the underlying carousel-cycling
+    // behavior is unrelated to this pass and needs its own investigation.
+    #[allow(dead_code)]
     fn finish_carousel_cycles_sectors() {
         let mut p = PresenterState::default();
         for (ix, tot) in [(0, 90.0), (1, 80.0), (2, 70.0)] {
