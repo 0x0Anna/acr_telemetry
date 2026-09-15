@@ -94,6 +94,22 @@ pub fn run(options: Options, running: &AtomicBool) -> Result<(), Box<dyn std::er
                 &mut last_statics_debug,
             );
 
+            // See the same check in `main.rs`'s record loop: the shared
+            // memory block stays readable for as long as the game is open,
+            // but its physics fields go flat at zero once the session
+            // leaves Live/Replay (menu, results, paused). Skip those
+            // samples so the exported .ld doesn't end in a dead flatline.
+            if !data.graphics.status.is_active() {
+                consecutive_none = consecutive_none.saturating_add(1);
+                let sleep = if consecutive_none >= IDLE_THRESHOLD {
+                    idle_sleep
+                } else {
+                    poll
+                };
+                std::thread::sleep(sleep);
+                continue;
+            }
+
             consecutive_none = 0;
             physics_records.push(PhysicsRecord::from_physics(
                 &data.physics,

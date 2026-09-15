@@ -206,10 +206,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 );
                 last_statics_debug = std::time::Instant::now();
             }
+            // The shared memory block stays mapped (and readable) for as long
+            // as the game process is open, but its physics fields go flat at
+            // zero once the session leaves Live/Replay — main menu, post-stage
+            // results, or paused with no car loaded. Recording those samples
+            // anyway is what produced .ld exports whose second half (or more)
+            // was a dead flatline: the game stayed open and the recorder kept
+            // appending zeroed physics for however long it took the driver to
+            // notice and hit stop. Skip the sample instead, same as a `None`
+            // read, so only genuine driving ends up in the export.
+            if !data.graphics.status.is_active() {
+                consecutive_none = consecutive_none.saturating_add(1);
+                let sleep = if consecutive_none >= IDLE_THRESHOLD {
+                    idle_sleep
+                } else {
+                    poll_interval
+                };
+                std::thread::sleep(sleep);
+                continue;
+            }
             consecutive_none = 0;
+
             let record = PhysicsRecord::from_physics(&data.physics, recorder.elapsed().as_secs_f64());
             recorder.record(record)?;
-            
+
             // Record graphics at ~60 Hz (time-based) - only if enabled
             if record_graphics && last_graphics_capture.elapsed() >= graphics_interval {
                 let graphics_record = GraphicsRecord::from_graphics(&data.graphics);
