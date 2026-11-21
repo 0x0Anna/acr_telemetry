@@ -13,8 +13,13 @@ pub fn write_csv(
     records: &[PhysicsRecord],
     sample_rate_hz: u32,
 ) -> std::io::Result<()> {
-    let dt = 1.0 / sample_rate_hz as f64;
-    let duration_secs = records.len() as f64 * dt;
+    // Sample timing comes from the recorded capture times, not a fixed 1/rate
+    // step: the real rate varies during a session, so len * (1/333) misstates
+    // Duration / End Time (328 s reported for a 300 s capture).
+    let mut records_ts = records.to_vec();
+    crate::record::ensure_capture_times(&mut records_ts, sample_rate_hz);
+    let time_secs = PhysicsRecord::motec_time_secs(&records_ts);
+    let duration_secs = time_secs.last().copied().unwrap_or(0.0) as f64;
 
     // Channel names and units (must match row data)
     let (names, units): (Vec<&str>, Vec<&str>) = (
@@ -279,9 +284,6 @@ pub fn write_csv(
     }
 
     // Data rows
-    let mut records_ts = records.to_vec();
-    crate::record::ensure_capture_times(&mut records_ts, sample_rate_hz);
-    let time_secs = PhysicsRecord::motec_time_secs(&records_ts);
     let b = |v: bool| if v { 1.0 } else { 0.0 };
     for (i, r) in records.iter().enumerate() {
         let time = time_secs.get(i).copied().unwrap_or(0.0) as f64;
@@ -695,4 +697,27 @@ pub fn write_graphics_csv(
     }
     
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::record::test_support::minimal_physics_record;
+
+    #[test]
+    fn duration_and_end_time_use_capture_times() {
+        // 100 samples spanning 2.0 s (50 Hz), far from the nominal 333 Hz (which would give 0.3 s).
+        let recs: Vec<_> = (0..101)
+            .map(|i| {
+                let mut r = minimal_physics_record();
+                r.capture_time_sec = 5.0 + i as f64 * 0.02;
+                r
+            })
+            .collect();
+        let mut out = Vec::new();
+        write_csv(&mut out, &recs, 333).unwrap();
+        let text = String::from_utf8(out).unwrap();
+        assert!(text.contains("\"End Time\",\"2\",\"s\""), "{}", text.lines().nth(8).unwrap());
+        assert!(text.contains("\"Duration\",\"2\",\"s\""), "{}", text.lines().nth(9).unwrap());
+    }
 }

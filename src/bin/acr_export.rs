@@ -19,41 +19,9 @@ use acr_recorder::config;
 use acr_recorder::export::subtiming::{compute_subtiming_markers, write_subtiming_shapefile, ShpSample, SubtimingParams};
 use acr_recorder::export::sqlite_export::RecordingNotesContent;
 use acr_recorder::notes::{Annotation, RecordingNotesJson};
-use acr_recorder::record::PhysicsRecord;
 use shapefile::dbase::{FieldValue, Record, TableWriterBuilder};
 use shapefile::{Point, Writer};
 
-/// Build annotations for time synchronization from physics: first air_temp > 0, first speed_kmh > 0,
-/// and each time air_temp crosses from <= 0 to > 0 (e.g. after returning to menu and re-entering).
-/// Runs only during export (offline); no impact on recording performance.
-fn sync_annotations_from_physics(records: &[PhysicsRecord], dt_sec: f64) -> Vec<Annotation> {
-    let mut out = Vec::new();
-    let mut added_first_speed = false;
-    for (i, r) in records.iter().enumerate() {
-        let t = i as f64 * dt_sec;
-        // A) Each time air_temp crosses from <= 0 to > 0
-        if r.air_temp > 0.0 && (i == 0 || records[i - 1].air_temp <= 0.0) {
-            out.push(Annotation {
-                time_offset_sec: t,
-                time_end_sec: None,
-                text: format!("air_temp > 0 ({:.1} °C)", r.air_temp),
-                tag: "sync_air_temp_gt_0".into(),
-            });
-        }
-        // B) First time speed_kmh > 3 only (threshold avoids noise at standstill)
-        if !added_first_speed && r.speed_kmh > 3.0 && (i == 0 || records[i - 1].speed_kmh <= 3.0) {
-            added_first_speed = true;
-            out.push(Annotation {
-                time_offset_sec: t,
-                time_end_sec: None,
-                text: format!("speed_kmh > 3 ({:.1} km/h)", r.speed_kmh),
-                tag: "sync_speed_gt_0".into(),
-            });
-        }
-    }
-    out.sort_by(|a, b| a.time_offset_sec.partial_cmp(&b.time_offset_sec).unwrap_or(std::cmp::Ordering::Equal));
-    out
-}
 
 /// Read <stem>.notes.json. Returns (content, annotations, start_utc, end_utc).
 /// If notes/annotations are empty, caller may load from acr_notes using start/end.
@@ -628,8 +596,7 @@ fn export_single(
     if do_sqlite {
         eprintln!("Notes directory: {}", notes_dir.display());
 
-        let dt_sec = 1.0 / sample_rate as f64;
-        let sync_ann = sync_annotations_from_physics(&records, dt_sec);
+        let sync_ann = acr_recorder::export::sync_annotations::sync_annotations_from_physics(&records, sample_rate);
 
         let (notes_content, user_annotations, notes_text, start_utc, end_utc) =
             match read_notes_json(input) {

@@ -6,5 +6,6 @@ pub mod motec_profile;
 pub mod rkyv_format;
 pub mod rkyv_reader;
 pub mod sqlite_export;
+pub mod sync_annotations;
 
 pub use acr_timing::subtiming;
