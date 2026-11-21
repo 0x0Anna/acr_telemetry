@@ -298,27 +298,10 @@ pub fn write_format_metadata(
 }
 
 fn format_iso8601(secs: u64) -> String {
-    let days = secs / 86400;
-    let (y, m, d) = days_to_ymd(days);
-    let h = (secs / 3600) % 24;
-    let min = (secs / 60) % 60;
-    let s = secs % 60;
+    let (y, m, d, h, min, s) = crate::utc_time::utc_parts(secs);
     format!("{:04}-{:02}-{:02}T{:02}:{:02}:{:02}Z", y, m, d, h, min, s)
 }
 
-fn days_to_ymd(days: u64) -> (u32, u32, u32) {
-    const EPOCH: i64 = 719163;
-    let j = days as i64 + EPOCH;
-    let a = (4 * j + 3) / 146097;
-    let b = j - (146097 * a) / 4;
-    let c = (4 * b + 3) / 1461;
-    let d = b - (1461 * c) / 4;
-    let e = (5 * d + 2) / 153;
-    let day = (d - (153 * e + 2) / 5) as u32 + 1;
-    let month = ((e + 2) % 12) as u32 + 1;
-    let year = (100 * a + c) as u32;
-    (year, month, day)
-}
 
 fn schema_types_all() -> Vec<TypeDef> {
     let mut types = schema_types_physics();

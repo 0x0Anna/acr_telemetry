@@ -162,11 +162,7 @@ fn write_ld_head(
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default();
     let secs = now.as_secs();
-    let days = secs / 86400;
-    let (y, m, d) = days_to_ymd(days);
-    let h = (secs / 3600) % 24;
-    let min = (secs / 60) % 60;
-    let s = secs % 60;
+    let (y, m, d, h, min, s) = crate::utc_time::utc_parts(secs);
     let date = format!("{:02}/{:02}/{:04}", d, m, y);
     let time = format!("{:02}:{:02}:{:02}", h, min, s);
     let comment = format!("acr_recorder export profile={profile_id}");
@@ -218,19 +214,6 @@ fn write_ld_event(f: &mut File, description: &str) -> std::io::Result<()> {
     Ok(())
 }
 
-fn days_to_ymd(days: u64) -> (u32, u32, u32) {
-    const EPOCH: i64 = 719163;
-    let j = days as i64 + EPOCH;
-    let a = (4 * j + 3) / 146097;
-    let b = j - (146097 * a) / 4;
-    let c = (4 * b + 3) / 1461;
-    let d = b - (1461 * c) / 4;
-    let e = (5 * d + 2) / 153;
-    let day = (d - (153 * e + 2) / 5) as u32 + 1;
-    let month = ((e + 2) % 12) as u32 + 1;
-    let year = (100 * a + c) as u32;
-    (year, month, day)
-}
 
 fn write_ld_chan(
     f: &mut File,

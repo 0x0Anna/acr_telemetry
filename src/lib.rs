@@ -12,6 +12,7 @@ pub mod recorder;
 pub mod motec_live;
 pub mod recording_position;
 pub mod track_match_app;
+pub mod utc_time;
 
 // Workspace crates (timing / telemetry / pacenotes split for separate release).
 pub use acr_telemetry::gis;
