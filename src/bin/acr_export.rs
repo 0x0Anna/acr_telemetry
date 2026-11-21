@@ -23,6 +23,16 @@ use shapefile::dbase::{FieldValue, Record, TableWriterBuilder};
 use shapefile::{Point, Writer};
 
 
+/// Recording start (RFC 3339, UTC) from <stem>.notes.json, for the MoTeC header Log Date/Time.
+fn read_recording_start(rkyv_path: &Path) -> Option<String> {
+    let stem = rkyv_path.file_stem()?.to_str()?;
+    let parent = rkyv_path.parent().unwrap_or(Path::new("."));
+    let json_str = std::fs::read_to_string(parent.join(format!("{}.notes.json", stem))).ok()?;
+    let j: RecordingNotesJson = serde_json::from_str(&json_str).ok()?;
+    let start = j.recording_start_utc.trim();
+    (!start.is_empty()).then(|| start.to_string())
+}
+
 /// Read <stem>.notes.json. Returns (content, annotations, start_utc, end_utc).
 /// If notes/annotations are empty, caller may load from acr_notes using start/end.
 fn read_notes_json(
@@ -736,7 +746,8 @@ fn export_single(
         let csv_path = out_dir.join(format!("{}.csv", stem));
         let f = File::create(&csv_path)?;
         let mut w = BufWriter::new(f);
-        acr_recorder::export::motec_csv::write_csv(&mut w, &records, sample_rate)?;
+        let recording_start = read_recording_start(input);
+        acr_recorder::export::motec_csv::write_csv(&mut w, &records, sample_rate, recording_start.as_deref())?;
         w.flush()?;
         eprintln!("Wrote {}", csv_path.display());
 
@@ -752,6 +763,7 @@ fn export_single(
                 &mut w,
                 &graphics_records,
                 graphics_sample_rate,
+                recording_start.as_deref(),
             )?;
             w.flush()?;
             eprintln!("Wrote {}", graphics_csv_path.display());
@@ -766,9 +778,10 @@ fn export_single(
                 &records,
                 sample_rate,
                 Some((graphics_records.as_slice(), *graphics_sample_rate)),
+                recording_start.as_deref(),
             )?;
         } else {
-            acr_recorder::export::motec_ld::write_ld(&ld_path, &records, sample_rate)?;
+            acr_recorder::export::motec_ld::write_ld(&ld_path, &records, sample_rate, recording_start.as_deref())?;
         }
         eprintln!(
             "Wrote {} (MoTeC profile={})",

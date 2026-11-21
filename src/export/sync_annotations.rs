@@ -22,7 +22,7 @@ pub fn sync_annotations_from_physics(records: &[PhysicsRecord], sample_rate_hz: 
             out.push(Annotation {
                 time_offset_sec: t,
                 time_end_sec: None,
-                text: format!("air_temp > 0 ({:.1} °C)", r.air_temp),
+                text: format!("air_temp > 0 ({:.1} K / {:.1} °C)", r.air_temp, r.air_temp - 273.15),
                 tag: "sync_air_temp_gt_0".into(),
             });
         }
@@ -68,5 +68,7 @@ mod tests {
         assert!((speed.time_offset_sec - 0.4).abs() < 1e-3, "{}", speed.time_offset_sec);
         let air = ann.iter().find(|a| a.tag == "sync_air_temp_gt_0").unwrap();
         assert_eq!(air.time_offset_sec, 0.0);
+        // The shared-memory value is Kelvin; it must not be labelled °C.
+        assert_eq!(air.text, "air_temp > 0 (280.0 K / 6.9 °C)");
     }
 }

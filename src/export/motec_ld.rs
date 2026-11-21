@@ -16,8 +16,9 @@ pub fn write_ld(
     path: impl AsRef<Path>,
     records: &[PhysicsRecord],
     sample_rate_hz: u32,
+    recording_start_utc: Option<&str>,
 ) -> std::io::Result<()> {
-    write_ld_with_profile(path, records, sample_rate_hz, None, None)
+    write_ld_with_profile(path, records, sample_rate_hz, None, None, recording_start_utc)
 }
 
 /// Write physics records (+ optional graphics sidecar channels) to MoTeC .ld format.
@@ -26,8 +27,9 @@ pub fn write_ld_with_graphics(
     records: &[PhysicsRecord],
     sample_rate_hz: u32,
     graphics: Option<(&[GraphicsRecord], u32)>,
+    recording_start_utc: Option<&str>,
 ) -> std::io::Result<()> {
-    write_ld_with_profile(path, records, sample_rate_hz, graphics, None)
+    write_ld_with_profile(path, records, sample_rate_hz, graphics, None, recording_start_utc)
 }
 
 /// Write `.ld` with an explicit MoTeC channel profile (from TOML).
@@ -37,6 +39,7 @@ pub fn write_ld_with_profile(
     sample_rate_hz: u32,
     graphics: Option<(&[GraphicsRecord], u32)>,
     profile: Option<&MotecProfile>,
+    recording_start_utc: Option<&str>,
 ) -> std::io::Result<()> {
     let profile = match profile {
         Some(p) => p.clone(),
@@ -46,7 +49,7 @@ pub fn write_ld_with_profile(
         )
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidInput, e))?,
     };
-    write_ld_profile(path, records, sample_rate_hz, graphics, &profile)
+    write_ld_profile(path, records, sample_rate_hz, graphics, &profile, recording_start_utc)
 }
 
 fn default_profile_name() -> String {
@@ -72,6 +75,7 @@ fn write_ld_profile(
     sample_rate_hz: u32,
     graphics: Option<(&[GraphicsRecord], u32)>,
     profile: &MotecProfile,
+    recording_start_utc: Option<&str>,
 ) -> std::io::Result<()> {
     let channels = motec_profile::build_ld_channels(profile, records, sample_rate_hz, graphics)
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidInput, e))?;
@@ -108,6 +112,7 @@ fn write_ld_profile(
         event_ptr,
         channels.len() as u32,
         &profile.id,
+        recording_start_utc,
     )?;
 
     f.seek(SeekFrom::Start(event_ptr as u64))?;
@@ -156,15 +161,9 @@ fn write_ld_head(
     event_ptr: u32,
     n_chans: u32,
     profile_id: &str,
+    recording_start_utc: Option<&str>,
 ) -> std::io::Result<()> {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default();
-    let secs = now.as_secs();
-    let (y, m, d, h, min, s) = crate::utc_time::utc_parts(secs);
-    let date = format!("{:02}/{:02}/{:04}", d, m, y);
-    let time = format!("{:02}:{:02}:{:02}", h, min, s);
+    let (date, time) = crate::utc_time::motec_log_date_time(recording_start_utc);
     let comment = format!("acr_recorder export profile={profile_id}");
 
     f.write_all(&0x40u32.to_le_bytes())?;

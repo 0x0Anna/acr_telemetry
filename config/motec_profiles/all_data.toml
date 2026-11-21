@@ -372,12 +372,12 @@ skip_if_zero = true
 
 [[channels]]
 name = "air_temp"
-unit = "C"
+unit = "K"
 source = "air_temp"
 
 [[channels]]
 name = "road_temp"
-unit = "C"
+unit = "K"
 source = "road_temp"
 
 [[channels]]

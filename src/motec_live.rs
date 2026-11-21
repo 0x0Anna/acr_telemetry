@@ -144,7 +144,7 @@ pub fn run(options: Options, running: &AtomicBool) -> Result<(), Box<dyn std::er
         return Ok(());
     }
 
-    motec_ld::write_ld(&ld_path, &physics_records, TARGET_HZ)?;
+    motec_ld::write_ld(&ld_path, &physics_records, TARGET_HZ, None)?;
 
     eprintln!("Wrote {}", ld_path.display());
     Ok(())

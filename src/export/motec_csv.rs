@@ -3,7 +3,6 @@
 //! Header format based on [pyxrk-dev](https://github.com/mitchdetailed/pyxrk-dev).
 
 use std::io::Write;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::record::{GraphicsRecord, PhysicsRecord};
 
@@ -12,6 +11,7 @@ pub fn write_csv(
     w: &mut impl Write,
     records: &[PhysicsRecord],
     sample_rate_hz: u32,
+    recording_start_utc: Option<&str>,
 ) -> std::io::Result<()> {
     // Sample timing comes from the recorded capture times, not a fixed 1/rate
     // step: the real rate varies during a session, so len * (1/333) misstates
@@ -247,7 +247,7 @@ pub fn write_csv(
             "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m",
             "", "", "", "", "", "", "", "", "", "", "", "",
             "", "", "", "", "", "", "", "", "", "", "", "",
-            "", "", "", "", "bar", "C", "C",
+            "", "", "", "", "bar", "K", "K",
             "", "", "", "", "", "", "",
             "", "",
             "", "", "m", "", "", "mm", "mm", "kg", "kg/m3", "",
@@ -257,7 +257,7 @@ pub fn write_csv(
         ],
     );
 
-    let (log_date, log_time) = format_datetime();
+    let (log_date, log_time) = crate::utc_time::motec_log_date_time(recording_start_utc);
 
     // MoTeC CSV header (pyxrk-dev structure)
     let header_rows: Vec<Vec<String>> = vec![
@@ -496,28 +496,18 @@ fn quote_row(row: &[String]) -> String {
     row.iter().map(|s| format!("\"{}\"", s)).collect::<Vec<_>>().join(",")
 }
 
-fn format_datetime() -> (String, String) {
-    let secs = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs();
-    let (y, m, d, h, min, s) = crate::utc_time::utc_parts(secs);
-    let date = format!("{:02}/{:02}/{:04}", d, m, y);
-    let time = format!("{:02}:{:02}:{:02}", h, min, s);
-    (date, time)
-}
-
 
 /// Write graphics records to CSV.
 pub fn write_graphics_csv(
     w: &mut impl Write,
     records: &[GraphicsRecord],
     sample_rate_hz: u32,
+    recording_start_utc: Option<&str>,
 ) -> std::io::Result<()> {
     let dt = 1.0 / sample_rate_hz as f64;
     let duration_secs = records.len() as f64 * dt;
     
-    let (date, time) = format_datetime();
+    let (date, time) = crate::utc_time::motec_log_date_time(recording_start_utc);
     
     let names = vec![
         "Time", "packet_id", "status", "session_type", "session_index",
@@ -715,7 +705,7 @@ mod tests {
             })
             .collect();
         let mut out = Vec::new();
-        write_csv(&mut out, &recs, 333).unwrap();
+        write_csv(&mut out, &recs, 333, None).unwrap();
         let text = String::from_utf8(out).unwrap();
         assert!(text.contains("\"End Time\",\"2\",\"s\""), "{}", text.lines().nth(8).unwrap());
         assert!(text.contains("\"Duration\",\"2\",\"s\""), "{}", text.lines().nth(9).unwrap());
