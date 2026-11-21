@@ -19,40 +19,18 @@ use acr_recorder::config;
 use acr_recorder::export::subtiming::{compute_subtiming_markers, write_subtiming_shapefile, ShpSample, SubtimingParams};
 use acr_recorder::export::sqlite_export::RecordingNotesContent;
 use acr_recorder::notes::{Annotation, RecordingNotesJson};
-use acr_recorder::record::PhysicsRecord;
 use shapefile::dbase::{FieldValue, Record, TableWriterBuilder};
 use shapefile::{Point, Writer};
 
-/// Build annotations for time synchronization from physics: first air_temp > 0, first speed_kmh > 0,
-/// and each time air_temp crosses from <= 0 to > 0 (e.g. after returning to menu and re-entering).
-/// Runs only during export (offline); no impact on recording performance.
-fn sync_annotations_from_physics(records: &[PhysicsRecord], dt_sec: f64) -> Vec<Annotation> {
-    let mut out = Vec::new();
-    let mut added_first_speed = false;
-    for (i, r) in records.iter().enumerate() {
-        let t = i as f64 * dt_sec;
-        // A) Each time air_temp crosses from <= 0 to > 0
-        if r.air_temp > 0.0 && (i == 0 || records[i - 1].air_temp <= 0.0) {
-            out.push(Annotation {
-                time_offset_sec: t,
-                time_end_sec: None,
-                text: format!("air_temp > 0 ({:.1} °C)", r.air_temp),
-                tag: "sync_air_temp_gt_0".into(),
-            });
-        }
-        // B) First time speed_kmh > 3 only (threshold avoids noise at standstill)
-        if !added_first_speed && r.speed_kmh > 3.0 && (i == 0 || records[i - 1].speed_kmh <= 3.0) {
-            added_first_speed = true;
-            out.push(Annotation {
-                time_offset_sec: t,
-                time_end_sec: None,
-                text: format!("speed_kmh > 3 ({:.1} km/h)", r.speed_kmh),
-                tag: "sync_speed_gt_0".into(),
-            });
-        }
-    }
-    out.sort_by(|a, b| a.time_offset_sec.partial_cmp(&b.time_offset_sec).unwrap_or(std::cmp::Ordering::Equal));
-    out
+
+/// Recording start (RFC 3339, UTC) from <stem>.notes.json, for the MoTeC header Log Date/Time.
+fn read_recording_start(rkyv_path: &Path) -> Option<String> {
+    let stem = rkyv_path.file_stem()?.to_str()?;
+    let parent = rkyv_path.parent().unwrap_or(Path::new("."));
+    let json_str = std::fs::read_to_string(parent.join(format!("{}.notes.json", stem))).ok()?;
+    let j: RecordingNotesJson = serde_json::from_str(&json_str).ok()?;
+    let start = j.recording_start_utc.trim();
+    (!start.is_empty()).then(|| start.to_string())
 }
 
 /// Read <stem>.notes.json. Returns (content, annotations, start_utc, end_utc).
@@ -628,8 +606,7 @@ fn export_single(
     if do_sqlite {
         eprintln!("Notes directory: {}", notes_dir.display());
 
-        let dt_sec = 1.0 / sample_rate as f64;
-        let sync_ann = sync_annotations_from_physics(&records, dt_sec);
+        let sync_ann = acr_recorder::export::sync_annotations::sync_annotations_from_physics(&records, sample_rate);
 
         let (notes_content, user_annotations, notes_text, start_utc, end_utc) =
             match read_notes_json(input) {
@@ -769,7 +746,8 @@ fn export_single(
         let csv_path = out_dir.join(format!("{}.csv", stem));
         let f = File::create(&csv_path)?;
         let mut w = BufWriter::new(f);
-        acr_recorder::export::motec_csv::write_csv(&mut w, &records, sample_rate)?;
+        let recording_start = read_recording_start(input);
+        acr_recorder::export::motec_csv::write_csv(&mut w, &records, sample_rate, recording_start.as_deref())?;
         w.flush()?;
         eprintln!("Wrote {}", csv_path.display());
 
@@ -785,6 +763,7 @@ fn export_single(
                 &mut w,
                 &graphics_records,
                 graphics_sample_rate,
+                recording_start.as_deref(),
             )?;
             w.flush()?;
             eprintln!("Wrote {}", graphics_csv_path.display());
@@ -799,9 +778,10 @@ fn export_single(
                 &records,
                 sample_rate,
                 Some((graphics_records.as_slice(), *graphics_sample_rate)),
+                recording_start.as_deref(),
             )?;
         } else {
-            acr_recorder::export::motec_ld::write_ld(&ld_path, &records, sample_rate)?;
+            acr_recorder::export::motec_ld::write_ld(&ld_path, &records, sample_rate, recording_start.as_deref())?;
         }
         eprintln!(
             "Wrote {} (MoTeC profile={})",

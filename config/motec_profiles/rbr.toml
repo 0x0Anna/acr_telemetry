@@ -297,12 +297,12 @@ source = "abs"
 
 [[channels]]
 name = "airTemp"
-unit = "C"
+unit = "K"
 source = "air_temp"
 
 [[channels]]
 name = "roadTemp"
-unit = "C"
+unit = "K"
 source = "road_temp"
 
 [[channels]]

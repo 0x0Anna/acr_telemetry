@@ -3,7 +3,6 @@
 //! Header format based on [pyxrk-dev](https://github.com/mitchdetailed/pyxrk-dev).
 
 use std::io::Write;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::record::{GraphicsRecord, PhysicsRecord};
 
@@ -12,9 +11,15 @@ pub fn write_csv(
     w: &mut impl Write,
     records: &[PhysicsRecord],
     sample_rate_hz: u32,
+    recording_start_utc: Option<&str>,
 ) -> std::io::Result<()> {
-    let dt = 1.0 / sample_rate_hz as f64;
-    let duration_secs = records.len() as f64 * dt;
+    // Sample timing comes from the recorded capture times, not a fixed 1/rate
+    // step: the real rate varies during a session, so len * (1/333) misstates
+    // Duration / End Time (328 s reported for a 300 s capture).
+    let mut records_ts = records.to_vec();
+    crate::record::ensure_capture_times(&mut records_ts, sample_rate_hz);
+    let time_secs = PhysicsRecord::motec_time_secs(&records_ts);
+    let duration_secs = time_secs.last().copied().unwrap_or(0.0) as f64;
 
     // Channel names and units (must match row data)
     let (names, units): (Vec<&str>, Vec<&str>) = (
@@ -242,7 +247,7 @@ pub fn write_csv(
             "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m",
             "", "", "", "", "", "", "", "", "", "", "", "",
             "", "", "", "", "", "", "", "", "", "", "", "",
-            "", "", "", "", "bar", "C", "C",
+            "", "", "", "", "bar", "K", "K",
             "", "", "", "", "", "", "",
             "", "",
             "", "", "m", "", "", "mm", "mm", "kg", "kg/m3", "",
@@ -252,7 +257,7 @@ pub fn write_csv(
         ],
     );
 
-    let (log_date, log_time) = format_datetime();
+    let (log_date, log_time) = crate::utc_time::motec_log_date_time(recording_start_utc);
 
     // MoTeC CSV header (pyxrk-dev structure)
     let header_rows: Vec<Vec<String>> = vec![
@@ -279,9 +284,6 @@ pub fn write_csv(
     }
 
     // Data rows
-    let mut records_ts = records.to_vec();
-    crate::record::ensure_capture_times(&mut records_ts, sample_rate_hz);
-    let time_secs = PhysicsRecord::motec_time_secs(&records_ts);
     let b = |v: bool| if v { 1.0 } else { 0.0 };
     for (i, r) in records.iter().enumerate() {
         let time = time_secs.get(i).copied().unwrap_or(0.0) as f64;
@@ -494,45 +496,18 @@ fn quote_row(row: &[String]) -> String {
     row.iter().map(|s| format!("\"{}\"", s)).collect::<Vec<_>>().join(",")
 }
 
-fn format_datetime() -> (String, String) {
-    let secs = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs();
-    let days = secs / 86400;
-    let (y, m, d) = days_to_ymd(days);
-    let h = (secs / 3600) % 24;
-    let min = (secs / 60) % 60;
-    let s = secs % 60;
-    let date = format!("{:02}/{:02}/{:04}", d, m, y);
-    let time = format!("{:02}:{:02}:{:02}", h, min, s);
-    (date, time)
-}
-
-fn days_to_ymd(days: u64) -> (u32, u32, u32) {
-    const EPOCH: i64 = 719163;
-    let j = days as i64 + EPOCH;
-    let a = (4 * j + 3) / 146097;
-    let b = j - (146097 * a) / 4;
-    let c = (4 * b + 3) / 1461;
-    let d = b - (1461 * c) / 4;
-    let e = (5 * d + 2) / 153;
-    let day = (d - (153 * e + 2) / 5) as u32 + 1;
-    let month = ((e + 2) % 12) as u32 + 1;
-    let year = (100 * a + c) as u32;
-    (year, month, day)
-}
 
 /// Write graphics records to CSV.
 pub fn write_graphics_csv(
     w: &mut impl Write,
     records: &[GraphicsRecord],
     sample_rate_hz: u32,
+    recording_start_utc: Option<&str>,
 ) -> std::io::Result<()> {
     let dt = 1.0 / sample_rate_hz as f64;
     let duration_secs = records.len() as f64 * dt;
     
-    let (date, time) = format_datetime();
+    let (date, time) = crate::utc_time::motec_log_date_time(recording_start_utc);
     
     let names = vec![
         "Time", "packet_id", "status", "session_type", "session_index",
@@ -712,4 +687,27 @@ pub fn write_graphics_csv(
     }
     
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::record::test_support::minimal_physics_record;
+
+    #[test]
+    fn duration_and_end_time_use_capture_times() {
+        // 100 samples spanning 2.0 s (50 Hz), far from the nominal 333 Hz (which would give 0.3 s).
+        let recs: Vec<_> = (0..101)
+            .map(|i| {
+                let mut r = minimal_physics_record();
+                r.capture_time_sec = 5.0 + i as f64 * 0.02;
+                r
+            })
+            .collect();
+        let mut out = Vec::new();
+        write_csv(&mut out, &recs, 333, None).unwrap();
+        let text = String::from_utf8(out).unwrap();
+        assert!(text.contains("\"End Time\",\"2\",\"s\""), "{}", text.lines().nth(8).unwrap());
+        assert!(text.contains("\"Duration\",\"2\",\"s\""), "{}", text.lines().nth(9).unwrap());
+    }
 }
