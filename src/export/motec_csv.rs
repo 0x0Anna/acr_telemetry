@@ -223,34 +223,34 @@ pub fn write_csv(
             "abs_vibration",
         ],
         vec![
-            "s", "", "", "", "", "deg", "", "rpm", "", "", "", "", "km/h",
+            "s", "", "", "", "", "", "", "rpm", "", "", "", "", "km/h",
             "m/s", "m/s", "m/s", "m/s", "m/s", "m/s", "rad/s", "rad/s", "rad/s",
             "g", "g", "g", "rad", "rad", "rad", "",
             "", "", "", "", "N", "N", "N", "N",
             "psi", "psi", "psi", "psi",
             "rad/s", "rad/s", "rad/s", "rad/s",
             "", "", "", "", "", "", "", "",
-            "C", "C", "C", "C",
+            "K", "K", "K", "K",
             "rad", "rad", "rad", "rad",
-            "mm", "mm", "mm", "mm",
-            "C", "C", "C", "C",
+            "m", "m", "m", "m",
+            "K", "K", "K", "K",
             "bar", "bar", "bar", "bar",
             "", "", "", "",
             "", "", "", "",
-            "deg", "deg", "deg", "deg",
+            "rad", "rad", "rad", "rad",
             "%", "%", "%", "%",
             "%", "%", "%", "%",
             "", "",
-            "C", "C", "C", "C",
-            "C", "C", "C", "C",
-            "C", "C", "C", "C",
+            "K", "K", "K", "K",
+            "K", "K", "K", "K",
+            "K", "K", "K", "K",
             "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m",
             "", "", "", "", "", "", "", "", "", "", "", "",
             "", "", "", "", "", "", "", "", "", "", "", "",
             "", "", "", "", "bar", "K", "K",
-            "", "", "", "", "", "", "",
+            "K", "", "", "", "", "", "",
             "", "",
-            "", "", "m", "", "", "mm", "mm", "kg", "kg/m3", "",
+            "", "", "m", "", "", "", "mm", "mm", "kg", "kg/m3",
             "", "", "", "", "", "", "kJ", "", "", "", "",
             "", "Nm", "Nm", "Nm", "Nm", "N", "N", "N", "N", "Nm", "Nm", "Nm", "Nm",
             "", "", "", "",
@@ -709,5 +709,47 @@ mod tests {
         let text = String::from_utf8(out).unwrap();
         assert!(text.contains("\"End Time\",\"2\",\"s\""), "{}", text.lines().nth(8).unwrap());
         assert!(text.contains("\"Duration\",\"2\",\"s\""), "{}", text.lines().nth(9).unwrap());
+    }
+
+    /// Units are a positional list next to the names, so one stray entry silently shifts a whole block.
+    /// Check name -> unit pairs against what the game actually delivers (all temperatures in Kelvin,
+    /// suspension travel in metres, slip angle in radians, steering normalised).
+    #[test]
+    fn units_row_lines_up_with_channel_names() {
+        let recs = vec![minimal_physics_record()];
+        let mut out = Vec::new();
+        write_csv(&mut out, &recs, 333, None).unwrap();
+        let text = String::from_utf8(out).unwrap();
+        let rows: Vec<Vec<String>> = text
+            .lines()
+            .map(|l| l.split(',').map(|f| f.trim_matches('"').to_string()).collect())
+            .collect();
+        let names_at = rows.iter().position(|r| r.first().map(String::as_str) == Some("Time")).unwrap();
+        let (names, units) = (&rows[names_at], &rows[names_at + 1]);
+        assert_eq!(names.len(), units.len());
+        let unit = |name: &str| -> &str {
+            let i = names.iter().position(|n| n == name).unwrap_or_else(|| panic!("no column {name}"));
+            units[i].as_str()
+        };
+        for (name, want) in [
+            ("steer_angle", ""),
+            ("tyre_core_temp_FL", "K"),
+            ("brake_temp_RR", "K"),
+            ("tyre_temp_m_FR", "K"),
+            ("suspension_travel_FL", "m"),
+            ("slip_angle_RL", "rad"),
+            ("air_temp", "K"),
+            ("road_temp", "K"),
+            ("water_temp", "K"),
+            ("abs", ""),
+            ("kers_input", ""),
+            ("ride_height_front", "mm"),
+            ("ballast", "kg"),
+            ("air_density", "kg/m3"),
+            ("performance_meter", ""),
+            ("wheel_pressure_FL", "psi"),
+        ] {
+            assert_eq!(unit(name), want, "unit for {name}");
+        }
     }
 }
